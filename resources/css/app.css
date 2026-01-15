@@ -1,0 +1,35 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+html {
+    scroll-padding-top: 100px; /* Sesuaikan dengan tinggi header kamu */
+}
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+    width: 8px;
+}
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, #FF6B35, #4CAF50);
+    border-radius: 20px;
+}
+
+/* Custom Utilities */
+@layer utilities {
+    .gradient-text {
+        background: linear-gradient(135deg, #FF6B35 0%, #4CAF50 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .gradient-border {
+        border: 2px solid transparent;
+        background: linear-gradient(white, white) padding-box,
+                    linear-gradient(135deg, #FF6B35, #4CAF50) border-box;
+    }
+}
