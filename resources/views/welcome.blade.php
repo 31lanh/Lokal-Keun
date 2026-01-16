@@ -1,7 +1,6 @@
 @extends('layouts.app')
 
 @section('content')
-
     <section id="beranda" class="relative min-h-screen flex items-center justify-center overflow-hidden pt-16">
         <div class="absolute inset-0 z-0">
             <div class="absolute top-20 right-10 w-72 h-72 bg-primary-orange/20 rounded-full blur-3xl animate-pulse-slow">
@@ -95,7 +94,7 @@
                     ];
                 @endphp
 
-                @foreach($categories as $cat)
+                @foreach ($categories as $cat)
                     <a href="#" class="group relative">
                         <div
                             class="absolute inset-0 bg-gradient-to-br from-primary-{{ $cat['color'] }} to-{{ $cat['color'] }}-dark rounded-2xl opacity-0 group-hover:opacity-10 transition-opacity">
@@ -200,6 +199,7 @@
             </div>
 
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+                {{-- UMKM Card 1 --}}
                 <div
                     class="group bg-background-light dark:bg-background-dark rounded-3xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2">
                     <div class="relative h-48 overflow-hidden">
@@ -227,14 +227,14 @@
                                 <span class="material-symbols-outlined text-sm text-primary-green">location_on</span>
                                 <span>Yogyakarta</span>
                             </div>
-                            <a href="{{ route('umkm.detail') }}"
-                                class="text-primary-orange font-bold text-sm hover:underline">
+                            <a href="#" class="text-primary-orange font-bold text-sm hover:underline">
                                 Detail →
                             </a>
                         </div>
                     </div>
                 </div>
 
+                {{-- UMKM Card 2 --}}
                 <div
                     class="group bg-background-light dark:bg-background-dark rounded-3xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2">
                     <div class="relative h-48 overflow-hidden">
@@ -248,7 +248,8 @@
                     </div>
                     <div class="p-6">
                         <div class="flex justify-between items-start mb-3">
-                            <h3 class="font-bold text-lg group-hover:text-primary-green transition-colors">Batik Modern Jaya
+                            <h3 class="font-bold text-lg group-hover:text-primary-green transition-colors">Batik Modern
+                                Jaya
                             </h3>
                             <div class="flex items-center gap-1 bg-amber-50 dark:bg-amber-900/20 px-2 py-1 rounded-lg">
                                 <span class="material-symbols-outlined text-sm text-amber-500 filled">star</span>
@@ -262,14 +263,14 @@
                                 <span class="material-symbols-outlined text-sm text-primary-green">location_on</span>
                                 <span>Solo</span>
                             </div>
-                            <a href="{{ route('umkm.detail') }}"
-                                class="text-primary-orange font-bold text-sm hover:underline">
+                            <a href="#" class="text-primary-orange font-bold text-sm hover:underline">
                                 Detail →
                             </a>
                         </div>
                     </div>
                 </div>
 
+                {{-- UMKM Card 3 --}}
                 <div
                     class="group bg-background-light dark:bg-background-dark rounded-3xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2">
                     <div class="relative h-48 overflow-hidden">
@@ -297,14 +298,14 @@
                                 <span class="material-symbols-outlined text-sm text-primary-green">location_on</span>
                                 <span>Tasikmalaya</span>
                             </div>
-                            <a href="{{ route('umkm.detail') }}"
-                                class="text-primary-orange font-bold text-sm hover:underline">
+                            <a href="#" class="text-primary-orange font-bold text-sm hover:underline">
                                 Detail →
                             </a>
                         </div>
                     </div>
                 </div>
 
+                {{-- UMKM Card 4 --}}
                 <div
                     class="group bg-background-light dark:bg-background-dark rounded-3xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2">
                     <div class="relative h-48 overflow-hidden">
@@ -332,8 +333,7 @@
                                 <span class="material-symbols-outlined text-sm text-primary-green">location_on</span>
                                 <span>Bandung</span>
                             </div>
-                            <a href="{{ route('umkm.detail') }}"
-                                class="text-primary-orange font-bold text-sm hover:underline">
+                            <a href="#" class="text-primary-orange font-bold text-sm hover:underline">
                                 Detail →
                             </a>
                         </div>
@@ -342,7 +342,7 @@
             </div>
 
             <div class="mt-12 text-center">
-                <a href="{{ route('umkm.index') }}"
+                <a href="#"
                     class="inline-block px-8 py-4 bg-gradient-to-r from-primary-orange to-primary-green hover:shadow-xl hover:shadow-orange-500/30 text-white font-bold rounded-xl transition-all transform hover:scale-105">
                     Lihat Lebih Banyak UMKM →
                 </a>
@@ -351,7 +351,7 @@
     </section>
 
     <section id="gabung-mitra"
-        class="min-h-screen flex items-center justify-center pt-24 pb-10 bg-background-light dark:bg-background-dark">
+        class="min-h-screen flex items-center justify-center py-20 bg-background-light dark:bg-background-dark">
         <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
 
             <div
@@ -377,11 +377,11 @@
                     </p>
 
                     <div class="flex flex-col sm:flex-row justify-center gap-4 mb-10">
-                        <button
+                        <a href="{{ route('register') }}"
                             class="px-8 py-3 bg-white text-primary-orange font-bold rounded-xl hover:bg-gray-100 transition-all transform hover:scale-105 shadow-xl flex items-center justify-center gap-2">
                             <span class="material-symbols-outlined">rocket_launch</span>
                             <span>Daftar Sebagai Mitra</span>
-                        </button>
+                        </a>
                     </div>
 
                     <div class="flex flex-wrap justify-center gap-6 md:gap-8 text-white/90 text-sm">
@@ -403,25 +403,6 @@
         </div>
     </section>
 
-    <div class="flex flex-wrap justify-center gap-6 md:gap-8 text-white/90 text-sm">
-        <div class="flex items-center gap-2">
-            <span class="material-symbols-outlined">verified</span>
-            <span class="font-semibold">100% Gratis</span>
-        </div>
-        <div class="flex items-center gap-2">
-            <span class="material-symbols-outlined">speed</span>
-            <span class="font-semibold">Setup 5 Menit</span>
-        </div>
-        <div class="flex items-center gap-2">
-            <span class="material-symbols-outlined">support_agent</span>
-            <span class="font-semibold">Support 24/7</span>
-        </div>
-    </div>
-    </div>
-    </div>
-    </div>
-    </section>
-
     <section class="min-h-screen flex items-center justify-center py-20 bg-white dark:bg-surface-dark">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
             <div class="text-center mb-12">
@@ -432,10 +413,13 @@
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                {{-- Testimonial 1 --}}
                 <div
                     class="bg-background-light dark:bg-background-dark p-8 rounded-2xl shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-1 border-2 border-transparent hover:border-primary-orange">
                     <div class="flex text-amber-400 mb-4">
-                        @for($i = 0; $i < 5; $i++) <span class="material-symbols-outlined filled">star</span> @endfor
+                        @for ($i = 0; $i < 5; $i++)
+                            <span class="material-symbols-outlined filled">star</span>
+                        @endfor
                     </div>
                     <p class="text-gray-700 dark:text-gray-300 mb-6 italic leading-relaxed">
                         "Platform ini sangat membantu saya menemukan oleh-oleh khas daerah yang otentik. Prosesnya mudah dan
@@ -454,10 +438,13 @@
                     </div>
                 </div>
 
+                {{-- Testimonial 2 --}}
                 <div
                     class="bg-background-light dark:bg-background-dark p-8 rounded-2xl shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-1 border-2 border-transparent hover:border-primary-green">
                     <div class="flex text-amber-400 mb-4">
-                        @for($i = 0; $i < 5; $i++) <span class="material-symbols-outlined filled">star</span> @endfor
+                        @for ($i = 0; $i < 5; $i++)
+                            <span class="material-symbols-outlined filled">star</span>
+                        @endfor
                     </div>
                     <p class="text-gray-700 dark:text-gray-300 mb-6 italic leading-relaxed">
                         "Sejak bergabung dengan Lokal-keun, pesanan katering saya meningkat 250%! Fitur lokasinya sangat
@@ -476,10 +463,13 @@
                     </div>
                 </div>
 
+                {{-- Testimonial 3 --}}
                 <div
                     class="bg-background-light dark:bg-background-dark p-8 rounded-2xl shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-1 border-2 border-transparent hover:border-primary-orange">
                     <div class="flex text-amber-400 mb-4">
-                        @for($i = 0; $i < 5; $i++) <span class="material-symbols-outlined filled">star</span> @endfor
+                        @for ($i = 0; $i < 5; $i++)
+                            <span class="material-symbols-outlined filled">star</span>
+                        @endfor
                     </div>
                     <p class="text-gray-700 dark:text-gray-300 mb-6 italic leading-relaxed">
                         "Saya suka bagaimana aplikasi ini mengkurasi produk berkualitas. Sangat direkomendasikan untuk
@@ -500,5 +490,4 @@
             </div>
         </div>
     </section>
-
 @endsection

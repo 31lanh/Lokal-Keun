@@ -224,7 +224,7 @@
                         </div>
                         <div class="pt-4 border-t border-gray-100 dark:border-gray-800 flex items-center justify-between">
                             <span class="text-sm text-gray-600 dark:text-gray-400 font-semibold">Mulai dari <span class="text-primary-orange font-bold">Rp 15rb</span></span>
-                            <a class="text-sm font-bold text-primary-orange hover:text-orange-dark flex items-center gap-1 group/link" href="{{ route('umkm.detail') }}">
+                            <a class="text-sm font-bold text-primary-orange hover:text-orange-dark flex items-center gap-1 group/link" href="">
                                 Lihat Detail
                                 <span class="material-symbols-outlined text-[18px] group-hover/link:translate-x-1 transition-transform">arrow_forward</span>
                             </a>

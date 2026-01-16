@@ -2,31 +2,31 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
 class User extends Authenticatable
 {
-    /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable;
 
     /**
      * The attributes that are mass assignable.
      *
-     * @var list<string>
+     * @var array<int, string>
      */
     protected $fillable = [
         'name',
         'email',
+        'whatsapp',
+        'role',
         'password',
     ];
 
     /**
      * The attributes that should be hidden for serialization.
      *
-     * @var list<string>
+     * @var array<int, string>
      */
     protected $hidden = [
         'password',
@@ -44,5 +44,74 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    /**
+     * Cek apakah user adalah pembeli
+     */
+    public function isPembeli(): bool
+    {
+        return $this->role === 'pembeli';
+    }
+
+    /**
+     * Cek apakah user adalah penjual
+     */
+    public function isPenjual(): bool
+    {
+        return $this->role === 'penjual';
+    }
+
+    /**
+     * Cek apakah user adalah admin
+     */
+    public function isAdmin(): bool
+    {
+        return $this->role === 'admin';
+    }
+
+    /**
+     * Get formatted WhatsApp number
+     */
+    public function getFormattedWhatsappAttribute(): string
+    {
+        if (!$this->whatsapp) {
+            return '';
+        }
+
+        // Format nomor WhatsApp untuk link
+        $number = preg_replace('/[^0-9]/', '', $this->whatsapp);
+
+        // Ubah 08 menjadi 628
+        if (substr($number, 0, 1) === '0') {
+            $number = '62' . substr($number, 1);
+        }
+
+        return $number;
+    }
+
+    /**
+     * Get WhatsApp chat link
+     */
+    public function getWhatsappLinkAttribute(): string
+    {
+        if (!$this->formatted_whatsapp) {
+            return '';
+        }
+
+        return 'https://wa.me/' . $this->formatted_whatsapp;
+    }
+
+    /**
+     * Get redirect route berdasarkan role
+     */
+    public function getRedirectRoute(): string
+    {
+        return match ($this->role) {
+            'admin' => 'admin.dashboard',
+            'penjual' => 'seller.dashboard',
+            'pembeli' => 'home',
+            default => 'home',
+        };
     }
 }
