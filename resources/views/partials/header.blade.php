@@ -57,22 +57,6 @@
             <div class="hidden md:flex items-center gap-3">
                 @auth
                     @if (auth()->user()->role === 'pembeli')
-                        <!-- Keranjang -->
-                        <a href="{{ route('pembeli.keranjang') }}"
-                            class="relative p-2 text-gray-700 dark:text-gray-300 hover:text-primary-orange transition-colors rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800">
-                            <span class="material-symbols-outlined">shopping_cart</span>
-                            <span
-                                class="absolute -top-1 -right-1 size-5 bg-primary-orange text-white text-xs font-bold rounded-full flex items-center justify-center">3</span>
-                        </a>
-
-                        <!-- Notifikasi -->
-                        <a href="{{ route('pembeli.notifikasi') }}"
-                            class="relative p-2 text-gray-700 dark:text-gray-300 hover:text-primary-orange transition-colors rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800">
-                            <span class="material-symbols-outlined">notifications</span>
-                            <span
-                                class="absolute -top-1 -right-1 size-5 bg-red-500 text-white text-xs font-bold rounded-full flex items-center justify-center">2</span>
-                        </a>
-
                         <!-- User Dropdown -->
                         <div class="relative" x-data="{ open: false }">
                             <button @click="open = !open" @click.away="open = false"
@@ -107,7 +91,7 @@
 
                                 <!-- Menu Items -->
                                 <div class="p-2">
-                                    <a href="{{ route('pembeli.profile') }}"
+                                    <a href=""
                                         class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-orange-50 dark:hover:bg-orange-900/20 transition-all group/item">
                                         <span
                                             class="material-symbols-outlined text-primary-orange group-hover/item:scale-110 transition-transform">person</span>
@@ -115,7 +99,7 @@
                                             Saya</span>
                                     </a>
 
-                                    <a href="{{ route('pembeli.pesanan') }}"
+                                    <a href=""
                                         class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-green-50 dark:hover:bg-green-900/20 transition-all group/item">
                                         <span
                                             class="material-symbols-outlined text-primary-green group-hover/item:scale-110 transition-transform">receipt_long</span>
@@ -123,14 +107,14 @@
                                             Saya</span>
                                     </a>
 
-                                    <a href="{{ route('pembeli.favorit') }}"
+                                    <a href=""
                                         class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20 transition-all group/item">
                                         <span
                                             class="material-symbols-outlined text-red-500 group-hover/item:scale-110 transition-transform">favorite</span>
                                         <span class="text-sm font-semibold text-gray-700 dark:text-gray-300">Favorit</span>
                                     </a>
 
-                                    <a href="{{ route('pembeli.alamat') }}"
+                                    <a href=""
                                         class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-all group/item">
                                         <span
                                             class="material-symbols-outlined text-blue-500 group-hover/item:scale-110 transition-transform">location_on</span>
