@@ -71,6 +71,22 @@ class User extends Authenticatable
     }
 
     /**
+     * Relationship dengan UMKM (untuk penjual)
+     */
+    public function umkm()
+    {
+        return $this->hasOne(Umkm::class);
+    }
+
+    /**
+     * Check if user has completed UMKM registration
+     */
+    public function hasCompletedUmkmRegistration(): bool
+    {
+        return $this->isPenjual() && $this->umkm()->exists();
+    }
+
+    /**
      * Get formatted WhatsApp number
      */
     public function getFormattedWhatsappAttribute(): string
@@ -109,8 +125,8 @@ class User extends Authenticatable
     {
         return match ($this->role) {
             'admin' => 'admin.dashboard',
-            'penjual' => 'seller.dashboard',
-            'pembeli' => 'home',
+            'penjual' => 'seller.daftar', // Penjual ke form daftar UMKM
+            'pembeli' => 'home', // Pembeli ke home
             default => 'home',
         };
     }

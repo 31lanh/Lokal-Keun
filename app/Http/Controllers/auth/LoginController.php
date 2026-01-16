@@ -36,10 +36,16 @@ class LoginController extends Controller
 
             $user = Auth::user();
 
+            // Cek jika penjual belum daftar UMKM
+            if ($user->role === 'penjual' && !$user->umkm) {
+                return redirect()->route('seller.daftar')
+                    ->with('info', 'Silakan lengkapi data UMKM Anda terlebih dahulu');
+            }
+
             return redirect()->intended(
                 match ($user->role) {
                     'admin' => '/admin/dashboard',
-                    'penjual' => '/seller/dashboard',
+                    'penjual' => route('seller.dashboard'),
                     default => '/',
                 }
             );
