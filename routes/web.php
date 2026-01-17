@@ -129,6 +129,23 @@ Route::get('/jelajah', function () {
     return view('jelajah');
 })->name('jelajah');
 
+// =====================
+// DETAIL UMKM (PUBLIC)
+// =====================
+Route::get('/detail', function () {
+    // Pastikan path ini sesuai dengan lokasi file detail.blade.php kamu.
+    // Jika file ada di folder: resources/views/penjual/detail.blade.php
+    return view('detail'); 
+    
+    // TAPI jika file ada langsung di: resources/views/detail.blade.php
+    // return view('detail');
+})->name('umkm.detail');
+
+Route::get('/seller/photo/delete/{id}', [App\Http\Controllers\Seller\SellerController::class, 'deletePhoto'])->name('seller.photo.delete');
+
+// Route untuk Hapus Menu
+Route::delete('/seller/menu/{id}', [App\Http\Controllers\Seller\SellerController::class, 'deleteMenu'])->name('seller.menu.delete');
+
 // // =====================
 // // GABUNG MITRA (PUBLIC)
 // // =====================
@@ -142,3 +159,5 @@ Route::get('/jelajah', function () {
 // Route::get('/products', [ProductController::class, 'index'])->name('products.index');
 // Route::get('/products/{id}', [ProductController::class, 'show'])->name('products.show');
 // Route::get('/categories', [CategoryController::class, 'index'])->name('categories.index');
+
+

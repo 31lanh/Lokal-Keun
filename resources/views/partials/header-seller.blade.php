@@ -1,0 +1,73 @@
+<nav class="fixed top-0 z-50 w-full bg-white/80 dark:bg-surface-dark/80 backdrop-blur-lg border-b border-gray-100 dark:border-gray-800 shadow-sm" x-data="{ open: false }">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex items-center justify-between h-20">
+            
+            <div class="flex-shrink-0 flex items-center gap-3">
+                <a href="{{ route('home') }}" class="flex items-center gap-3 group cursor-pointer">
+                    <div class="relative">
+                        <div class="absolute inset-0 bg-gradient-to-br from-primary-orange to-primary-green rounded-xl blur-lg opacity-50 group-hover:opacity-75 transition-opacity"></div>
+                        <div class="relative size-12 bg-gradient-to-br from-primary-orange to-primary-green rounded-xl flex items-center justify-center transform group-hover:scale-105 transition-transform shadow-lg shadow-orange-500/20">
+                            <span class="material-symbols-outlined text-white text-3xl">storefront</span>
+                        </div>
+                    </div>
+                    <div class="flex flex-col">
+                        <h2 class="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-gray-900 to-gray-700 dark:from-white dark:to-gray-300">
+                            LokalKeun
+                        </h2>
+                        <span class="text-[10px] font-bold text-primary-orange tracking-wider uppercase">Seller Area</span>
+                    </div>
+                </a>
+            </div>
+
+            <div class="flex items-center gap-4">
+                <div class="relative">
+                    <button @click="open = !open" @click.away="open = false" 
+                        class="flex items-center gap-2 px-3 py-2 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors border border-transparent hover:border-gray-200 dark:hover:border-gray-700">
+                        
+                        <div class="size-9 bg-gradient-to-br from-primary-orange to-primary-green rounded-full flex items-center justify-center text-white font-bold text-sm">
+                            {{ substr(auth()->user()->name, 0, 1) }}
+                        </div>
+                        <div class="hidden md:flex flex-col items-start text-left ml-1">
+                            <span class="text-sm font-bold text-gray-700 dark:text-gray-300 leading-tight">
+                                {{ Str::limit(auth()->user()->name, 12) }}
+                            </span>
+                            <span class="text-[10px] text-gray-500 font-medium">Calon Mitra</span>
+                        </div>
+
+                        <span class="material-symbols-outlined text-gray-500 text-xl transition-transform duration-300"
+                            :class="open ? 'rotate-180' : ''">expand_more</span>
+                    </button>
+
+                    <div x-show="open" 
+                         x-transition:enter="transition ease-out duration-200"
+                         x-transition:enter-start="opacity-0 scale-95" 
+                         x-transition:enter-end="opacity-100 scale-100"
+                         x-transition:leave="transition ease-in duration-150"
+                         x-transition:leave-start="opacity-100 scale-100" 
+                         x-transition:leave-end="opacity-0 scale-95"
+                         class="absolute right-0 mt-2 w-64 bg-white dark:bg-surface-dark rounded-2xl shadow-xl border border-gray-200 dark:border-gray-700 overflow-hidden z-50"
+                         style="display: none;">
+                        
+                        <div class="p-4 bg-gradient-to-br from-orange-50 to-green-50 dark:from-orange-900/20 dark:to-green-900/20 border-b border-gray-200 dark:border-gray-700">
+                            <p class="font-bold text-gray-900 dark:text-white truncate">{{ Auth::user()->name }}</p>
+                            <p class="text-xs text-gray-600 dark:text-gray-400 truncate">{{ Auth::user()->email }}</p>
+                            <div class="mt-2 inline-flex px-2 py-0.5 rounded-md bg-primary-orange/10 text-primary-orange text-[10px] font-bold uppercase tracking-wide border border-primary-orange/20">
+                                Seller Account
+                            </div>
+                        </div>
+
+                        <div class="p-2 bg-gray-50 dark:bg-gray-800/50">
+                            <form method="POST" action="{{ route('logout') }}">
+                                @csrf
+                                <button type="submit" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/30 transition-all w-full text-left group/item">
+                                    <span class="material-symbols-outlined text-red-500 group-hover/item:scale-110 group-hover/item:rotate-12 transition-all">logout</span>
+                                    <span class="text-sm font-bold text-red-500">Keluar</span>
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
