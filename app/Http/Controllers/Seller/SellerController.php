@@ -9,6 +9,7 @@ use App\Models\UmkmMenu;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\File;
 use Illuminate\Validation\Rule;
 
 class SellerController extends Controller
@@ -82,12 +83,12 @@ class SellerController extends Controller
             if ($request->hasFile('photos')) {
                 foreach ($request->file('photos') as $index => $photo) {
                     $filename = 'place_' . $umkm->id . '_' . time() . $index . '.' . $photo->getClientOriginalExtension();
-                    $path = $photo->storeAs('umkm/photos', $filename, 'public');
+                    $photo->move(public_path('umkm/photos'), $filename);
                     
                     UmkmPhoto::create([
                         'umkm_id'    => $umkm->id,
-                        'photo_path' => $path,
-                        'photo_url'  => Storage::url($path),
+                        'photo_path' => 'umkm/photos/' . $filename,
+                        'photo_url'  => '/umkm/photos/' . $filename,
                         'is_primary' => $index === 0,
                         'order'      => $index,
                     ]);
@@ -102,8 +103,8 @@ class SellerController extends Controller
                     $menuPhotoPath = null;
                     if (isset($menuData['photo']) && $menuData['photo'] instanceof \Illuminate\Http\UploadedFile) {
                         $menuFilename = 'menu_' . $umkm->id . '_' . uniqid() . '.' . $menuData['photo']->getClientOriginalExtension();
-                        $path = $menuData['photo']->storeAs('umkm/menus', $menuFilename, 'public');
-                        $menuPhotoPath = Storage::url($path);
+                        $menuData['photo']->move(public_path('umkm/menus'), $menuFilename);
+                        $menuPhotoPath = '/umkm/menus/' . $menuFilename;
                     }
 
                     UmkmMenu::create([
@@ -219,8 +220,8 @@ class SellerController extends Controller
                     // Upload foto baru jika ada
                     if (isset($menuData['photo']) && $menuData['photo'] instanceof \Illuminate\Http\UploadedFile) {
                         $menuFilename = 'menu_' . $umkm->id . '_' . uniqid() . '.' . $menuData['photo']->getClientOriginalExtension();
-                        $path = $menuData['photo']->storeAs('umkm/menus', $menuFilename, 'public');
-                        $dataToSave['photo_path'] = Storage::url($path);
+                        $menuData['photo']->move(public_path('umkm/menus'), $menuFilename);
+                        $dataToSave['photo_path'] = '/umkm/menus/' . $menuFilename;
                     }
 
                     // Update jika ada ID, Create jika ID null
@@ -243,12 +244,12 @@ class SellerController extends Controller
 
                 foreach ($photos as $index => $photo) {
                     $filename = 'place_' . $umkm->id . '_' . time() . $index . '.' . $photo->getClientOriginalExtension();
-                    $path = $photo->storeAs('umkm/photos', $filename, 'public');
+                    $photo->move(public_path('umkm/photos'), $filename);
                     
                     UmkmPhoto::create([
                         'umkm_id'    => $umkm->id,
-                        'photo_path' => $path,
-                        'photo_url'  => Storage::url($path),
+                        'photo_path' => 'umkm/photos/' . $filename,
+                        'photo_url'  => '/umkm/photos/' . $filename,
                         'is_primary' => false,
                         'order'      => $order++,
                     ]);
@@ -272,9 +273,12 @@ class SellerController extends Controller
         $photo = UmkmPhoto::where('umkm_id', auth()->user()->umkm->id)->findOrFail($photoId);
         
         // Hapus file fisik
-        $path = str_replace('/storage/', 'public/', $photo->photo_path); 
-        if(Storage::exists($path)) {
-            Storage::delete($path);
+        $filePath = public_path($photo->photo_path);
+        if (File::exists($filePath)) {
+            File::delete($filePath);
+        } elseif (Storage::disk('public')->exists($photo->photo_path)) {
+            // Fallback untuk foto lama yang masih di storage
+            Storage::disk('public')->delete($photo->photo_path);
         }
         
         $photo->delete();
@@ -293,9 +297,14 @@ class SellerController extends Controller
 
         // Hapus foto jika ada
         if ($menu->photo_path) {
-            $path = str_replace('/storage/', 'public/', $menu->photo_path);
-            if(Storage::exists($path)) {
-                Storage::delete($path);
+            $relativePath = ltrim($menu->photo_path, '/');
+            $filePath = public_path($relativePath);
+            
+            if (File::exists($filePath)) {
+                File::delete($filePath);
+            } elseif (Storage::disk('public')->exists(str_replace('/storage/', '', $menu->photo_path))) {
+                // Fallback untuk foto lama
+                Storage::disk('public')->delete(str_replace('/storage/', '', $menu->photo_path));
             }
         }
 

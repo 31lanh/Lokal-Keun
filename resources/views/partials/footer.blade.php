@@ -6,7 +6,7 @@
                     <div class="size-10 bg-gradient-to-br from-primary-orange to-primary-green rounded-xl flex items-center justify-center">
                         <span class="material-symbols-outlined text-white text-2xl">store</span>
                     </div>
-                    <h3 class="text-xl font-bold gradient-text">Lokal-keun</h3>
+                    <h3 class="text-xl font-bold gradient-text">LokalKeun</h3>
                 </div>
                 <p class="text-gray-600 dark:text-gray-400 text-sm leading-relaxed mb-6">
                     Platform digital yang menghubungkan UMKM lokal dengan pelanggan untuk memajukan ekonomi kerakyatan.
@@ -52,7 +52,7 @@
 
         <div class="border-t border-gray-200 dark:border-gray-800 pt-8 flex justify-center items-center gap-4">
             <p class="text-sm font-bold text-gray-500">
-              © 2026 Lokal-keun. All rights reserved.
+              © 2026 LokalKeun. All rights reserved.
             </p>
           </div>          
     </div>

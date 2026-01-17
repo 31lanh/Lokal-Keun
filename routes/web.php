@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Seller\SellerController;
+use App\Http\Controllers\Buyer\PublicController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes - Authentication
@@ -125,9 +126,7 @@ Route::get('/', function () {
 // =====================
 // JELAJAH (PUBLIC)
 // =====================
-Route::get('/jelajah', function () {
-    return view('jelajah');
-})->name('jelajah');
+Route::get('/jelajah', [PublicController::class, 'index'])->name('jelajah');
 
 // =====================
 // DETAIL UMKM (PUBLIC)
@@ -159,5 +158,3 @@ Route::delete('/seller/menu/{id}', [App\Http\Controllers\Seller\SellerController
 // Route::get('/products', [ProductController::class, 'index'])->name('products.index');
 // Route::get('/products/{id}', [ProductController::class, 'show'])->name('products.show');
 // Route::get('/categories', [CategoryController::class, 'index'])->name('categories.index');
-
-

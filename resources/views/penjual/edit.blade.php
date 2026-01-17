@@ -232,10 +232,10 @@
                             @endforelse
                         </div>
 
-                        <a href="{{ route('seller.umkm.edit') }}#menu-container" 
+                        <button type="button" id="btn-add-menu"
                             class="flex items-center gap-1 bg-primary-orange hover:bg-orange-600 text-white px-4 py-2 rounded-lg text-xs font-medium transition-colors shadow-sm">
                             <span class="material-symbols-outlined text-sm">add</span> Tambah Menu
-                        </a>
+                        </button>
                     </div>
                 </div>
 
@@ -350,6 +350,11 @@
                 if(placeholder) placeholder.classList.add('hidden');
             }
             reader.readAsDataURL(input.files[0]);
+        } else {
+            // Reset preview jika batal pilih file
+            img.src = '';
+            img.classList.add('hidden');
+            if(placeholder) placeholder.classList.remove('hidden');
         }
     }
 

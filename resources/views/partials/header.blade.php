@@ -14,7 +14,7 @@
                     </div>
                 </div>
                 <div>
-                    <h2 class="text-2xl font-bold gradient-text">Lokal-keun</h2>
+                    <h2 class="text-2xl font-bold gradient-text">LokalKeun</h2>
                     <p class="text-xs text-gray-500 dark:text-gray-400">Belanja Lokal, Berkah Global</p>
                 </div>
             </a>
