@@ -18,10 +18,11 @@ class User extends Authenticatable
     protected $fillable = [
         'name',
         'email',
-        'whatsapp',
-        'role',
         'password',
+        'role',                 // Pastikan ini ada
+        'profile_photo_path',   // <--- TAMBAHKAN BARIS INI
     ];
+
 
     /**
      * The attributes that should be hidden for serialization.

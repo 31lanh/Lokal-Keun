@@ -31,7 +31,6 @@ class SellerController extends Controller
      */
     public function storeDaftar(Request $request)
     {
-        // 1. Validasi Input
         $validated = $request->validate([
             'nama_usaha'    => ['required', 'string', 'max:255'],
             'kategori'      => ['required', Rule::in(['kuliner', 'fashion', 'kerajinan', 'pertanian', 'jasa'])],
@@ -41,13 +40,9 @@ class SellerController extends Controller
             'telepon'       => ['required', 'string', 'max:20'],
             'email'         => ['nullable', 'email', 'max:255'],
             'alamat'        => ['required', 'string'],
-            
-            // Field Tambahan
             'maps_link'     => ['nullable', 'url'],
             'jam_buka'      => ['nullable'],
             'jam_tutup'     => ['nullable'],
-
-            // Validasi Foto & Menu
             'photos.*'      => ['nullable', 'image', 'mimes:jpeg,jpg,png', 'max:5120'],
             'menus'         => ['nullable', 'array'],
             'menus.*.name'  => ['required_with:menus', 'string', 'max:255'],
@@ -62,7 +57,6 @@ class SellerController extends Controller
         try {
             DB::beginTransaction();
 
-            // 2. Simpan Data UMKM
             $umkm = Umkm::create([
                 'user_id'       => auth()->id(),
                 'nama_usaha'    => $validated['nama_usaha'],
@@ -79,12 +73,11 @@ class SellerController extends Controller
                 'status'        => 'pending',
             ]);
 
-            // 3. Simpan Foto Tempat
             if ($request->hasFile('photos')) {
                 foreach ($request->file('photos') as $index => $photo) {
                     $filename = 'place_' . $umkm->id . '_' . time() . $index . '.' . $photo->getClientOriginalExtension();
                     $photo->move(public_path('umkm/photos'), $filename);
-                    
+
                     UmkmPhoto::create([
                         'umkm_id'    => $umkm->id,
                         'photo_path' => 'umkm/photos/' . $filename,
@@ -95,7 +88,6 @@ class SellerController extends Controller
                 }
             }
 
-            // 4. Simpan Menu
             if ($request->has('menus')) {
                 foreach ($request->menus as $menuData) {
                     if (empty($menuData['name'])) continue;
@@ -118,10 +110,8 @@ class SellerController extends Controller
             }
 
             DB::commit();
-
             return redirect()->route('seller.dashboard')
                 ->with('success', 'Pendaftaran berhasil! Data Anda sedang direview.');
-
         } catch (\Exception $e) {
             DB::rollBack();
             return back()->withInput()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
@@ -138,9 +128,7 @@ class SellerController extends Controller
                 ->with('info', 'Silakan lengkapi data UMKM Anda terlebih dahulu.');
         }
 
-        // [PENTING] Load relasi agar tidak error count() di view
         $umkm = auth()->user()->umkm->load(['menus', 'photos']);
-
         return view('penjual.dashboard', compact('umkm'));
     }
 
@@ -152,14 +140,12 @@ class SellerController extends Controller
         $umkm = auth()->user()->umkm;
         if (!$umkm) return redirect()->route('seller.daftar');
 
-        // Load relasi untuk ditampilkan di form edit
         $umkm->load(['menus', 'photos']);
-
         return view('penjual.edit', compact('umkm'));
     }
 
     /**
-     * Proses Update Data UMKM (Termasuk Menu & Foto)
+     * Proses Update Data UMKM
      */
     public function updateUmkm(Request $request)
     {
@@ -176,9 +162,8 @@ class SellerController extends Controller
             'maps_link'     => 'nullable|url',
             'jam_buka'      => 'nullable',
             'jam_tutup'     => 'nullable',
-            // Validasi Menu
             'menus'         => 'nullable|array',
-            'menus.*.id'    => 'nullable', // ID untuk menu yg diedit
+            'menus.*.id'    => 'nullable',
             'menus.*.name'  => 'required_with:menus',
             'menus.*.price' => 'required_with:menus|numeric',
             'menus.*.photo' => 'nullable|image|max:2048',
@@ -187,7 +172,6 @@ class SellerController extends Controller
         try {
             DB::beginTransaction();
 
-            // 1. Update Info Dasar
             $umkm->update([
                 'nama_usaha'   => $validated['nama_usaha'],
                 'kategori'     => $validated['kategori'],
@@ -200,12 +184,9 @@ class SellerController extends Controller
                 'jam_tutup'    => $validated['jam_tutup'] ?? null,
             ]);
 
-            // 2. Handle Menu (Sync: Create/Update/Delete)
+            // Handle Menu
             if ($request->has('menus')) {
-                // Ambil semua ID menu yang ada di form submit
                 $submittedIds = collect($request->menus)->pluck('id')->filter()->toArray();
-                
-                // Hapus menu di database yang TIDAK ada di form submit (artinya user menghapusnya dari UI)
                 $umkm->menus()->whereNotIn('id', $submittedIds)->delete();
 
                 foreach ($request->menus as $menuData) {
@@ -217,35 +198,31 @@ class SellerController extends Controller
                         'description' => $menuData['description'] ?? null,
                     ];
 
-                    // Upload foto baru jika ada
                     if (isset($menuData['photo']) && $menuData['photo'] instanceof \Illuminate\Http\UploadedFile) {
                         $menuFilename = 'menu_' . $umkm->id . '_' . uniqid() . '.' . $menuData['photo']->getClientOriginalExtension();
                         $menuData['photo']->move(public_path('umkm/menus'), $menuFilename);
                         $dataToSave['photo_path'] = '/umkm/menus/' . $menuFilename;
                     }
 
-                    // Update jika ada ID, Create jika ID null
                     $umkm->menus()->updateOrCreate(
                         ['id' => $menuData['id'] ?? null],
                         $dataToSave
                     );
                 }
             } else {
-                // Jika user menghapus semua menu dari form
                 $umkm->menus()->delete();
             }
 
-            // 3. Handle Tambah Foto Galeri (Append foto baru)
+            // Handle Foto Galeri
             if ($request->hasFile('photos')) {
                 $photos = $request->file('photos');
-                // Cari urutan terakhir agar foto baru ada di belakang
                 $currentMaxOrder = $umkm->photos()->max('order') ?? -1;
                 $order = $currentMaxOrder + 1;
 
                 foreach ($photos as $index => $photo) {
                     $filename = 'place_' . $umkm->id . '_' . time() . $index . '.' . $photo->getClientOriginalExtension();
                     $photo->move(public_path('umkm/photos'), $filename);
-                    
+
                     UmkmPhoto::create([
                         'umkm_id'    => $umkm->id,
                         'photo_path' => 'umkm/photos/' . $filename,
@@ -258,7 +235,6 @@ class SellerController extends Controller
 
             DB::commit();
             return redirect()->route('seller.dashboard')->with('success', 'Data berhasil diperbarui!');
-
         } catch (\Exception $e) {
             DB::rollBack();
             return back()->withInput()->with('error', 'Gagal update: ' . $e->getMessage());
@@ -271,45 +247,121 @@ class SellerController extends Controller
     public function deletePhoto($photoId)
     {
         $photo = UmkmPhoto::where('umkm_id', auth()->user()->umkm->id)->findOrFail($photoId);
-        
-        // Hapus file fisik
+
         $filePath = public_path($photo->photo_path);
         if (File::exists($filePath)) {
             File::delete($filePath);
         } elseif (Storage::disk('public')->exists($photo->photo_path)) {
-            // Fallback untuk foto lama yang masih di storage
             Storage::disk('public')->delete($photo->photo_path);
         }
-        
+
         $photo->delete();
         return back()->with('success', 'Foto berhasil dihapus.');
     }
 
     /**
-     * Hapus Menu (Dipanggil dari tombol hapus di dashboard)
+     * Hapus Menu
      */
     public function deleteMenu($menuId)
     {
-        // Pastikan menu milik user yang login (Security Check)
-        $menu = UmkmMenu::whereHas('umkm', function($query) {
+        $menu = UmkmMenu::whereHas('umkm', function ($query) {
             $query->where('user_id', auth()->id());
         })->findOrFail($menuId);
 
-        // Hapus foto jika ada
         if ($menu->photo_path) {
             $relativePath = ltrim($menu->photo_path, '/');
             $filePath = public_path($relativePath);
-            
+
             if (File::exists($filePath)) {
                 File::delete($filePath);
             } elseif (Storage::disk('public')->exists(str_replace('/storage/', '', $menu->photo_path))) {
-                // Fallback untuk foto lama
                 Storage::disk('public')->delete(str_replace('/storage/', '', $menu->photo_path));
             }
         }
 
         $menu->delete();
-
         return back()->with('success', 'Menu berhasil dihapus.');
+    }
+
+    /**
+     * BRANDING: Menampilkan Form Edit Logo & Banner
+     */
+    public function editBranding()
+    {
+        $user = auth()->user();
+        $umkm = $user->umkm;
+
+        if (!$umkm) {
+            return redirect()->route('seller.daftar')->with('error', 'Silakan daftar UMKM terlebih dahulu.');
+        }
+
+        return view('penjual.branding', compact('umkm', 'user'));
+    }
+
+    /**
+     * BRANDING: Update Logo & Banner
+     */
+    public function updateBranding(Request $request)
+    {
+        $request->validate([
+            'logo'   => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+            'banner' => 'nullable|image|mimes:jpeg,png,jpg|max:5120',
+        ]);
+
+        $user = auth()->user();
+        $umkm = $user->umkm;
+
+        // 1. UPDATE LOGO
+        if ($request->hasFile('logo')) {
+            if ($user->profile_photo_path) {
+                // Cek storage dulu, kalau tidak ada cek public_path
+                if (Storage::disk('public')->exists($user->profile_photo_path)) {
+                    Storage::disk('public')->delete($user->profile_photo_path);
+                }
+            }
+            $path = $request->file('logo')->store('profile-photos', 'public');
+            $user->update(['profile_photo_path' => $path]);
+        }
+
+        // 2. UPDATE BANNER
+        if ($request->hasFile('banner')) {
+            $bannerFile = $request->file('banner');
+            $bannerPath = $bannerFile->store('umkm-photos', 'public');
+
+            $existingBanner = UmkmPhoto::where('umkm_id', $umkm->id)
+                ->where('is_primary', true)
+                ->first();
+
+            if ($existingBanner) {
+                // Perbaikan: Gunakan 'photo_path' bukan 'path'
+                // Cek file fisik dulu sebelum hapus
+                if ($existingBanner->photo_path) {
+                    if (Storage::disk('public')->exists($existingBanner->photo_path)) {
+                        Storage::disk('public')->delete($existingBanner->photo_path);
+                    } elseif (File::exists(public_path($existingBanner->photo_path))) {
+                        File::delete(public_path($existingBanner->photo_path));
+                    }
+                }
+
+                $existingBanner->update([
+                    'photo_path' => $bannerPath, // Perbaikan nama kolom
+                    'photo_url'  => Storage::url($bannerPath),
+                    'file_name'  => $bannerFile->getClientOriginalName(),
+                    'file_size'  => $bannerFile->getSize(),
+                ]);
+            } else {
+                UmkmPhoto::create([
+                    'umkm_id'    => $umkm->id,
+                    'photo_path' => $bannerPath, // Perbaikan nama kolom
+                    'photo_url'  => Storage::url($bannerPath),
+                    'file_name'  => $bannerFile->getClientOriginalName(),
+                    'file_size'  => $bannerFile->getSize(),
+                    'is_primary' => true,
+                    'order'      => 0
+                ]);
+            }
+        }
+
+        return redirect()->back()->with('success', 'Tampilan toko berhasil diperbarui!');
     }
 }

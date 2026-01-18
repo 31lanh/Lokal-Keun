@@ -1,292 +1,487 @@
 @extends('layouts.app')
 
 @section('content')
+    <div class="min-h-screen pt-20 pb-10 bg-gray-50 dark:bg-gray-900">
 
-<div class="min-h-screen pt-24 pb-10 bg-background-light dark:bg-background-dark">
-    
-    <main class="w-full max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-        
-        <nav class="mb-4">
-            <ol class="flex flex-wrap items-center gap-2 text-xs md:text-sm font-medium text-gray-500 dark:text-gray-400">
-                <li><a href="#" class="hover:text-primary-orange transition-colors">Beranda</a></li>
-                <li><span class="material-symbols-outlined text-xs pt-1">chevron_right</span></li>
-                <li><a href="#" class="hover:text-primary-orange transition-colors">Kuliner</a></li>
-                <li><span class="material-symbols-outlined text-xs pt-1">chevron_right</span></li>
-                <li class="text-white font-semibold">Kopi Kenangan Senja</li>
-            </ol>
-        </nav>
+        <main class="w-full max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
 
-        <div class="relative w-full rounded-xl overflow-hidden bg-white dark:bg-surface-dark shadow-md border border-gray-200 dark:border-gray-800 mb-6">
-            <div class="h-48 w-full bg-gray-200 relative">
-                <img src="https://images.unsplash.com/photo-1511920170033-f8396924c348?w=1200&h=400&fit=crop" alt="Coffee Shop" class="w-full h-full object-cover">
-                <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"></div>
-            </div>
+            {{-- BREADCRUMB --}}
+            <nav class="mb-6">
+                <ol
+                    class="flex flex-wrap items-center gap-2 text-xs md:text-sm font-medium text-gray-600 dark:text-gray-400">
+                    <li><a href="/" class="hover:text-orange-500 transition-colors">Beranda</a></li>
+                    <li><span class="material-symbols-outlined text-xs">chevron_right</span></li>
+                    <li><a href="#" class="hover:text-orange-500 transition-colors">Kuliner</a></li>
+                    <li><span class="material-symbols-outlined text-xs">chevron_right</span></li>
+                    <li class="text-gray-900 dark:text-white font-semibold">{{ $umkm->nama_usaha }}</li>
+                </ol>
+            </nav>
 
-            <div class="relative px-5 pb-5">
-                <div class="flex flex-col md:flex-row gap-5 -mt-12 items-start md:items-end">
-                    <div class="relative h-24 w-24 rounded-full border-4 border-white dark:border-surface-dark bg-white shadow-lg overflow-hidden shrink-0">
-                        <img src="https://images.unsplash.com/photo-1509042239860-f550ce710b93?w=200&h=200&fit=crop" alt="Logo" class="w-full h-full object-cover">
-                    </div>
+            {{-- LOGIKA GAMBAR --}}
+            @php
+                // Banner Logic
+                $banner = $umkm->photos->where('is_primary', true)->first();
+                $bannerUrl = 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=1200&h=400&fit=crop';
 
-                    <div class="flex-1 pb-1 w-full">
-                        <div class="flex flex-col md:flex-row md:justify-between md:items-end gap-4">
-                            <div>
-                                <h1 class="text-2xl font-bold text-gray-900 dark:text-white mb-1">Kopi Kenangan Senja</h1>
-                                <div class="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs md:text-sm text-gray-600 dark:text-gray-300">
-                                    <span class="flex items-center gap-1">
-                                        <span class="material-symbols-outlined text-base text-primary-orange">restaurant</span>
-                                        Kafe & Resto
-                                    </span>
-                                    <span class="flex items-center gap-1">
-                                        <span class="material-symbols-outlined text-base text-primary-orange">location_on</span>
-                                        Bandung
-                                    </span>
-                                    <span class="flex items-center gap-1 text-amber-500 font-semibold">
-                                        <span class="material-symbols-outlined text-base fill-current">star</span>
-                                        4.8
-                                        <span class="text-gray-500 dark:text-gray-400 font-normal">(120 Ulasan)</span>
-                                    </span>
-                                </div>
-                            </div>
+                if ($banner) {
+                    if ($banner->photo_url) {
+                        $cleanUrl = ltrim($banner->photo_url, '/');
+                        if (str_starts_with($cleanUrl, 'storage/')) {
+                            $bannerUrl = asset($cleanUrl);
+                        } elseif (file_exists(public_path($cleanUrl))) {
+                            $bannerUrl = asset($cleanUrl);
+                        } else {
+                            $bannerUrl = asset('storage/' . $banner->photo_path);
+                        }
+                    } elseif ($banner->photo_path) {
+                        $bannerUrl = asset('storage/' . $banner->photo_path);
+                    }
+                }
 
-                            <div class="flex gap-2 w-full md:w-auto mt-2 md:mt-0">
-                                <button class="flex-1 md:flex-none h-9 px-4 rounded-lg bg-gradient-to-r from-primary-orange to-primary-green text-white text-xs font-bold hover:shadow-md transition-all flex items-center justify-center gap-1.5">
-                                    <span class="material-symbols-outlined text-lg">call</span>
-                                    Hubungi
-                                </button>
-                                <button class="flex-1 md:flex-none h-9 px-4 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 text-xs font-semibold hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors flex items-center justify-center gap-1.5">
-                                    <span class="material-symbols-outlined text-lg">favorite</span>
-                                    Favorit
-                                </button>
-                                <button onclick="shareUMKM()" class="h-9 w-9 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors flex items-center justify-center">
-                                    <span class="material-symbols-outlined text-lg">share</span>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+                // Logo Logic
+                $logoUrl =
+                    'https://ui-avatars.com/api/?name=' .
+                    urlencode($umkm->nama_usaha) .
+                    '&background=FF6B35&color=fff&size=256';
+                if ($umkm->user && $umkm->user->profile_photo_path) {
+                    if (str_starts_with($umkm->user->profile_photo_path, 'storage/')) {
+                        $logoUrl = asset($umkm->user->profile_photo_path);
+                    } else {
+                        $logoUrl = asset('storage/' . $umkm->user->profile_photo_path);
+                    }
+                }
+            @endphp
 
-            <div class="px-5 border-t border-gray-200 dark:border-gray-700 overflow-x-auto">
-                <div class="flex gap-6 min-w-max">
-                    <a href="#about" class="tab-link border-b-2 border-primary-orange text-primary-orange py-3 px-1 text-xs md:text-sm font-bold flex items-center gap-1.5">
-                        <span class="material-symbols-outlined text-lg">info</span> Tentang
-                    </a>
-                    <a href="#products" class="tab-link border-b-2 border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 py-3 px-1 text-xs md:text-sm font-bold flex items-center gap-1.5 transition-colors">
-                        <span class="material-symbols-outlined text-lg">restaurant_menu</span> Menu
-                    </a>
-                    <a href="#gallery" class="tab-link border-b-2 border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 py-3 px-1 text-xs md:text-sm font-bold flex items-center gap-1.5 transition-colors">
-                        <span class="material-symbols-outlined text-lg">photo_library</span> Galeri
-                    </a>
-                    <a href="#reviews" class="tab-link border-b-2 border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 py-3 px-1 text-xs md:text-sm font-bold flex items-center gap-1.5 transition-colors">
-                        <span class="material-symbols-outlined text-lg">reviews</span> Ulasan
-                    </a>
-                </div>
-            </div>
-        </div>
+            {{-- HEADER SECTION --}}
+            <div
+                class="bg-white dark:bg-gray-800 rounded-xl overflow-hidden shadow-lg border border-gray-200 dark:border-gray-700 mb-8">
 
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            
-            <div class="lg:col-span-2 space-y-6">
-                
-                <section id="about" class="bg-white dark:bg-surface-dark rounded-xl p-5 shadow-sm border border-gray-200 dark:border-gray-700">
-                    <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-3 flex items-center gap-2">
-                        <span class="material-symbols-outlined text-primary-orange">info</span>
-                        Tentang Kami
-                    </h3>
-                    <div class="text-sm text-gray-600 dark:text-gray-300 leading-relaxed">
-                        <p class="mb-3">
-                            Kopi Kenangan Senja hadir sebagai tempat pelarian dari hiruk pikuk kota. Didirikan pada tahun 2018, kami berkomitmen menyajikan kopi lokal terbaik dari petani Jawa Barat.
-                        </p>
-                        <p>
-                            Selain kopi, kami juga menyediakan berbagai aneka makanan ringan dan camilan tradisional yang dikemas secara modern.
-                        </p>
-                    </div>
+                {{-- Banner Image --}}
+                <div class="relative h-48 md:h-60 w-full overflow-hidden">
+                    <img src="{{ $bannerUrl }}" alt="{{ $umkm->nama_usaha }}" class="w-full h-full object-cover">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"></div>
 
-                    <div class="mt-4 flex flex-wrap gap-2">
-                        <div class="flex items-center gap-1.5 px-2.5 py-1 bg-orange-50 dark:bg-orange-900/20 text-primary-orange rounded-full text-xs font-medium">
-                            <span class="material-symbols-outlined text-sm">verified</span> Terverifikasi
-                        </div>
-                        <div class="flex items-center gap-1.5 px-2.5 py-1 bg-green-50 dark:bg-green-900/20 text-primary-green rounded-full text-xs font-medium">
-                            <span class="material-symbols-outlined text-sm">eco</span> Ramah Lingkungan
-                        </div>
-                    </div>
-                </section>
-
-                <section id="products">
-                    <div class="flex items-center justify-between mb-3">
-                        <h3 class="text-lg font-bold text-gray-900 dark:text-white">Menu Populer</h3>
-                        <a href="#" class="text-primary-orange text-xs font-bold hover:underline">Lihat Semua</a>
-                    </div>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
-                        @include('partials.product-card', [
-                            'image' => 'https://lh3.googleusercontent.com/aida-public/AB6AXuA9_EqBMIBuyJHkTO6bVppMk5YjOdGMcQk61aYLRHV4DAd2mESkiogbxiYpXLOeEvpbF7iR5cZjiYLwI95v_KTNhZLAt54JW3h5WxyWNakHleUJvhz4DFnwHvm286iIcU4zdttfI1oeqW-yyfG_ZEwXoIXx4JF7ghRyKIBKL4P4Obhzc-hz0WHiNoVx_UFTD_e4RSzRr-VjGu0jHn6LJBZkJ5vdMEvcv10OtbLFV9Z_HTxSds8Sr6AYZ242dr2QCPRIeQuafPS74JB6',
-                            'title' => 'Cappucino Senja',
-                            'price' => 'Rp 28.000',
-                            'description' => 'Campuran espresso robusta dengan susu segar.'
-                        ])
-
-                        @include('partials.product-card', [
-                            'image' => 'https://lh3.googleusercontent.com/aida-public/AB6AXuBKBDs49xCDWnYRUnM2SA70tGzewIeXbFGNdEtodbzN33p4qwTrPVVr_MI249ilpIzFU2kOUoYQvUJDlfYsYqHW9SJ5fTzSIWq2ZDxB9bYbkquKGbOwbhrOwq7bHDrAq-0Ta7cu4a0NaJIQWEftTGhbs_bPMnkdjj-a2AYaK3XmhkZ3f6R4sohP6UhhM6yvzIrNWbel_5bU-8aBzfkk32AkX_SphshVcNChxzBIJFkq8qJefU66SHRtio3Wj5j6FT41vdVSasA3ywML',
-                            'title' => 'Matcha Latte',
-                            'price' => 'Rp 32.000',
-                            'description' => 'Bubuk matcha premium Jepang dengan susu.'
-                        ])
-
-                        @include('partials.product-card', [
-                            'image' => 'https://lh3.googleusercontent.com/aida-public/AB6AXuDbOBZ6NfqmfFZVU-M0Eag14a7f6-TZQiN3yn7gmvF21LD3Pm2_Cc98iQRKxqQ471DvYQNX0oC9jt-OpaTpymp42YeRl8gr8_vU-1Wq1OGun8LLW5_yRffWmzWXCrDoEnm5pepnv5s8cXCmJ8ePTbek8R43t4PBU5ajYWnwgTtpGRgrHTgCkDQeetiQtRkN7-km7JXGOPAMgciQWk-HiGAScMhVNi-95tQ8WWvvqWjmtvRkwwLm21ni3tLFxzZUKK22zBis5hg8kuUi',
-                            'title' => 'Croissant Butter',
-                            'price' => 'Rp 22.000',
-                            'description' => 'Pastry renyah dengan butter berkualitas.'
-                        ])
-                    </div>
-                </section>
-
-                <section id="gallery">
-                    <div class="flex items-center justify-between mb-3">
-                        <h3 class="text-lg font-bold text-gray-900 dark:text-white">Galeri Foto</h3>
-                        <a href="#" class="text-primary-orange text-xs font-bold hover:underline">Lihat Semua</a>
-                    </div>
-                    <div class="grid grid-cols-2 md:grid-cols-4 gap-2">
-                        <div class="md:col-span-2 md:row-span-2 rounded-lg overflow-hidden relative group cursor-pointer">
-                            <img src="https://images.unsplash.com/photo-1554118811-1e0d58224f24?w=600&h=600&fit=crop" alt="Interior" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
-                        </div>
-                        <div class="rounded-lg overflow-hidden relative group aspect-square cursor-pointer">
-                            <img src="https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=300&h=300&fit=crop" alt="Coffee" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
-                        </div>
-                        <div class="rounded-lg overflow-hidden relative group aspect-square cursor-pointer">
-                            <img src="https://images.unsplash.com/photo-1545665225-b23b99e4d45e?w=300&h=300&fit=crop" alt="Barista" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
-                        </div>
-                        <div class="rounded-lg overflow-hidden relative group aspect-square cursor-pointer">
-                            <img src="https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=300&h=300&fit=crop" alt="Cake" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
-                        </div>
-                        <div class="rounded-lg overflow-hidden relative group aspect-square cursor-pointer">
-                            <img src="https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=300&h=300&fit=crop" alt="Cake" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
-                        </div>
-                    </div>
-                </section>
-
-                <section id="reviews">
-                    <div class="flex items-center justify-between mb-3">
-                        <h3 class="text-lg font-bold text-gray-900 dark:text-white">Ulasan Pelanggan</h3>
-                    </div>
-                    <div class="bg-white dark:bg-surface-dark rounded-xl p-5 shadow-sm border border-gray-200 dark:border-gray-700">
-                        <div class="flex items-center gap-6 border-b border-gray-100 dark:border-gray-800 pb-5 mb-5">
-                            <div class="text-center">
-                                <span class="text-4xl font-bold text-gray-900 dark:text-white">4.8</span>
-                                <div class="flex text-amber-500 text-xs my-1">
-                                    @for($i=0; $i<5; $i++) <span class="material-symbols-outlined fill-current text-sm">star</span> @endfor
-                                </div>
-                                <span class="text-xs text-gray-500">120 Ulasan</span>
-                            </div>
-                            <div class="flex-1 space-y-1.5">
-                                <div class="flex items-center gap-2"><span class="text-xs font-semibold w-2">5</span><div class="flex-1 h-1.5 bg-gray-100 rounded-full"><div class="h-full bg-primary-orange w-[85%] rounded-full"></div></div></div>
-                                <div class="flex items-center gap-2"><span class="text-xs font-semibold w-2">4</span><div class="flex-1 h-1.5 bg-gray-100 rounded-full"><div class="h-full bg-primary-orange w-[10%] rounded-full"></div></div></div>
-                                <div class="flex items-center gap-2"><span class="text-xs font-semibold w-2">3</span><div class="flex-1 h-1.5 bg-gray-100 rounded-full"><div class="h-full bg-primary-orange w-[3%] rounded-full"></div></div></div>
-                            </div>
-                        </div>
-                        
-                        <div class="space-y-5">
-                            <div class="flex gap-3">
-                                <div class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 text-xs font-bold shrink-0">SN</div>
-                                <div class="flex-1">
-                                    <div class="flex justify-between items-start">
-                                        <h4 class="font-bold text-sm text-gray-900 dark:text-white">Siti Nurhaliza</h4>
-                                        <span class="text-xs text-gray-400">2 hari lalu</span>
-                                    </div>
-                                    <div class="flex text-amber-500 text-xs mb-1">
-                                        @for($i=0; $i<5; $i++) <span class="material-symbols-outlined fill-current text-sm">star</span> @endfor
-                                    </div>
-                                    <p class="text-xs text-gray-600 dark:text-gray-300">Tempatnya nyaman banget buat ngerjain tugas. Kopinya enak.</p>
-                                </div>
-                            </div>
-                            
-                            <div class="flex gap-3">
-                                <div class="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center text-green-600 text-xs font-bold shrink-0">BS</div>
-                                <div class="flex-1">
-                                    <div class="flex justify-between items-start">
-                                        <h4 class="font-bold text-sm text-gray-900 dark:text-white">Budi Santoso</h4>
-                                        <span class="text-xs text-gray-400">1 minggu lalu</span>
-                                    </div>
-                                    <div class="flex text-amber-500 text-xs mb-1">
-                                        @for($i=0; $i<4; $i++) <span class="material-symbols-outlined fill-current text-sm">star</span> @endfor
-                                        <span class="material-symbols-outlined text-gray-300 text-sm">star</span>
-                                    </div>
-                                    <p class="text-xs text-gray-600 dark:text-gray-300">Makanannya enak tapi agak lama nunggunya.</p>
-                                </div>
-                            </div>
-                        </div>
-
-                        <button class="w-full mt-5 py-2 rounded-lg border border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-300 text-xs font-bold hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
-                            Lihat Semua Ulasan
-                        </button>
-                    </div>
-                </section>
-            </div>
-
-            <div class="lg:col-span-1 space-y-6">
-                <div class="bg-white dark:bg-surface-dark rounded-xl p-5 shadow-sm border border-gray-200 dark:border-gray-700 sticky top-24 space-y-5">
-                    <div>
-                        <h4 class="font-bold text-sm text-gray-900 dark:text-white mb-2 flex items-center gap-1.5">
-                            <span class="material-symbols-outlined text-base text-primary-orange">map</span> Lokasi
-                        </h4>
-                        <div class="aspect-video w-full rounded-lg bg-gray-100 overflow-hidden relative mb-2 group cursor-pointer">
-                            <img src="https://images.unsplash.com/photo-1524661135-423995f22d0b?w=600&h=400&fit=crop" alt="Map" class="w-full h-full object-cover group-hover:opacity-90 transition-opacity">
-                            <div class="absolute inset-0 flex items-center justify-center">
-                                <span class="bg-white/95 px-2.5 py-1 rounded-full text-[10px] font-bold text-primary-orange shadow-sm">Lihat Peta</span>
-                            </div>
-                        </div>
-                        <p class="text-xs text-gray-600 dark:text-gray-300">Jl. Braga No. 12, Bandung, Jawa Barat</p>
-                    </div>
-
-                    <div>
-                        <h4 class="font-bold text-sm text-gray-900 dark:text-white mb-2 flex items-center gap-1.5">
-                            <span class="material-symbols-outlined text-base text-primary-orange">schedule</span> Jam Buka
-                        </h4>
-                        <div class="flex items-center gap-2 mb-2">
-                            <span class="relative flex h-2 w-2">
-                                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-                                <span class="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
-                            </span>
-                            <span class="text-xs font-semibold text-green-600">Buka • Tutup 22:00</span>
-                        </div>
-                        <ul class="space-y-1.5 text-xs text-gray-600 dark:text-gray-300">
-                            <li class="flex justify-between"><span>Senin - Jumat</span><span class="font-medium">08:00 - 22:00</span></li>
-                            <li class="flex justify-between"><span>Sabtu - Minggu</span><span class="font-medium">09:00 - 23:00</span></li>
-                        </ul>
-                    </div>
-
-                    <div>
-                        <h4 class="font-bold text-sm text-gray-900 dark:text-white mb-2 flex items-center gap-1.5">
-                            <span class="material-symbols-outlined text-base text-primary-orange">contact_support</span> Kontak
-                        </h4>
-                        <div class="space-y-2">
-                            <a href="#" class="flex items-center gap-3 p-2.5 rounded-lg border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 transition-all group">
-                                <div class="w-7 h-7 rounded-full bg-green-100 flex items-center justify-center text-green-600">
-                                    <span class="material-symbols-outlined text-sm">chat</span>
-                                </div>
-                                <div class="flex flex-col">
-                                    <span class="text-[10px] text-gray-500">WhatsApp</span>
-                                    <span class="text-xs font-semibold text-gray-900 dark:text-white group-hover:text-primary-orange">+62 812-3456-7890</span>
-                                </div>
+                    {{-- Floating Stats --}}
+                    <div class="absolute top-4 right-4 flex gap-2">
+                        @if ($umkm->maps_link)
+                            <a href="{{ $umkm->maps_link }}" target="_blank"
+                                class="px-3 py-1.5 rounded-full bg-white/90 backdrop-blur-sm text-xs font-bold text-gray-800 flex items-center gap-1 hover:bg-white transition-all">
+                                <span class="material-symbols-outlined text-sm text-yellow-500 filled">star</span>
+                                Rating Gmaps
                             </a>
+                        @endif
+                        <div
+                            class="px-3 py-1.5 rounded-full bg-white/90 backdrop-blur-sm text-xs font-bold text-gray-800 flex items-center gap-1">
+                            <span class="material-symbols-outlined text-sm">visibility</span>
+                            2.5K
                         </div>
                     </div>
                 </div>
+
+                {{-- Profile Information --}}
+                <div class="relative px-6 pb-6">
+                    <div class="flex flex-col md:flex-row gap-5 -mt-14 items-start md:items-end">
+
+                        {{-- Logo / Avatar --}}
+                        <div class="relative shrink-0">
+                            <div
+                                class="h-24 w-24 md:h-28 md:w-28 rounded-xl border-4 border-white dark:border-gray-800 bg-white shadow-lg overflow-hidden">
+                                <img src="{{ $logoUrl }}" alt="Logo" class="w-full h-full object-cover">
+                            </div>
+                        </div>
+
+                        {{-- Store Info --}}
+                        <div class="flex-1 pb-1 w-full">
+                            <div class="flex flex-col md:flex-row md:justify-between md:items-end gap-4">
+                                <div>
+                                    <h1
+                                        class="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white mb-2 flex items-center gap-2">
+                                        {{ $umkm->nama_usaha }}
+                                        <span class="material-symbols-outlined text-blue-500 text-lg filled"
+                                            title="Terverifikasi">verified</span>
+                                    </h1>
+                                    <div class="flex flex-wrap items-center gap-3 text-sm text-gray-600 dark:text-gray-300">
+                                        <span
+                                            class="flex items-center gap-1.5 px-3 py-1 bg-orange-100 dark:bg-orange-900/30 text-orange-600 rounded-full font-medium">
+                                            <span class="material-symbols-outlined text-base">restaurant</span>
+                                            {{ $umkm->kategori }}
+                                        </span>
+                                        <span class="flex items-center gap-1.5">
+                                            <span
+                                                class="material-symbols-outlined text-base text-orange-500">location_on</span>
+                                            {{ Str::limit($umkm->alamat, 40) }}
+                                        </span>
+                                    </div>
+                                </div>
+
+                                {{-- Action Buttons --}}
+                                <div class="flex gap-2 w-full md:w-auto">
+                                    <a href="{{ $umkm->whatsapp_link }}" target="_blank"
+                                        class="flex-1 md:flex-none h-10 px-5 rounded-lg bg-orange-500 hover:bg-orange-600 text-white text-sm font-bold hover:shadow-lg transition-all flex items-center justify-center gap-2">
+                                        <span class="material-symbols-outlined text-lg">call</span>
+                                        Hubungi
+                                    </a>
+                                    <button onclick="shareUMKM()"
+                                        class="h-10 w-10 rounded-lg border-2 border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 hover:border-orange-500 transition-all flex items-center justify-center">
+                                        <span class="material-symbols-outlined text-lg">share</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {{-- TABS --}}
+                <div class="px-6 border-t border-gray-200 dark:border-gray-700 overflow-x-auto">
+                    <div class="flex gap-6 min-w-max">
+                        <a href="#about"
+                            class="tab-link relative text-orange-600 py-4 text-sm font-bold flex items-center gap-2 transition-colors">
+                            <span class="material-symbols-outlined text-lg">info</span> Tentang
+                            <span class="absolute bottom-0 left-0 w-full h-0.5 bg-orange-500"></span>
+                        </a>
+                        <a href="#products"
+                            class="tab-link relative text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 py-4 text-sm font-bold flex items-center gap-2 transition-colors">
+                            <span class="material-symbols-outlined text-lg">restaurant_menu</span> Menu
+                        </a>
+                        <a href="#gallery"
+                            class="tab-link relative text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 py-4 text-sm font-bold flex items-center gap-2 transition-colors">
+                            <span class="material-symbols-outlined text-lg">photo_library</span> Galeri
+                        </a>
+                        <a href="#reviews"
+                            class="tab-link relative text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 py-4 text-sm font-bold flex items-center gap-2 transition-colors">
+                            <span class="material-symbols-outlined text-lg">reviews</span> Ulasan
+                        </a>
+                    </div>
+                </div>
             </div>
-        </div>
-    </main>
-</div>
 
-<script>
-    function shareUMKM() {
-        if (navigator.share) {
-            navigator.share({ title: 'Kopi Kenangan Senja', url: window.location.href });
-        } else {
-            navigator.clipboard.writeText(window.location.href);
-            alert('Link disalin!');
+            {{-- MAIN CONTENT GRID --}}
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+                {{-- LEFT COLUMN --}}
+                <div class="lg:col-span-2 space-y-6">
+
+                    {{-- 1. ABOUT SECTION --}}
+                    <section id="about"
+                        class="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm border border-gray-200 dark:border-gray-700">
+                        <div class="flex items-center gap-3 mb-4">
+                            <div class="p-2 bg-orange-100 rounded-lg">
+                                <span class="material-symbols-outlined text-orange-600 text-xl">info</span>
+                            </div>
+                            <h3 class="text-xl font-bold text-gray-900 dark:text-white">Tentang Kami</h3>
+                        </div>
+
+                        <div class="text-sm text-gray-600 dark:text-gray-300 leading-relaxed space-y-3">
+                            <p>{{ $umkm->deskripsi }}</p>
+                            @if ($umkm->tahun_berdiri)
+                                <p class="text-gray-500">Didirikan sejak tahun {{ $umkm->tahun_berdiri }}.</p>
+                            @endif
+                        </div>
+
+                        <div class="mt-5 flex flex-wrap gap-2">
+                            <div
+                                class="flex items-center gap-2 px-3 py-2 bg-orange-50 text-orange-600 rounded-lg text-xs font-medium border border-orange-200">
+                                <span class="material-symbols-outlined text-base filled">verified</span>
+                                Terverifikasi
+                            </div>
+                        </div>
+                    </section>
+
+                    {{-- 2. MENU SECTION --}}
+                    <section id="products">
+                        <div class="flex items-center justify-between mb-4">
+                            <div>
+                                <h3 class="text-xl font-bold text-gray-900 dark:text-white">Menu & Produk</h3>
+                                <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Pilihan terbaik dari kami</p>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                            @forelse($umkm->menus as $menu)
+                                <div
+                                    class="bg-white dark:bg-gray-800 rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all border border-gray-100 dark:border-gray-700 group">
+                                    <div class="relative aspect-[4/3] overflow-hidden">
+                                        @if ($menu->photo_path)
+                                            <img src="{{ asset(ltrim($menu->photo_path, '/')) }}"
+                                                alt="{{ $menu->name }}"
+                                                class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
+                                        @else
+                                            <div
+                                                class="w-full h-full flex items-center justify-center bg-gray-100 text-gray-400">
+                                                <span class="material-symbols-outlined text-4xl">fastfood</span>
+                                            </div>
+                                        @endif
+                                    </div>
+                                    <div class="p-4">
+                                        <h4 class="font-bold text-gray-900 dark:text-white mb-1 line-clamp-1">
+                                            {{ $menu->name }}</h4>
+                                        <p class="text-xs text-gray-500 dark:text-gray-400 mb-3 line-clamp-2">
+                                            {{ $menu->description ?? 'Tidak ada deskripsi' }}
+                                        </p>
+                                        <div class="flex items-center justify-between">
+                                            <span class="text-orange-600 font-bold">Rp
+                                                {{ number_format($menu->price, 0, ',', '.') }}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            @empty
+                                <div class="col-span-full py-10 text-center bg-gray-50 rounded-xl">
+                                    <span class="material-symbols-outlined text-4xl text-gray-300">restaurant_menu</span>
+                                    <p class="text-gray-500 mt-2">Belum ada menu yang ditambahkan.</p>
+                                </div>
+                            @endforelse
+                        </div>
+                    </section>
+
+                    {{-- 3. GALLERY SECTION --}}
+                    <section id="gallery">
+                        <div class="mb-4">
+                            <h3 class="text-xl font-bold text-gray-900 dark:text-white">Galeri Foto</h3>
+                        </div>
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+                            @forelse($umkm->photos as $index => $photo)
+                                <div
+                                    class="{{ $index == 0 ? 'md:col-span-2 md:row-span-2' : '' }} rounded-xl overflow-hidden relative group cursor-pointer shadow-sm hover:shadow-md transition-all aspect-square">
+                                    <img src="{{ $photo->photo_url ? asset(ltrim($photo->photo_url, '/')) : asset('storage/' . $photo->photo_path) }}"
+                                        alt="Gallery"
+                                        class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
+                                    <div
+                                        class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                                        <span class="material-symbols-outlined text-white text-3xl">zoom_in</span>
+                                    </div>
+                                </div>
+                            @empty
+                                <div
+                                    class="col-span-full py-10 text-center bg-gray-50 rounded-xl border-2 border-dashed border-gray-200">
+                                    <span class="material-symbols-outlined text-3xl text-gray-300">image</span>
+                                    <p class="text-gray-500 mt-2">Belum ada foto galeri.</p>
+                                </div>
+                            @endforelse
+                        </div>
+                    </section>
+
+                    {{-- 4. REVIEWS SECTION --}}
+                    <section id="reviews">
+                        <div class="mb-4">
+                            <h3 class="text-xl font-bold text-gray-900 dark:text-white">Ulasan & Rating</h3>
+                            <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Berdasarkan data Google Maps</p>
+                        </div>
+
+                        <div
+                            class="bg-white dark:bg-gray-800 rounded-xl p-8 shadow-sm border border-gray-200 dark:border-gray-700 text-center">
+                            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/aa/Google_Maps_icon_%282020%29.svg/1200px-Google_Maps_icon_%282020%29.svg.png"
+                                alt="Google Maps" class="w-16 h-16 mx-auto mb-4">
+
+                            <h4 class="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+                                {{ $umkm->rating ?? '0.0' }} / 5.0
+                            </h4>
+
+                            <div class="flex justify-center text-amber-400 mb-4 gap-1">
+                                @php $rating = $umkm->rating ?? 0; @endphp
+                                @for ($i = 1; $i <= 5; $i++)
+                                    @if ($i <= $rating)
+                                        <span class="material-symbols-outlined filled text-2xl">star</span>
+                                    @elseif($i - 0.5 <= $rating)
+                                        <span class="material-symbols-outlined filled text-2xl">star_half</span>
+                                    @else
+                                        <span class="material-symbols-outlined text-gray-300 text-2xl">star</span>
+                                    @endif
+                                @endfor
+                            </div>
+
+                            <p class="text-gray-600 dark:text-gray-300 mb-6 max-w-md mx-auto text-sm">
+                                Untuk melihat ulasan terbaru dan rating asli secara real-time, silakan kunjungi halaman
+                                Google Maps kami.
+                            </p>
+
+                            @if ($umkm->maps_link)
+                                <a href="{{ $umkm->maps_link }}" target="_blank"
+                                    class="inline-flex items-center gap-2 px-6 py-3 rounded-lg bg-blue-600 text-white font-bold hover:bg-blue-700 hover:shadow-lg transition-all">
+                                    <span class="material-symbols-outlined text-lg">open_in_new</span>
+                                    Lihat Ulasan di Google Maps
+                                </a>
+                            @else
+                                <button disabled
+                                    class="inline-flex items-center gap-2 px-6 py-3 rounded-lg bg-gray-300 text-gray-500 font-bold cursor-not-allowed">
+                                    Link Maps Belum Tersedia
+                                </button>
+                            @endif
+                        </div>
+                    </section>
+                </div>
+
+                {{-- RIGHT COLUMN (SIDEBAR) --}}
+                <div class="lg:col-span-1 space-y-6">
+                    <div
+                        class="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm border border-gray-200 dark:border-gray-700 sticky top-24 space-y-6">
+
+                        {{-- MAPS --}}
+                        <div>
+                            <h4 class="font-bold text-base text-gray-900 dark:text-white mb-3 flex items-center gap-2">
+                                <span class="material-symbols-outlined text-red-500">map</span> Lokasi
+                            </h4>
+
+                            <div
+                                class="aspect-video w-full rounded-lg bg-gray-100 overflow-hidden relative mb-3 shadow-sm border border-gray-200">
+                                <iframe width="100%" height="100%" frameborder="0" scrolling="no"
+                                    src="https://maps.google.com/maps?q={{ urlencode($umkm->nama_usaha . ' ' . $umkm->alamat) }}&t=&z=15&ie=UTF8&iwloc=&output=embed">
+                                </iframe>
+
+                                @if ($umkm->maps_link)
+                                    <a href="{{ $umkm->maps_link }}" target="_blank"
+                                        class="absolute bottom-2 right-2 z-10">
+                                        <div
+                                            class="bg-white px-3 py-1.5 rounded-full text-xs font-bold text-orange-600 shadow-md flex items-center gap-1 hover:scale-105 transition-transform">
+                                            <span class="material-symbols-outlined text-xs">open_in_new</span>
+                                            Buka App
+                                        </div>
+                                    </a>
+                                @endif
+                            </div>
+
+                            <p class="text-sm text-gray-600 dark:text-gray-300 flex items-start gap-2">
+                                <span
+                                    class="material-symbols-outlined text-orange-500 text-base mt-0.5 shrink-0">place</span>
+                                <span>{{ $umkm->alamat }}</span>
+                            </p>
+                        </div>
+
+                        {{-- JAM BUKA --}}
+                        <div class="pt-6 border-t border-gray-200 dark:border-gray-700">
+                            <h4 class="font-bold text-base text-gray-900 dark:text-white mb-3 flex items-center gap-2">
+                                <span class="material-symbols-outlined text-blue-500">schedule</span> Jam Buka
+                            </h4>
+
+                            @php
+                                $now = now()->format('H:i');
+                                $isOpen =
+                                    $umkm->jam_buka &&
+                                    $umkm->jam_tutup &&
+                                    $now >= $umkm->jam_buka &&
+                                    $now <= $umkm->jam_tutup;
+                            @endphp
+
+                            @if ($isOpen)
+                                <div
+                                    class="flex items-center gap-2 mb-3 px-3 py-2 bg-green-50 rounded-lg border border-green-200">
+                                    <span class="relative flex h-2.5 w-2.5">
+                                        <span
+                                            class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                                        <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-green-500"></span>
+                                    </span>
+                                    <span class="text-sm font-bold text-green-600">Buka Sekarang</span>
+                                </div>
+                            @else
+                                <div
+                                    class="flex items-center gap-2 mb-3 px-3 py-2 bg-red-50 rounded-lg border border-red-200">
+                                    <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-red-500"></span>
+                                    <span class="text-sm font-bold text-red-600">Tutup</span>
+                                </div>
+                            @endif
+
+                            <div class="flex justify-between items-center text-sm">
+                                <span class="text-gray-600">Jam Operasional</span>
+                                <span class="font-bold text-gray-900">
+                                    {{ \Carbon\Carbon::parse($umkm->jam_buka)->format('H:i') }} -
+                                    {{ \Carbon\Carbon::parse($umkm->jam_tutup)->format('H:i') }}
+                                </span>
+                            </div>
+                        </div>
+
+                        {{-- KONTAK --}}
+                        <div class="pt-6 border-t border-gray-200 dark:border-gray-700">
+                            <h4 class="font-bold text-base text-gray-900 dark:text-white mb-3 flex items-center gap-2">
+                                <span class="material-symbols-outlined text-purple-500">contact_support</span> Kontak
+                            </h4>
+                            <div class="space-y-3">
+                                <a href="tel:{{ $umkm->telepon }}"
+                                    class="flex items-center gap-3 p-3 rounded-lg border-2 border-gray-200 hover:border-orange-500 transition-all">
+                                    <div
+                                        class="w-10 h-10 rounded-full bg-orange-100 text-orange-600 flex items-center justify-center">
+                                        <span class="material-symbols-outlined">call</span>
+                                    </div>
+                                    <div class="flex flex-col">
+                                        <span class="text-xs text-gray-500">Telepon</span>
+                                        <span class="text-sm font-bold text-gray-900">{{ $umkm->telepon }}</span>
+                                    </div>
+                                </a>
+                                @if ($umkm->email)
+                                    <a href="mailto:{{ $umkm->email }}"
+                                        class="flex items-center gap-3 p-3 rounded-lg border-2 border-gray-200 hover:border-blue-500 transition-all">
+                                        <div
+                                            class="w-10 h-10 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center">
+                                            <span class="material-symbols-outlined">mail</span>
+                                        </div>
+                                        <div class="flex flex-col">
+                                            <span class="text-xs text-gray-500">Email</span>
+                                            <span
+                                                class="text-sm font-bold text-gray-900">{{ Str::limit($umkm->email, 20) }}</span>
+                                        </div>
+                                    </a>
+                                @endif
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    {{-- SCRIPTS --}}
+    <script>
+        function shareUMKM() {
+            if (navigator.share) {
+                navigator.share({
+                    title: '{{ $umkm->nama_usaha }}',
+                    text: 'Lihat profil UMKM ini di LokalKeun!',
+                    url: window.location.href
+                });
+            } else {
+                navigator.clipboard.writeText(window.location.href);
+                alert('Link berhasil disalin!');
+            }
         }
-    }
-</script>
 
+        // Smooth Scroll
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Tab Active State
+        const tabs = document.querySelectorAll('.tab-link');
+        const sections = document.querySelectorAll('section[id]');
+
+        window.addEventListener('scroll', () => {
+            let current = '';
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop;
+                if (pageYOffset >= sectionTop - 200) {
+                    current = section.getAttribute('id');
+                }
+            });
+
+            tabs.forEach(tab => {
+                tab.classList.remove('text-orange-600');
+                tab.classList.add('text-gray-500');
+                const underline = tab.querySelector('span:last-child');
+                if (underline) underline.classList.add('hidden');
+
+                if (tab.getAttribute('href') === `#${current}`) {
+                    tab.classList.add('text-orange-600');
+                    tab.classList.remove('text-gray-500');
+                    if (underline) underline.classList.remove('hidden');
+                }
+            });
+        });
+    </script>
 @endsection
