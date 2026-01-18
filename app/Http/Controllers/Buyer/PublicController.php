@@ -13,7 +13,7 @@ class PublicController extends Controller
 
     $query = Umkm::query()->with(['photos', 'menus']); 
 
-    // --- LOGIKA PENCARIAN UTAMA ---
+    // Untuk filter melalui Search Bar 
     if ($request->filled('q')) {
         $search = $request->q;
         $query->where(function($q) use ($search) {
@@ -28,17 +28,17 @@ class PublicController extends Controller
         });
     }
 
-    // --- Filter Tambahan (Kategori Checkbox) ---
+    // Untuk filter kategori
     if ($request->has('categories')) {
         $query->whereIn('kategori', $request->categories);
     }
 
-    // --- Filter Lokasi ---
+    // Untuk filter lokasi (filter jarak terdekat dari lokasi buyer belum)
     if ($request->filled('location') && $request->location != 'Semua Lokasi') {
         $query->where('alamat', 'like', "%{$request->location}%");
     }
 
-    // --- Sorting ---
+    // Untuk filter sorting 
     if ($request->sort == 'Terbaru') {
         $query->latest();
     } elseif ($request->sort == 'Terlama') {
