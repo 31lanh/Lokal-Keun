@@ -23,10 +23,11 @@
                 @php
                     $isHome = Request::is('/');
                     $menus = [
-                        ['label' => 'Beranda', 'type' => 'anchor', 'target' => '#beranda'],
-                        ['label' => 'Jelajah', 'type' => 'route', 'target' => 'jelajah'],
-                        ['label' => 'Kategori', 'type' => 'anchor', 'target' => '#kategori'],
-                        ['label' => 'Tentang', 'type' => 'anchor', 'target' => '#tentang'],
+                        ['label' => 'Beranda',      'type' => 'anchor', 'target' => '#beranda'],
+                        // PERUBAHAN DISINI: Ubah jadi anchor ke #jelajah
+                        ['label' => 'Jelajah',      'type' => 'anchor', 'target' => '#jelajah'], 
+                        ['label' => 'Kategori',     'type' => 'anchor', 'target' => '#kategori'],
+                        ['label' => 'Tentang',      'type' => 'anchor', 'target' => '#tentang'],
                         ['label' => 'Gabung Mitra', 'type' => 'anchor', 'target' => '#gabung-mitra'],
                     ];
                 @endphp
@@ -36,6 +37,7 @@
                         if ($menu['type'] === 'route') {
                             $href = route($menu['target']);
                         } else {
+                            // Logic Anchor: Jika sedang di home, scroll ke #id. Jika di page lain, redirect ke url/#id
                             $href = $isHome ? $menu['target'] : url('/' . $menu['target']);
                         }
                     @endphp

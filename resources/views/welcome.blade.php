@@ -184,7 +184,7 @@
         </div>
     </section>
 
-    <section class="min-h-screen flex items-center justify-center py-20 bg-white dark:bg-surface-dark">
+    <section id="jelajah" class="min-h-screen flex items-center justify-center py-20 bg-white dark:bg-surface-dark">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
             <div class="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-4">
                 <div>
