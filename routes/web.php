@@ -164,6 +164,11 @@ Route::get('/', function () {
 Route::get('/jelajah', [PublicController::class, 'index'])->name('jelajah');
 
 // =====================
+// KATEGORI DETAIL (PUBLIC)
+// =====================
+Route::get('/kategori/{slug}', [PublicController::class, 'category'])->name('kategori.detail');
+
+// =====================
 // DETAIL UMKM (PUBLIC)
 // =====================
 // Route::get('/detail', function () {
