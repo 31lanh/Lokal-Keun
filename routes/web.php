@@ -6,6 +6,9 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Seller\SellerController;
 use App\Http\Controllers\Buyer\PublicController;
 use App\Http\Controllers\Front\UmkmDetailController;
+use App\Http\Controllers\Admin\AdminController;
+
+
 
 /*
 |--------------------------------------------------------------------------
@@ -25,7 +28,7 @@ Route::middleware('guest')->group(function () {
     // Social Auth
     Route::get('/auth/google', [RegisterController::class, 'redirectToGoogle'])->name('auth.google');
     Route::get('/auth/google/callback', [RegisterController::class, 'handleGoogleCallback']);
-    
+
     Route::get('/auth/github', [RegisterController::class, 'redirectToGithub'])->name('auth.github');
     Route::get('/auth/github/callback', [RegisterController::class, 'handleGithubCallback']);
 
@@ -78,7 +81,23 @@ Route::middleware(['auth'])->group(function () {
             Route::get('/photo/{id}/delete', [SellerController::class, 'deletePhoto'])->name('photo.delete');
             Route::delete('/menu/{id}/delete', [SellerController::class, 'deleteMenu'])->name('menu.delete');
         });
+});
 
+
+// GROUP ROUTE ADMIN
+Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
+
+    // Dashboard Utama
+    Route::get('/dashboard', [AdminController::class, 'index'])->name('dashboard');
+
+    // Manajemen UMKM (Validasi)
+    Route::get('/umkm', [AdminController::class, 'umkmIndex'])->name('umkm.index');
+    Route::put('/umkm/{id}/approve', [AdminController::class, 'approveUmkm'])->name('umkm.approve');
+    Route::put('/umkm/{id}/reject', [AdminController::class, 'rejectUmkm'])->name('umkm.reject');
+
+    // MANAJEMEN USER
+    Route::get('/users', [AdminController::class, 'usersIndex'])->name('users.index');
+    Route::delete('/users/{id}', [AdminController::class, 'userDestroy'])->name('users.destroy');
 });
 
 /*
