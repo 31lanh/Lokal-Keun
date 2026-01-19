@@ -5,10 +5,9 @@ use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Seller\SellerController;
 use App\Http\Controllers\Buyer\PublicController;
+use App\Http\Controllers\Buyer\BuyerController; // [BARU] Import Controller Dashboard Pembeli
 use App\Http\Controllers\Front\UmkmDetailController;
 use App\Http\Controllers\Admin\AdminController;
-
-
 
 /*
 |--------------------------------------------------------------------------
@@ -29,11 +28,7 @@ Route::middleware('guest')->group(function () {
     Route::get('/auth/google', [RegisterController::class, 'redirectToGoogle'])->name('auth.google');
     Route::get('/auth/google/callback', [RegisterController::class, 'handleGoogleCallback']);
 
-    Route::get('/auth/github', [RegisterController::class, 'redirectToGithub'])->name('auth.github');
-    Route::get('/auth/github/callback', [RegisterController::class, 'handleGithubCallback']);
-
-    Route::get('/auth/apple', [RegisterController::class, 'redirectToApple'])->name('auth.apple');
-    Route::get('/auth/apple/callback', [RegisterController::class, 'handleAppleCallback']);
+    // ... (Github/Apple jika ada)
 });
 
 // Logout
@@ -61,43 +56,53 @@ Route::middleware(['auth'])->group(function () {
         ->prefix('seller')
         ->name('seller.')
         ->group(function () {
-
-            // 1. DASHBOARD
+            // Dashboard
             Route::get('/dashboard', [SellerController::class, 'dashboard'])->name('dashboard');
 
-            // 2. PENDAFTARAN UMKM
+            // Pendaftaran & Branding
             Route::get('/daftar', [SellerController::class, 'showDaftarForm'])->name('daftar');
             Route::post('/daftar', [SellerController::class, 'storeDaftar'])->name('daftar.store');
-
-            // 3. BRANDING
             Route::get('/branding', [SellerController::class, 'editBranding'])->name('branding');
             Route::put('/branding', [SellerController::class, 'updateBranding'])->name('branding.update');
 
-            // 4. EDIT INFORMASI UMKM
+            // Manajemen UMKM
             Route::get('/umkm/edit', [SellerController::class, 'editUmkm'])->name('umkm.edit');
             Route::put('/umkm/update', [SellerController::class, 'updateUmkm'])->name('umkm.update');
 
-            // 5. FITUR HAPUS (Foto & Menu)
-            Route::get('/photo/{id}/delete', [SellerController::class, 'deletePhoto'])->name('photo.delete');
+            // Hapus Data (Gunakan DELETE method agar aman)
+            Route::delete('/photo/{id}/delete', [SellerController::class, 'deletePhoto'])->name('photo.delete');
             Route::delete('/menu/{id}/delete', [SellerController::class, 'deleteMenu'])->name('menu.delete');
         });
-});
 
+    // =====================
+    // ADMIN ROUTES
+    // =====================
+    Route::middleware('role:admin')
+        ->prefix('admin')
+        ->name('admin.')
+        ->group(function () {
+            Route::get('/dashboard', [AdminController::class, 'index'])->name('dashboard');
 
-// GROUP ROUTE ADMIN
-Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
+            // Validasi UMKM
+            Route::get('/umkm', [AdminController::class, 'umkmIndex'])->name('umkm.index');
+            Route::put('/umkm/{id}/approve', [AdminController::class, 'approveUmkm'])->name('umkm.approve');
+            Route::put('/umkm/{id}/reject', [AdminController::class, 'rejectUmkm'])->name('umkm.reject');
 
-    // Dashboard Utama
-    Route::get('/dashboard', [AdminController::class, 'index'])->name('dashboard');
+            // Manajemen User
+            Route::get('/users', [AdminController::class, 'usersIndex'])->name('users.index');
+            Route::delete('/users/{id}', [AdminController::class, 'userDestroy'])->name('users.destroy');
+        });
 
-    // Manajemen UMKM (Validasi)
-    Route::get('/umkm', [AdminController::class, 'umkmIndex'])->name('umkm.index');
-    Route::put('/umkm/{id}/approve', [AdminController::class, 'approveUmkm'])->name('umkm.approve');
-    Route::put('/umkm/{id}/reject', [AdminController::class, 'rejectUmkm'])->name('umkm.reject');
-
-    // MANAJEMEN USER
-    Route::get('/users', [AdminController::class, 'usersIndex'])->name('users.index');
-    Route::delete('/users/{id}', [AdminController::class, 'userDestroy'])->name('users.destroy');
+    // =====================
+    // BUYER / PEMBELI ROUTES [BARU]
+    // =====================
+    Route::middleware('role:pembeli')
+        ->prefix('buyer')
+        ->name('buyer.')
+        ->group(function () {
+            // Ini route dashboard khusus pembeli yang baru kita buat
+            Route::get('/dashboard', [BuyerController::class, 'index'])->name('dashboard');
+        });
 });
 
 /*
@@ -106,36 +111,56 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
 |--------------------------------------------------------------------------
 */
 
-// Home
+// Home (Logika Redirect Cerdas)
 Route::get('/', function () {
     if (auth()->check()) {
-        $user = auth()->user();
-        if ($user->role === 'pembeli') {
-            return view('welcome');
-        }
-        if (method_exists($user, 'getRedirectRoute')) {
-            return redirect()->route($user->getRedirectRoute());
+        $role = auth()->user()->role;
+
+        // Redirect sesuai role
+        if ($role === 'admin') {
+            return redirect()->route('admin.dashboard');
+        } elseif ($role === 'penjual') {
+            return redirect()->route('seller.dashboard');
+        } elseif ($role === 'pembeli') {
+            // [FIXED] Pembeli diarahkan ke dashboard khusus pembeli
+            return redirect()->route('buyer.dashboard');
         }
     }
+    // Jika tamu (belum login), tampilkan landing page
     return view('welcome');
 })->name('home');
 
-// Jelajah
+// Jelajah & Detail
 Route::get('/jelajah', [PublicController::class, 'index'])->name('jelajah');
-
-// Kategori Detail (Punya Temanmu - Kita Ambil)
 Route::get('/kategori/{slug}', [PublicController::class, 'category'])->name('kategori.detail');
-
-// Detail UMKM
 Route::get('/umkm/{slug}', [UmkmDetailController::class, 'show'])->name('umkm.show');
 
-// Route Debugging
+// Debugging (Bisa dihapus nanti saat production)
 Route::get('/cek-slug', function () {
     $umkms = \App\Models\Umkm::all();
-    if ($umkms->isEmpty()) {
-        return "Database UMKM masih kosong.";
-    }
-    return $umkms->map(function ($umkm) {
-        return url('/umkm/' . $umkm->slug);
-    });
+    if ($umkms->isEmpty()) return "Database UMKM masih kosong.";
+    return $umkms->map(fn($umkm) => url('/umkm/' . $umkm->slug));
 });
+
+// Direktori Semua UMKM
+Route::get('/direktori-umkm', [PublicController::class, 'direktori'])->name('umkm.index');
+
+/*
+|--------------------------------------------------------------------------
+| ROUTE PENGHUBUNG (TRAFFIC COP)
+|--------------------------------------------------------------------------
+| Route ini menangani pemanggilan route('dashboard') dari header/view.
+| Dia akan melempar user ke dashboard spesifik sesuai role.
+*/
+Route::middleware(['auth'])->get('/dashboard-redirect', function () {
+    $user = auth()->user();
+
+    if ($user->role === 'admin') {
+        return redirect()->route('admin.dashboard');
+    } elseif ($user->role === 'penjual') {
+        return redirect()->route('seller.dashboard');
+    } else {
+        // Default pembeli
+        return redirect()->route('buyer.dashboard');
+    }
+})->name('dashboard'); // <--- INI PENTING: Namanya harus 'dashboard'
