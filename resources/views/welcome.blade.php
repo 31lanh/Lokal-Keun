@@ -27,20 +27,23 @@
                     </p>
 
                     <div class="bg-white dark:bg-surface-dark p-2 rounded-2xl shadow-xl shadow-orange-500/10 max-w-xl">
-                        <div class="flex flex-col md:flex-row gap-2">
-                            <div class="flex-1 flex items-center px-4 py-2 bg-gray-50 dark:bg-gray-800 rounded-xl group">
-                                <span
-                                    class="material-symbols-outlined text-primary-orange mr-2 group-hover:scale-110 transition-transform">search</span>
-                                <input
-                                    class="bg-transparent border-none w-full text-gray-900 dark:text-white placeholder:text-gray-400 focus:ring-0 p-0 text-sm"
-                                    placeholder="Cari produk lokal..." type="text" />
+                        <form action="{{ route('jelajah') }}" method="GET">
+                            <div class="flex flex-col md:flex-row gap-2">
+                                <div class="flex-1 flex items-center px-4 py-2 bg-gray-50 dark:bg-gray-800 rounded-xl group">
+                                    <span
+                                        class="material-symbols-outlined text-primary-orange mr-2 group-hover:scale-110 transition-transform">search</span>
+                                    <input
+                                        name="q"
+                                        class="bg-transparent border-none w-full text-gray-900 dark:text-white placeholder:text-gray-400 focus:ring-0 p-0 text-sm"
+                                        placeholder="Cari produk lokal..." type="text" />
+                                </div>
+                                <button type="submit"
+                                    class="px-5 py-2 bg-gradient-to-r from-primary-orange to-primary-green hover:shadow-lg text-white font-bold rounded-xl transition-all transform hover:scale-105 flex items-center justify-center gap-2 text-sm">
+                                    <span class="material-symbols-outlined text-sm">search</span>
+                                    <span>Cari</span>
+                                </button>
                             </div>
-                            <button
-                                class="px-5 py-2 bg-gradient-to-r from-primary-orange to-primary-green hover:shadow-lg text-white font-bold rounded-xl transition-all transform hover:scale-105 flex items-center justify-center gap-2 text-sm">
-                                <span class="material-symbols-outlined text-sm">search</span>
-                                <span>Cari</span>
-                            </button>
-                        </div>
+                        </form>
                     </div>
 
                     <div class="flex flex-wrap gap-6 pt-2">
@@ -85,17 +88,17 @@
             <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
                 @php
                     $categories = [
-                        ['name' => 'Kuliner', 'icon' => 'restaurant', 'color' => 'orange'],
-                        ['name' => 'Fashion', 'icon' => 'checkroom', 'color' => 'green'],
-                        ['name' => 'Kerajinan', 'icon' => 'palette', 'color' => 'orange'],
-                        ['name' => 'Jasa', 'icon' => 'design_services', 'color' => 'green'],
-                        ['name' => 'Kecantikan', 'icon' => 'spa', 'color' => 'orange'],
-                        ['name' => 'Agribisnis', 'icon' => 'agriculture', 'color' => 'green'],
+                        ['name' => 'Kuliner', 'icon' => 'restaurant', 'color' => 'orange', 'slug' => 'kuliner'],
+                        ['name' => 'Fashion', 'icon' => 'checkroom', 'color' => 'green', 'slug' => 'fashion'],
+                        ['name' => 'Kerajinan', 'icon' => 'palette', 'color' => 'orange', 'slug' => 'kerajinan'],
+                        ['name' => 'Jasa', 'icon' => 'design_services', 'color' => 'green', 'slug' => 'jasa'],
+                        ['name' => 'Kecantikan', 'icon' => 'spa', 'color' => 'orange', 'slug' => 'kecantikan'],
+                        ['name' => 'Agribisnis', 'icon' => 'agriculture', 'color' => 'green', 'slug' => 'Agribisnis'],
                     ];
                 @endphp
 
                 @foreach ($categories as $cat)
-                    <a href="#" class="group relative">
+                    <a href="{{ route('kategori.detail', $cat['slug']) }}" class="group relative">
                         <div
                             class="absolute inset-0 bg-gradient-to-br from-primary-{{ $cat['color'] }} to-{{ $cat['color'] }}-dark rounded-2xl opacity-0 group-hover:opacity-10 transition-opacity">
                         </div>
