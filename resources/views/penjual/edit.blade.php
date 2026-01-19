@@ -1,6 +1,9 @@
 @extends('layouts.seller')
 
 @section('content')
+{{-- PENTING: Token CSRF --}}
+<meta name="csrf-token" content="{{ csrf_token() }}">
+
 <div class="relative flex min-h-screen w-full flex-col overflow-x-hidden font-display">
 
     <div class="absolute inset-0 z-0 overflow-hidden pointer-events-none">
@@ -11,6 +14,7 @@
     <div class="relative z-10 flex-1 flex justify-center pb-20 pt-6 px-4 sm:px-6 lg:px-8">
         <div class="flex flex-col max-w-[1000px] w-full gap-8">
 
+            {{-- Header --}}
             <div class="text-center space-y-3 pt-2">
                 <div class="inline-flex items-center gap-2 px-3 py-1.5 bg-blue-50 dark:bg-blue-900/30 rounded-full mb-1">
                     <span class="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></span>
@@ -38,6 +42,7 @@
                 </div>
                 @endif
 
+                {{-- INFORMASI DASAR --}}
                 <div class="group relative bg-white dark:bg-surface-dark rounded-3xl shadow-lg border-2 border-transparent hover:border-primary-orange/20 overflow-hidden transition-all">
                     <div class="relative p-6 sm:p-8">
                         <div class="flex items-center gap-4 mb-6 pb-5 border-b border-gray-100 dark:border-gray-700">
@@ -78,6 +83,7 @@
                     </div>
                 </div>
 
+                {{-- DESKRIPSI --}}
                 <div class="group relative bg-white dark:bg-surface-dark rounded-3xl shadow-lg border-2 border-transparent hover:border-primary-green/20 overflow-hidden transition-all">
                     <div class="relative p-6 sm:p-8">
                         <div class="flex items-center gap-4 mb-6 pb-5 border-b border-gray-100 dark:border-gray-700">
@@ -97,6 +103,7 @@
                     </div>
                 </div>
 
+                {{-- KONTAK & LOKASI --}}
                 <div class="group relative bg-white dark:bg-surface-dark rounded-3xl shadow-lg border-2 border-transparent hover:border-primary-orange/20 overflow-hidden transition-all">
                     <div class="relative p-6 sm:p-8">
                         <div class="flex items-center gap-4 mb-6 pb-5 border-b border-gray-100 dark:border-gray-700">
@@ -137,6 +144,7 @@
                     </div>
                 </div>
 
+                {{-- JAM OPERASIONAL --}}
                 <div class="group relative bg-white dark:bg-surface-dark rounded-3xl shadow-lg border-2 border-transparent hover:border-primary-green/20 overflow-hidden transition-all">
                     <div class="relative p-6 sm:p-8">
                         <div class="flex items-center gap-4 mb-6 pb-5 border-b border-gray-100 dark:border-gray-700">
@@ -161,6 +169,7 @@
                     </div>
                 </div>
 
+                {{-- EDIT MENU --}}
                 <div class="group relative bg-white dark:bg-surface-dark rounded-3xl shadow-lg border-2 border-transparent hover:border-red-500/20 overflow-hidden transition-all">
                     <div class="relative p-6 sm:p-8">
                         <div class="flex items-center justify-between mb-6 pb-5 border-b border-gray-100 dark:border-gray-700">
@@ -192,7 +201,7 @@
                                                     <span class="material-symbols-outlined text-2xl">add_a_photo</span>
                                                     <span class="text-[10px] font-medium">Foto</span>
                                                 </div>
-                                                <img src="{{ $menu->photo_path }}" class="preview-img absolute inset-0 w-full h-full object-cover rounded-lg" />
+                                                <img src="{{ asset(ltrim($menu->photo_path, '/')) }}" class="preview-img absolute inset-0 w-full h-full object-cover rounded-lg" />
                                             @else
                                                 <div class="preview-placeholder flex flex-col items-center gap-1 text-gray-400">
                                                     <span class="material-symbols-outlined text-2xl">add_a_photo</span>
@@ -233,12 +242,13 @@
                         </div>
 
                         <button type="button" id="btn-add-menu"
-                            class="flex items-center gap-1 bg-primary-orange hover:bg-orange-600 text-white px-4 py-2 rounded-lg text-xs font-medium transition-colors shadow-sm">
+                            class="flex items-center gap-1 bg-primary-orange hover:bg-orange-600 text-white px-4 py-2 rounded-lg text-xs font-medium transition-colors shadow-sm mt-4">
                             <span class="material-symbols-outlined text-sm">add</span> Tambah Menu
                         </button>
                     </div>
                 </div>
 
+                {{-- 6. GALERI FOTO (AJAX DELETE + MULTIPLE UPLOAD) --}}
                 <div class="group relative bg-white dark:bg-surface-dark rounded-3xl shadow-lg border-2 border-transparent hover:border-primary-orange/20 overflow-hidden transition-all">
                     <div class="relative p-6 sm:p-8">
                         <div class="flex items-center gap-4 mb-6 pb-5 border-b border-gray-100 dark:border-gray-700">
@@ -251,36 +261,43 @@
                             </div>
                         </div>
 
-                        <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
-                            @foreach($umkm->photos as $photo)
-                                <div class="relative aspect-square rounded-xl overflow-hidden border border-gray-200 group">
-                                    <img src="{{ $photo->photo_url }}" class="w-full h-full object-cover">
-                                    <a href="{{ route('seller.photo.delete', $photo->id) }}" 
-                                       onclick="return confirm('Hapus foto ini?')"
-                                       class="absolute top-2 right-2 bg-white text-red-500 p-1.5 rounded-full shadow hover:bg-red-50 transition-all opacity-0 group-hover:opacity-100">
+                        {{-- FOTO LAMA (AJAX DELETE) --}}
+                        <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6" id="existing-gallery-container">
+                            @foreach($umkm->photos->where('is_primary', false) as $photo)
+                                <div class="relative aspect-square rounded-xl overflow-hidden border border-gray-200 group existing-photo-item" id="photo-{{ $photo->id }}">
+                                    <img src="{{ asset(ltrim($photo->photo_path, '/')) }}" class="w-full h-full object-cover">
+                                    {{-- Tombol Hapus (Trigger Modal) --}}
+                                    <button type="button" 
+                                            onclick="openDeleteModal(() => deleteExistingPhoto({{ $photo->id }}))"
+                                            class="absolute top-2 right-2 bg-white text-red-500 p-1.5 rounded-full shadow hover:bg-red-50 transition-all opacity-0 group-hover:opacity-100 cursor-pointer border-none">
                                         <span class="material-symbols-outlined text-lg block">delete</span>
-                                    </a>
+                                    </button>
                                 </div>
                             @endforeach
                         </div>
 
+                        {{-- UPLOAD BARU --}}
                         <div class="flex flex-col gap-4">
                             <p class="text-sm font-bold text-gray-900 dark:text-white">Tambah Foto Baru</p>
                             <input type="file" name="photos[]" multiple accept="image/*" class="hidden" id="photo-upload-gallery" onchange="previewGallery(this)">
-                            <label for="photo-upload-gallery" class="border-2 border-dashed border-primary-orange/30 rounded-2xl p-10 flex flex-col items-center justify-center text-center gap-4 bg-orange-50/50 hover:bg-orange-100/50 hover:border-primary-orange transition-all cursor-pointer">
-                                <div class="size-20 rounded-2xl bg-gradient-to-br from-primary-orange/20 to-orange-dark/20 flex items-center justify-center text-primary-orange shadow-lg">
-                                    <span class="material-symbols-outlined text-4xl">add_a_photo</span>
+                            
+                            <label for="photo-upload-gallery" class="border-2 border-dashed border-primary-orange/30 rounded-2xl p-10 flex flex-col items-center justify-center text-center gap-4 bg-orange-50/50 hover:bg-orange-100/50 hover:border-primary-orange transition-all cursor-pointer group">
+                                <div class="size-20 rounded-2xl bg-gradient-to-br from-primary-orange/20 to-orange-dark/20 flex items-center justify-center text-primary-orange shadow-lg group-hover:scale-110 transition-transform">
+                                    <span class="material-symbols-outlined text-4xl">add_photo_alternate</span>
                                 </div>
                                 <div>
-                                    <p class="text-gray-900 dark:text-white font-bold text-lg">Klik untuk unggah foto</p>
-                                    <p class="text-gray-500 text-sm">JPG/PNG Maks. 5MB</p>
+                                    <p class="text-gray-900 dark:text-white font-bold text-lg">Klik untuk unggah banyak foto</p>
+                                    <p class="text-gray-500 text-sm">JPG/PNG Maks. 5MB per file</p>
                                 </div>
                             </label>
-                            <div id="gallery-preview-container" class="grid grid-cols-3 sm:grid-cols-4 gap-2 mt-2"></div>
+                            
+                            {{-- CONTAINER PREVIEW BARU --}}
+                            <div id="gallery-preview-container" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 mt-2"></div>
                         </div>
                     </div>
                 </div>
 
+                {{-- TOMBOL SIMPAN --}}
                 <div class="sticky bottom-0 bg-white/95 dark:bg-surface-dark/95 backdrop-blur-xl p-6 -mx-4 sm:mx-0 sm:p-0 sm:bg-transparent sm:backdrop-blur-none sm:relative flex flex-col-reverse sm:flex-row justify-between items-center gap-4 border-t sm:border-t-0 border-gray-200 rounded-t-3xl sm:rounded-none shadow-2xl sm:shadow-none z-40">
                     <div class="flex items-center gap-3 text-sm text-gray-600 dark:text-gray-400">
                         <a href="{{ route('seller.dashboard') }}" class="font-bold text-gray-500 hover:text-primary-orange transition-colors">Batal & Kembali</a>
@@ -296,6 +313,9 @@
         </div>
     </div>
 </div>
+
+{{-- INCLUDE PARTIAL MODAL --}}
+@include('partials.delete-modal')
 
 <template id="menu-template">
     <div class="menu-item relative flex flex-col sm:flex-row gap-4 p-4 rounded-xl border-2 border-gray-100 dark:border-gray-700 bg-gray-50/50 dark:bg-slate-800/50 animation-fade-in">
@@ -337,7 +357,109 @@
 </template>
 
 <script>
-    // 1. Preview Single Image
+    // --------------------------------------------------------
+    // A. LOGIC PREVIEW & DATA TRANSFER (FOTO BARU)
+    // --------------------------------------------------------
+    let dt = new DataTransfer();
+
+    function previewGallery(input) {
+        const container = document.getElementById('gallery-preview-container');
+        
+        for (let file of input.files) {
+            if (file.type.match('image.*')) {
+                dt.items.add(file);
+            }
+        }
+
+        input.files = dt.files; // Sinkronisasi
+        renderGalleryPreview();
+    }
+
+    function renderGalleryPreview() {
+        const container = document.getElementById('gallery-preview-container');
+        container.innerHTML = '';
+
+        Array.from(dt.files).forEach((file, index) => {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const div = document.createElement('div');
+                div.className = 'relative aspect-square rounded-xl overflow-hidden border border-gray-200 shadow-md animate-fade-in group';
+                div.innerHTML = `
+                    <img src="${e.target.result}" class="w-full h-full object-cover">
+                    <div class="absolute inset-0 bg-black/10 group-hover:bg-black/20 transition-colors"></div>
+                    <div class="absolute bottom-2 left-2 bg-green-500 text-white text-[10px] px-2 py-0.5 rounded shadow font-bold">New</div>
+                    
+                    <button type="button" onclick="removeNewFile(${index})" 
+                        class="absolute top-2 right-2 bg-white text-red-500 p-1 rounded-full shadow hover:bg-red-50 transition-all cursor-pointer">
+                        <span class="material-symbols-outlined text-sm block">close</span>
+                    </button>
+                `;
+                container.appendChild(div);
+            }
+            reader.readAsDataURL(file);
+        });
+    }
+
+    function removeNewFile(index) {
+        dt.items.remove(index);
+        document.getElementById('photo-upload-gallery').files = dt.files;
+        renderGalleryPreview();
+    }
+
+    // --------------------------------------------------------
+    // B. LOGIC HAPUS FOTO LAMA (AJAX FETCH)
+    // --------------------------------------------------------
+    function deleteExistingPhoto(photoId) {
+        // Ambil CSRF Token
+        const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+        const url = `/seller/photo/${photoId}/delete`; 
+
+        fetch(url, {
+            method: 'GET', 
+            headers: {
+                // Header ini WAJIB agar Controller tahu ini AJAX
+                'X-Requested-With': 'XMLHttpRequest', 
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => {
+            // Cek jika respon bukan JSON (misal error 404/500 html page)
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data.success) {
+                // Hapus elemen visual
+                const el = document.getElementById(`photo-${photoId}`);
+                if(el) {
+                    el.style.transition = 'all 0.3s';
+                    el.style.opacity = '0';
+                    el.style.transform = 'scale(0.9)';
+                    setTimeout(() => el.remove(), 300);
+                }
+                // Tutup modal jika pakai modal
+                if(typeof closeDeleteModal === 'function') closeDeleteModal();
+            } else {
+                alert('Gagal: ' + (data.message || 'Terjadi kesalahan.'));
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            // Jangan alert "Koneksi Error" jika sebenarnya berhasil tapi parsing gagal
+            // Cek manual element, jika masih ada baru alert
+            const el = document.getElementById(`photo-${photoId}`);
+            if(el) {
+                 alert('Terjadi kesalahan koneksi atau server.');
+            }
+        });
+    }
+
+    // --------------------------------------------------------
+    // C. LOGIC MENU & LAINNYA
+    // --------------------------------------------------------
     function previewImage(input) {
         const parent = input.closest('label');
         const placeholder = parent.querySelector('.preview-placeholder');
@@ -347,69 +469,45 @@
             reader.onload = function(e) {
                 img.src = e.target.result;
                 img.classList.remove('hidden');
-                if(placeholder) placeholder.classList.add('hidden');
+                placeholder.classList.add('hidden');
             }
             reader.readAsDataURL(input.files[0]);
-        } else {
-            // Reset preview jika batal pilih file
-            img.src = '';
-            img.classList.add('hidden');
-            if(placeholder) placeholder.classList.remove('hidden');
         }
     }
 
-    // 2. Preview Gallery
-    function previewGallery(input) {
-        const container = document.getElementById('gallery-preview-container');
-        container.innerHTML = '';
-        if (input.files) {
-            Array.from(input.files).forEach(file => {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    const div = document.createElement('div');
-                    div.className = 'relative aspect-square rounded-lg overflow-hidden border border-gray-200';
-                    div.innerHTML = `<img src="${e.target.result}" class="w-full h-full object-cover">`;
-                    container.appendChild(div);
-                }
-                reader.readAsDataURL(file);
-            });
-        }
-    }
-
-    // 3. Logic Tambah/Hapus Menu
     document.addEventListener('DOMContentLoaded', function() {
         const container = document.getElementById('menu-container');
         const btnAdd = document.getElementById('btn-add-menu');
         const menuCountBadge = document.getElementById('menu-count');
         const template = document.getElementById('menu-template');
         const emptyMsg = document.getElementById('empty-menu-msg');
-        
-        // Start index dari count menu yang ada + 100 (biar aman)
         let menuIndex = {{ $umkm->menus->count() }} + 100; 
 
         function updateUI() {
             const items = container.querySelectorAll('.menu-item');
             menuCountBadge.textContent = items.length + ' Item';
+            
+            items.forEach(item => {
+                const btnRemove = item.querySelector('.btn-remove-menu');
+                if (items.length > 1) {
+                    btnRemove.classList.remove('hidden');
+                } else {
+                    btnRemove.classList.add('hidden');
+                }
+            });
         }
 
-        // Add Menu
         btnAdd.addEventListener('click', function() {
             if(emptyMsg) emptyMsg.style.display = 'none';
-
-            // Ambil content dari template
             const clone = template.content.cloneNode(true);
-            
-            // Replace INDEX dengan angka unik
             clone.querySelectorAll('[name*="INDEX"]').forEach(el => {
                 el.name = el.name.replace('INDEX', menuIndex);
             });
-
             container.appendChild(clone);
             menuIndex++;
             updateUI();
         });
 
-        // Remove Menu
         container.addEventListener('click', function(e) {
             if (e.target.closest('.btn-remove-menu')) {
                 const item = e.target.closest('.menu-item');

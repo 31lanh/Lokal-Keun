@@ -14,8 +14,10 @@ class UmkmPhoto extends Model
         'umkm_id',
         'photo_path',
         'photo_url',
-        'is_primary',
+        'is_primary', // Pastikan ini ada
         'order',
+        'file_name',  // Opsional
+        'file_size',  // Opsional
     ];
 
     protected $casts = [
@@ -23,47 +25,8 @@ class UmkmPhoto extends Model
         'order' => 'integer',
     ];
 
-    /**
-     * Relationship dengan UMKM
-     */
     public function umkm()
     {
         return $this->belongsTo(Umkm::class);
-    }
-
-    /**
-     * Get full URL for photo
-     */
-    public function getUrlAttribute(): string
-    {
-        return $this->photo_url;
-    }
-
-    /**
-     * Delete photo file when model is deleted
-     */
-    protected static function boot()
-    {
-        parent::boot();
-
-        static::deleting(function ($photo) {
-            // Delete physical file
-            if (Storage::disk('public')->exists($photo->photo_path)) {
-                Storage::disk('public')->delete($photo->photo_path);
-            }
-        });
-    }
-
-    /**
-     * Set as primary photo
-     */
-    public function setAsPrimary()
-    {
-        // Remove primary from other photos
-        static::where('umkm_id', $this->umkm_id)
-            ->update(['is_primary' => false]);
-
-        // Set this as primary
-        $this->update(['is_primary' => true]);
     }
 }

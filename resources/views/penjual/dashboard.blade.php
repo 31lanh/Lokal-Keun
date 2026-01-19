@@ -5,8 +5,10 @@
 
         {{-- 1. LOGIC PHP --}}
         @php
+            // Ambil Banner (is_primary = true)
             $banner = $umkm->photos->where('is_primary', true)->first();
             $bannerUrl = null;
+            
             if ($banner) {
                 if ($banner->photo_url) {
                     $cleanUrl = ltrim($banner->photo_url, '/');
@@ -44,14 +46,12 @@
         </div>
 
         {{-- 3. MAIN CONTAINER --}}
-        {{-- Perubahan: Tidak ada lagi -mt-24 di sini agar teks tidak naik ke banner --}}
         <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
 
             {{-- HEADER PROFILE --}}
             <div class="flex flex-col md:flex-row items-start md:items-end gap-6 md:gap-8 mb-12">
                 
-                {{-- Foto Profil --}}
-                {{-- Perubahan: Margin negatif dipindah ke sini agar HANYA FOTO yang naik ke banner --}}
+                {{-- Foto Profil (Overlap Banner) --}}
                 <div class="relative group shrink-0 -mt-16 md:-mt-20 mx-auto md:mx-0">
                     <div class="w-36 h-36 md:w-48 md:h-48 rounded-3xl border-[6px] border-white dark:border-gray-800 bg-white shadow-md overflow-hidden relative">
                         <img src="{{ auth()->user()->profile_photo_path ? asset('storage/' . auth()->user()->profile_photo_path) : 'https://ui-avatars.com/api/?name=' . urlencode($umkm->nama_usaha) . '&background=random&size=200' }}"
@@ -63,24 +63,22 @@
                     </div>
                 </div>
 
-                {{-- Nama & Status (Sekarang berada di area putih, aman dari banner) --}}
+                {{-- Nama & Status (Di bawah banner, area putih) --}}
                 <div class="flex-1 w-full text-center md:text-left pt-2 md:pb-4">
                     <div class="flex flex-col md:flex-row md:justify-between md:items-end gap-6">
                         
                         {{-- Kiri: Judul & Info --}}
                         <div>
-                            {{-- 1. Nama Usaha --}}
                             <h1 class="text-3xl md:text-4xl font-semibold text-gray-900 dark:text-white tracking-tight mb-2">
                                 {{ $umkm->nama_usaha }}
                             </h1>
 
-                            {{-- 2. Lokasi --}}
                             <p class="text-base text-gray-500 flex items-center justify-center md:justify-start gap-1.5 font-medium mb-4">
                                 <span class="material-symbols-outlined text-xl text-gray-400">location_on</span>
                                 {{ Str::limit($umkm->alamat, 60) }}
                             </p>
                             
-                            {{-- 3. Badge Status (Di Bawah Lokasi) --}}
+                            {{-- Status Pill di bawah lokasi --}}
                             <div class="flex justify-center md:justify-start">
                                 @if ($isOpen)
                                     <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 text-xs font-bold uppercase tracking-wider shadow-sm">
@@ -101,14 +99,12 @@
 
                         {{-- Kanan: Action Buttons --}}
                         <div class="flex flex-wrap gap-3 justify-center w-full md:w-auto mt-4 md:mt-0">
-                            {{-- Tombol Kelola --}}
                             <a href="{{ route('seller.umkm.edit') }}"
                                 class="group px-6 py-2.5 bg-white border-2 border-gray-100 text-gray-600 rounded-xl text-base font-semibold hover:border-orange-200 hover:bg-orange-50 hover:text-primary-orange transition-all shadow-sm hover:shadow-md flex items-center gap-2">
                                 <span class="material-symbols-outlined text-xl group-hover:rotate-45 transition-transform duration-300">settings</span>
                                 Kelola Toko
                             </a>
 
-                            {{-- Tombol Lihat Toko --}}
                             <a href="{{ route('umkm.show', $umkm->slug) }}" target="_blank"
                                 class="group px-6 py-2.5 bg-gray-900 text-white border border-transparent rounded-xl text-base font-semibold hover:bg-gradient-to-r hover:from-primary-orange hover:to-orange-600 hover:shadow-lg hover:shadow-orange-500/30 transition-all flex items-center gap-2 transform hover:-translate-y-0.5">
                                 <span class="material-symbols-outlined text-xl group-hover:scale-110 transition-transform">visibility</span>
@@ -121,7 +117,7 @@
 
             {{-- 4. STATISTIK --}}
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
-                {{-- Rating (Yellow Theme) --}}
+                {{-- Rating --}}
                 <div class="bg-yellow-50 dark:bg-yellow-900/20 p-6 rounded-2xl border border-yellow-100 dark:border-yellow-800 shadow-sm flex items-center justify-between hover:shadow-md transition-shadow">
                     <div>
                         <p class="text-sm font-medium text-yellow-700 dark:text-yellow-400 uppercase tracking-wider mb-1">Rating Toko</p>
@@ -135,7 +131,7 @@
                     </div>
                 </div>
 
-                {{-- Total Menu (Orange Theme) --}}
+                {{-- Produk --}}
                 <div class="bg-orange-50 dark:bg-orange-900/20 p-6 rounded-2xl border border-orange-100 dark:border-orange-800 shadow-sm flex items-center justify-between hover:shadow-md transition-shadow">
                     <div>
                         <p class="text-sm font-medium text-orange-700 dark:text-orange-400 uppercase tracking-wider mb-1">Total Produk</p>
@@ -149,7 +145,7 @@
                     </div>
                 </div>
 
-                {{-- Kunjungan (Blue Theme) --}}
+                {{-- Kunjungan --}}
                 <div class="bg-blue-50 dark:bg-blue-900/20 p-6 rounded-2xl border border-blue-100 dark:border-blue-800 shadow-sm flex items-center justify-between hover:shadow-md transition-shadow">
                     <div>
                         <p class="text-sm font-medium text-blue-700 dark:text-blue-400 uppercase tracking-wider mb-1">Kunjungan</p>
@@ -169,7 +165,7 @@
 
                 {{-- SIDEBAR --}}
                 <div class="lg:col-span-4 space-y-8">
-                    {{-- About Card --}}
+                    {{-- About --}}
                     <div class="bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 shadow-sm p-6">
                         <h3 class="text-base font-semibold text-gray-900 dark:text-white mb-5 pb-3 border-b border-gray-50 flex items-center gap-2">
                             <span class="material-symbols-outlined text-primary-orange">store</span> Informasi Toko
@@ -200,7 +196,7 @@
                         </div>
                     </div>
 
-                    {{-- Gallery Grid --}}
+                    {{-- Gallery Grid (FILTER IS_PRIMARY = FALSE) --}}
                     <div class="bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 shadow-sm p-6">
                         <div class="flex justify-between items-center mb-5">
                             <h3 class="text-base font-semibold text-gray-900 dark:text-white flex items-center gap-2">
@@ -209,7 +205,8 @@
                             <a href="{{ route('seller.umkm.edit') }}#gallery-container" class="text-orange-500 text-sm font-medium hover:underline">Edit</a>
                         </div>
                         <div class="grid grid-cols-3 gap-3">
-                            @forelse($umkm->photos->take(6) as $photo)
+                            {{-- FILTER BANNER DI SINI --}}
+                            @forelse($umkm->photos->where('is_primary', false)->take(6) as $photo)
                                 <div class="aspect-square rounded-xl bg-gray-100 overflow-hidden border border-gray-100">
                                     <img src="{{ $photo->photo_url ? asset(ltrim($photo->photo_url, '/')) : asset('storage/' . $photo->photo_path) }}"
                                          class="w-full h-full object-cover">
@@ -226,7 +223,6 @@
                 {{-- MAIN CONTENT (Menu List) --}}
                 <div class="lg:col-span-8">
                     <div class="bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 shadow-sm min-h-[500px]">
-                        {{-- Header Menu --}}
                         <div class="p-6 border-b border-gray-50 flex justify-between items-center">
                             <div>
                                 <h3 class="font-semibold text-gray-900 text-xl flex items-center gap-2">
@@ -246,8 +242,6 @@
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                                     @foreach ($umkm->menus as $menu)
                                         <div class="group relative flex gap-5 p-5 rounded-2xl border border-gray-100 bg-white hover:border-orange-200 transition-all hover:shadow-lg">
-                                            
-                                            {{-- Foto --}}
                                             <div class="shrink-0 w-24 h-24 rounded-xl bg-gray-50 overflow-hidden border border-gray-100">
                                                 @if ($menu->photo_path)
                                                     <img src="{{ asset(ltrim($menu->photo_path, '/')) }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
@@ -257,23 +251,17 @@
                                                     </div>
                                                 @endif
                                             </div>
-
-                                            {{-- Info --}}
                                             <div class="flex-1 min-w-0 flex flex-col justify-center">
                                                 <div class="flex justify-between items-start">
-                                                    {{-- Font nama menu --}}
                                                     <h4 class="text-lg font-medium text-gray-800 truncate pr-6 group-hover:text-primary-orange transition-colors">{{ $menu->name }}</h4>
                                                 </div>
                                                 <p class="text-sm text-gray-500 line-clamp-1 mt-1 mb-2 font-normal">
                                                     {{ $menu->description ?? 'Tidak ada deskripsi' }}
                                                 </p>
-                                                {{-- Harga --}}
                                                 <p class="font-semibold text-base text-primary-orange">
                                                     Rp {{ number_format($menu->price, 0, ',', '.') }}
                                                 </p>
                                             </div>
-
-                                            {{-- Actions (Hover) --}}
                                             <div class="absolute top-4 right-4 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                                                 <a href="{{ route('seller.umkm.edit') }}#menu-container" class="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors" title="Edit">
                                                     <span class="material-symbols-outlined text-base">edit</span>
