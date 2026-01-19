@@ -15,6 +15,7 @@ class DatabaseSeeder extends Seeder
             AdminSeeder::class,
             BuyerSeeder::class,
             SellerSeeder::class,
+            UmkmSeeder::class,
         ]);
     }
 }

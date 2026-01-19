@@ -77,20 +77,18 @@ class Umkm extends Model
 
     public function photos()
     {
-        return $this->hasMany(UmkmPhoto::class);
+        return $this->hasMany(UmkmPhoto::class, 'umkm_id');
     }
-
     // [BARU] Relasi ke Menu
     public function menus()
     {
-        return $this->hasMany(UmkmMenu::class);
+        return $this->hasMany(UmkmMenu::class, 'umkm_id');
     }
 
     public function primaryPhoto()
     {
-        return $this->hasOne(UmkmPhoto::class)->where('is_primary', true);
+        return $this->hasOne(UmkmPhoto::class, 'umkm_id')->where('is_primary', true);
     }
-
     // --- SCOPES & HELPERS ---
 
     public function scopeApproved($query)
@@ -106,6 +104,6 @@ class Umkm extends Model
         }
         return 'https://wa.me/' . $number;
     }
-    
+
     // ... method lain (isApproved, etc) bisa dibiarkan ...
 }

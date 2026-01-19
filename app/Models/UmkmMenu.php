@@ -21,6 +21,6 @@ class UmkmMenu extends Model
 
     public function umkm()
     {
-        return $this->belongsTo(Umkm::class);
+        return $this->belongsTo(Umkm::class, 'umkm_id');
     }
 }

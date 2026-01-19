@@ -4,10 +4,30 @@ namespace App\Http\Controllers\Buyer;
 
 use App\Http\Controllers\Controller;
 use App\Models\Umkm;
+use App\Models\UmkmMenu;
 use Illuminate\Http\Request;
 
 class PublicController extends Controller
 {
+
+    public function welcome()
+    {
+        // 1. Ambil 4 UMKM Unggulan (Rating tertinggi & Approved)
+        $featuredUmkms = Umkm::where('status', 'approved')
+            ->with('primaryPhoto')
+            ->orderBy('rating', 'desc')
+            ->take(4)
+            ->get();
+
+        // 2. Statistik Real
+        $stats = [
+            'total_umkm' => Umkm::where('status', 'approved')->count(),
+            'total_products' => UmkmMenu::count(),
+            'total_users' => \App\Models\User::where('role', 'pembeli')->count(),
+        ];
+
+        return view('welcome', compact('featuredUmkms', 'stats'));
+    }
     public function index(Request $request)
     {
 

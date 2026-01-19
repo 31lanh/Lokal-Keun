@@ -127,7 +127,7 @@ Route::get('/', function () {
         }
     }
     // Jika tamu (belum login), tampilkan landing page
-    return view('welcome');
+    return app(App\Http\Controllers\Buyer\PublicController::class)->welcome();
 })->name('home');
 
 // Jelajah & Detail
