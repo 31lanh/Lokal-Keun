@@ -22,7 +22,11 @@
     class="bg-background-light dark:bg-background-dark font-display text-gray-900 dark:text-gray-100 overflow-x-hidden">
 
     @include('partials.header')
-
+    @include('partials.modals.profile')
+    @include('partials.modals.edit-profile')
+    @include('partials.modals.favorites')
+    @include('partials.modals.address')
+    
     <main>
         @yield('content')
     </main>

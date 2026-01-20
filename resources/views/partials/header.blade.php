@@ -89,32 +89,25 @@
                                 </div>
 
                                 <div class="p-2">
-                                    <a href="#"
+                                    <button @click="open = false; $dispatch('open-profile')"
                                         class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-orange-50 dark:hover:bg-orange-900/20 transition-all group/item">
                                         <span
                                             class="material-symbols-outlined text-primary-orange group-hover/item:scale-110 transition-transform">person</span>
                                         <span class="text-sm font-semibold text-gray-700 dark:text-gray-300">Profil
                                             Saya</span>
-                                    </a>
-                                    <a href="#"
-                                        class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-green-50 dark:hover:bg-green-900/20 transition-all group/item">
-                                        <span
-                                            class="material-symbols-outlined text-primary-green group-hover/item:scale-110 transition-transform">receipt_long</span>
-                                        <span class="text-sm font-semibold text-gray-700 dark:text-gray-300">Pesanan
-                                            Saya</span>
-                                    </a>
-                                    <a href="#"
+                                    </button>
+                                    <button @click="open = false; $dispatch('open-favorites')"
                                         class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20 transition-all group/item">
                                         <span
                                             class="material-symbols-outlined text-red-500 group-hover/item:scale-110 transition-transform">favorite</span>
                                         <span class="text-sm font-semibold text-gray-700 dark:text-gray-300">Favorit</span>
-                                    </a>
-                                    <a href="#"
+                                    </button>
+                                    <button @click="open = false; $dispatch('open-address')"
                                         class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-all group/item">
                                         <span
                                             class="material-symbols-outlined text-blue-500 group-hover/item:scale-110 transition-transform">location_on</span>
                                         <span class="text-sm font-semibold text-gray-700 dark:text-gray-300">Alamat</span>
-                                    </a>
+                                    </button>
                                 </div>
 
                                 <div
