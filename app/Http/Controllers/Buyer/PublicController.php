@@ -9,13 +9,13 @@ use Illuminate\Http\Request;
 
 class PublicController extends Controller
 {
-
     public function welcome()
     {
         // 1. Ambil 4 UMKM Unggulan (Rating tertinggi & Approved)
         $featuredUmkms = Umkm::where('status', 'approved')
             ->with('primaryPhoto')
-            ->orderBy('rating', 'desc')
+            ->orderByDesc('rating') // [PERBAIKAN] Menggunakan sintaks orderByDesc
+            ->orderByDesc('total_reviews') // [TAMBAHAN] Jika rating sama, urutkan berdasarkan jumlah ulasan terbanyak
             ->take(4)
             ->get();
 
@@ -28,12 +28,13 @@ class PublicController extends Controller
 
         return view('welcome', compact('featuredUmkms', 'stats'));
     }
+
     public function index(Request $request)
     {
+        // [PERBAIKAN] Tambahkan where('status', 'approved') agar toko pending/rejected tidak muncul
+        $query = Umkm::where('status', 'approved')->with(['photos', 'menus']);
 
-        $query = Umkm::query()->with(['photos', 'menus']);
-
-        // Untuk filter melalui Search Bar 
+        // Filter Search Bar 
         if ($request->filled('q')) {
             $search = $request->q;
             $query->where(function ($q) use ($search) {
@@ -48,60 +49,58 @@ class PublicController extends Controller
             });
         }
 
-
-        // Untuk filter kategori
+        // Filter Kategori
         if ($request->has('categories')) {
             $query->whereIn('kategori', $request->categories);
         }
 
-        // Untuk filter lokasi (filter jarak terdekat dari lokasi buyer belum)
+        // Filter Lokasi
         if ($request->filled('location') && $request->location != 'Semua Lokasi') {
             $query->where('alamat', 'like', "%{$request->location}%");
         }
 
-        // Untuk filter sorting 
+        // [PERBAIKAN] Logika Sorting (Termasuk Rating Tertinggi)
         if ($request->sort == 'Terbaru') {
             $query->latest();
         } elseif ($request->sort == 'Terlama') {
             $query->oldest();
+        } elseif ($request->sort == 'Rating Tertinggi') {
+            $query->orderByDesc('rating'); // Sort berdasarkan bintang tertinggi
         } else {
-            $query->latest();
+            $query->latest(); // Default
         }
 
-        $umkms = $query->with(['photos', 'menus'])
-            ->paginate(9)
-            ->withQueryString();
+        $umkms = $query->paginate(9)->withQueryString();
 
         return view('jelajah', compact('umkms'));
     }
 
     public function direktori(Request $request)
     {
-        // Logika mirip dengan 'jelajah', tapi mungkin tampilannya beda (List View / Grid View khusus UMKM)
-        // Untuk sementara, kita bisa reuse view 'jelajah' atau buat view baru 'umkm.index'
-
-        $query = \App\Models\Umkm::where('status', 'approved');
+        // [PERBAIKAN] Pastikan hanya mengambil yang approved
+        $query = Umkm::where('status', 'approved');
 
         if ($request->has('q')) {
             $search = $request->q;
-            $query->where('nama_usaha', 'LIKE', "%{$search}%")
-                ->orWhere('deskripsi', 'LIKE', "%{$search}%");
+            $query->where(function($q) use ($search) {
+                $q->where('nama_usaha', 'LIKE', "%{$search}%")
+                  ->orWhere('deskripsi', 'LIKE', "%{$search}%");
+            });
         }
 
         $umkms = $query->paginate(12);
 
-        // Kamu bisa buat view baru: resources/views/pages/umkm/index.blade.php
-        // Atau sementara pakai view jelajah
+        // Menggunakan view jelajah sebagai template
         return view('jelajah', compact('umkms'));
     }
 
     public function category(Request $request, $slug)
     {
-        $category = $slug;
-        $query = Umkm::query()->with(['photos', 'menus']);
+        // [PERBAIKAN] Tambahkan where('status', 'approved')
+        $query = Umkm::where('status', 'approved')->with(['photos', 'menus']);
 
-        // Filter berdasarkan kategori dari URL
-        $query->where('kategori', $category);
+        // Filter berdasarkan kategori dari URL (Slug)
+        $query->where('kategori', $slug);
 
         // Filter Search (tetap memungkinkan pencarian dalam kategori)
         if ($request->filled('q')) {
@@ -122,17 +121,19 @@ class PublicController extends Controller
             $query->where('alamat', 'like', "%{$request->location}%");
         }
 
-        // Sorting
+        // [PERBAIKAN] Logika Sorting (Termasuk Rating Tertinggi)
         if ($request->sort == 'Terbaru') {
             $query->latest();
         } elseif ($request->sort == 'Terlama') {
             $query->oldest();
+        } elseif ($request->sort == 'Rating Tertinggi') {
+            $query->orderByDesc('rating'); // Sort berdasarkan bintang tertinggi
         } else {
             $query->latest();
         }
 
         $umkms = $query->paginate(9)->withQueryString();
 
-        return view('kategori_detail', compact('umkms', 'category'));
+        return view('kategori_detail', compact('umkms', 'slug')); // Mengirim variable slug sebagai kategori
     }
 }

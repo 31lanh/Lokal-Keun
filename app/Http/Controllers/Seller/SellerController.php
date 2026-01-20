@@ -244,7 +244,7 @@ class SellerController extends Controller
     }
 
     /**
-     * Hapus Foto Galeri (DIPERBAIKI: Support AJAX JSON)
+     * Hapus Foto Galeri
      */
     public function deletePhoto(Request $request, $photoId)
     {
@@ -260,8 +260,6 @@ class SellerController extends Controller
 
         $photo->delete();
 
-        // 1. Cek jika request adalah AJAX (wantsJson atau header X-Requested-With)
-        // Ini yang memperbaiki error "kesalahan koneksi" di frontend
         if ($request->ajax() || $request->wantsJson() || $request->header('X-Requested-With') === 'XMLHttpRequest') {
             return response()->json([
                 'success' => true,
@@ -269,7 +267,6 @@ class SellerController extends Controller
             ]);
         }
 
-        // 2. Fallback untuk request biasa (Redirect)
         return back()->with('success', 'Foto berhasil dihapus.');
     }
 
@@ -310,7 +307,6 @@ class SellerController extends Controller
             $existingBanner = UmkmPhoto::where('umkm_id', $umkm->id)->where('is_primary', true)->first();
             
             if ($existingBanner) {
-                 // Hapus file lama jika perlu
                  $existingBanner->update(['photo_path' => $bannerPath, 'photo_url' => Storage::url($bannerPath)]);
             } else {
                  UmkmPhoto::create([
@@ -324,5 +320,30 @@ class SellerController extends Controller
         }
 
         return redirect()->route('seller.dashboard')->with('success', 'Tampilan toko diperbarui!');
+    }
+
+    /**
+     * [BARU] SWITCH ROLE ACTION
+     * Mengubah role user dari Pembeli menjadi Penjual
+     */
+    public function switchRole()
+    {
+        $user = auth()->user();
+
+        // Security Check: Hanya pembeli yang boleh akses ini
+        if ($user->role !== 'pembeli') {
+            return redirect()->back(); 
+        }
+
+        try {
+            // 1. Ubah role jadi penjual
+            $user->update(['role' => 'penjual']);
+
+            // 2. Direct ke halaman pendaftaran UMKM (daftar.blade.php)
+            return redirect()->route('seller.daftar')->with('success', 'Akun berhasil diupgrade! Silakan lengkapi data usaha Anda.');
+
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Gagal mengubah role.');
+        }
     }
 }

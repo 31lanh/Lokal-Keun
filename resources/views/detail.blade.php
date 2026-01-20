@@ -3,10 +3,10 @@
 @section('content')
     {{-- 
         SETUP ALPINE DATA:
-        activeTab: Menentukan konten mana yang tampil ('about', 'products', 'gallery', 'reviews')
+        Mengecek session 'active_tab'. Jika ada (dari controller), pakai itu. Jika tidak, default 'about'.
     --}}
     <div x-data="{ 
-            activeTab: 'about',
+            activeTab: '{{ session('active_tab', 'about') }}',
             switchTab(tabName) {
                 this.activeTab = tabName;
                 document.getElementById('profil-tabs').scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -88,7 +88,6 @@
                 {{-- NAVIGASI TAB (STICKY & INTERACTIVE) --}}
                 <div class="border-t border-gray-100 dark:border-gray-700 sticky top-[80px] bg-white dark:bg-gray-800 z-30 transition-all" id="profil-tabs">
                     <div class="flex overflow-x-auto no-scrollbar px-6 gap-8">
-                        {{-- Button Tab menggunakan Alpine @click --}}
                         <button @click="activeTab = 'about'" 
                                 :class="activeTab === 'about' ? 'text-primary-orange border-primary-orange' : 'text-gray-500 hover:text-gray-900 border-transparent'"
                                 class="py-4 text-sm font-bold border-b-2 transition-colors whitespace-nowrap">
@@ -119,7 +118,7 @@
                 {{-- LEFT CONTENT (Dynamic Content based on Tab) --}}
                 <div class="lg:col-span-8 min-h-[500px]">
 
-                    {{-- TAB 1: TENTANG (Berisi Deskripsi + Preview Menu + Preview Galeri) --}}
+                    {{-- TAB 1: TENTANG --}}
                     <div x-show="activeTab === 'about'" 
                          x-transition:enter="transition ease-out duration-300 transform"
                          x-transition:enter-start="opacity-0 translate-y-4"
@@ -135,7 +134,7 @@
                                 <p class="whitespace-pre-line">{{ $umkm->deskripsi }}</p>
                             </div>
 
-                            {{-- Highlight Info (IMPROVED DESIGN) --}}
+                            {{-- Highlight Info --}}
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <div class="flex items-center gap-4 p-4 rounded-xl bg-gradient-to-br from-blue-50 to-blue-100/50 dark:from-blue-900/20 dark:to-blue-800/10 border border-blue-100 dark:border-blue-800 hover:shadow-md transition-shadow">
                                     <div class="size-12 rounded-full bg-blue-500 text-white flex items-center justify-center shrink-0 shadow-lg shadow-blue-500/30">
@@ -187,7 +186,6 @@
                             </div>
                             @if($umkm->menus->count() > 3)
                                 <div class="mt-6 text-center border-t border-gray-100 dark:border-gray-700 pt-4">
-                                    {{-- Tombol Switch Tab --}}
                                     <button @click="switchTab('products')" class="inline-flex items-center gap-2 px-6 py-2.5 rounded-full bg-orange-50 text-primary-orange font-bold text-sm hover:bg-orange-100 transition-colors">
                                         Lihat {{ $umkm->menus->count() }} Menu Lengkap
                                         <span class="material-symbols-outlined text-sm">arrow_forward</span>
@@ -215,7 +213,6 @@
                             </div>
                             @if($umkm->photos->count() > 4)
                                 <div class="mt-6 text-center border-t border-gray-100 dark:border-gray-700 pt-4">
-                                    {{-- Tombol Switch Tab --}}
                                     <button @click="switchTab('gallery')" class="inline-flex items-center gap-2 px-6 py-2.5 rounded-full bg-orange-50 text-primary-orange font-bold text-sm hover:bg-orange-100 transition-colors">
                                         Lihat {{ $umkm->photos->count() }} Foto Lengkap
                                         <span class="material-symbols-outlined text-sm">grid_view</span>
@@ -225,7 +222,7 @@
                         </section>
                     </div>
 
-                    {{-- TAB 2: SEMUA MENU (Full Page Slide Effect) --}}
+                    {{-- TAB 2: SEMUA MENU --}}
                     <div x-show="activeTab === 'products'" style="display: none;"
                          x-transition:enter="transition ease-out duration-300 transform"
                          x-transition:enter-start="opacity-0 translate-x-10"
@@ -236,7 +233,6 @@
                                 <h3 class="text-xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
                                     <span class="material-symbols-outlined text-primary-orange">restaurant_menu</span> Semua Menu ({{ $umkm->menus->count() }})
                                 </h3>
-                                {{-- Tombol Back to About --}}
                                 <button @click="activeTab = 'about'" class="text-sm text-gray-500 hover:text-primary-orange flex items-center gap-1 font-semibold">
                                     <span class="material-symbols-outlined text-lg">arrow_back</span> Kembali
                                 </button>
@@ -263,7 +259,7 @@
                         </div>
                     </div>
 
-                    {{-- TAB 3: SEMUA GALERI (Full Page Slide Effect) --}}
+                    {{-- TAB 3: SEMUA GALERI --}}
                     <div x-show="activeTab === 'gallery'" style="display: none;"
                          x-transition:enter="transition ease-out duration-300 transform"
                          x-transition:enter-start="opacity-0 translate-x-10"
@@ -290,49 +286,97 @@
                         </div>
                     </div>
 
-                    {{-- TAB 4: ULASAN --}}
+                    {{-- TAB 4: ULASAN (UPDATED) --}}
                     <div x-show="activeTab === 'reviews'" style="display: none;"
                          x-transition:enter="transition ease-out duration-300 transform"
                          x-transition:enter-start="opacity-0 translate-y-4"
                          x-transition:enter-end="opacity-100 translate-y-0">
+                        
                         <section class="bg-white dark:bg-gray-800 rounded-2xl p-6 md:p-8 shadow-sm border border-gray-200 dark:border-gray-700">
                             <div class="flex items-center justify-between mb-6 pb-3 border-b border-gray-100 dark:border-gray-700">
                                 <h3 class="text-lg font-bold text-gray-900 dark:text-white flex items-center gap-2">
-                                    <span class="material-symbols-outlined text-primary-orange">reviews</span> Ulasan & Rating
+                                    <span class="material-symbols-outlined text-primary-orange">reviews</span> Ulasan ({{ $umkm->total_reviews }})
                                 </h3>
                             </div>
-                            <div class="text-center py-10">
+
+                            {{-- Statistik Rating --}}
+                            <div class="text-center py-6 border-b border-gray-100 dark:border-gray-700 mb-8">
                                 <div class="text-6xl font-extrabold text-gray-900 dark:text-white mb-2">{{ $umkm->rating ?? '0.0' }}</div>
-                                <div class="flex justify-center text-amber-400 mb-6 gap-1">
+                                <div class="flex justify-center text-amber-400 mb-2 gap-1">
                                     @for ($i = 1; $i <= 5; $i++)
                                         <span class="material-symbols-outlined filled text-3xl">star{{ $i > ($umkm->rating ?? 0) ? '_border' : '' }}</span>
                                     @endfor
                                 </div>
-                                @if ($umkm->maps_link)
-                                    <a href="{{ $umkm->maps_link }}" target="_blank" class="inline-flex items-center gap-2 px-8 py-4 rounded-xl bg-blue-600 text-white font-bold text-sm hover:bg-blue-700 shadow-lg hover:shadow-blue-500/30 transition-all">
-                                        <span class="material-symbols-outlined">open_in_new</span>
-                                        Lihat Ulasan di Google Maps
-                                    </a>
-                                @else
-                                    <p class="text-gray-400 text-sm italic">Link Google Maps belum tersedia.</p>
-                                @endif
+                                <p class="text-gray-500 text-sm">Berdasarkan {{ $umkm->total_reviews }} ulasan</p>
+                            </div>
+
+                            {{-- Daftar Ulasan --}}
+                            <div class="space-y-6">
+                                @forelse($umkm->reviews as $review)
+                                    <div class="flex gap-4 items-start">
+                                        {{-- Avatar User --}}
+                                        <div class="shrink-0">
+                                            @if($review->user->profile_photo_path)
+                                                 <img src="{{ asset('storage/' . $review->user->profile_photo_path) }}" class="size-10 rounded-full object-cover border border-gray-200">
+                                            @else
+                                                 <div class="size-10 rounded-full bg-gradient-to-br from-primary-orange to-orange-400 text-white flex items-center justify-center font-bold text-sm">
+                                                     {{ substr($review->user->name, 0, 1) }}
+                                                 </div>
+                                            @endif
+                                        </div>
+
+                                        {{-- Konten Ulasan --}}
+                                        <div class="flex-1">
+                                            <div class="flex justify-between items-start">
+                                                <div>
+                                                    <h5 class="font-bold text-gray-900 dark:text-white text-sm">{{ $review->user->name }}</h5>
+                                                    <div class="flex items-center gap-2 mt-1">
+                                                        <div class="flex text-amber-400 text-xs">
+                                                            @for($r=1; $r<=5; $r++)
+                                                                <span class="material-symbols-outlined filled text-[14px]">star{{ $r > $review->rating ? '_border' : '' }}</span>
+                                                            @endfor
+                                                        </div>
+                                                        <span class="text-xs text-gray-400">• {{ $review->created_at->diffForHumans() }}</span>
+                                                    </div>
+                                                </div>
+
+                                                {{-- Tombol Hapus --}}
+                                                @if(auth()->id() === $review->user_id)
+                                                    <form action="{{ route('reviews.destroy', $review->id) }}" method="POST" onsubmit="return confirm('Hapus ulasan ini?')">
+                                                        @csrf
+                                                        @method('DELETE')
+                                                        <button type="submit" class="text-red-400 hover:text-red-600 p-1 transition-colors" title="Hapus Ulasan">
+                                                            <span class="material-symbols-outlined text-lg">delete</span>
+                                                        </button>
+                                                    </form>
+                                                @endif
+                                            </div>
+                                            
+                                            <p class="text-gray-600 dark:text-gray-300 text-sm mt-3 leading-relaxed">
+                                                {{ $review->comment }}
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <hr class="border-gray-100 dark:border-gray-700 last:hidden">
+                                @empty
+                                    <div class="text-center py-10">
+                                        <div class="size-16 bg-gray-50 dark:bg-gray-700/50 rounded-full flex items-center justify-center mx-auto mb-3 text-gray-300">
+                                            <span class="material-symbols-outlined text-3xl">chat_bubble_outline</span>
+                                        </div>
+                                        <p class="text-gray-500">Belum ada ulasan. Jadilah yang pertama mereview!</p>
+                                    </div>
+                                @endforelse
                             </div>
                         </section>
                     </div>
 
                 </div>
 
-{{-- RIGHT SIDEBAR (4 Kolom - Sticky) --}}
+                {{-- RIGHT SIDEBAR (4 Kolom - Sticky) --}}
                 <div class="lg:col-span-4 relative">
-                    {{-- 
-                        LOGIKA STICKY:
-                        1. sticky: Mengaktifkan fitur sticky positioning.
-                        2. top-28: Jarak dari atas browser (sekitar 112px) supaya tidak ketutup Header.
-                        3. z-10: Memastikan posisinya di atas elemen dekoratif lain jika ada.
-                    --}}
                     <div class="sticky top-28 space-y-6 z-10">
                         
-                        {{-- Card Info Praktis --}}
+                        {{-- 1. CARD INFO PRAKTIS --}}
                         <div class="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-sm border border-gray-200 dark:border-gray-700">
                             <h4 class="font-bold text-gray-900 dark:text-white mb-4 pb-3 border-b border-gray-100 dark:border-gray-700 flex items-center gap-2">
                                 <span class="material-symbols-outlined text-blue-500">info</span> Info Praktis
@@ -340,8 +384,18 @@
 
                             {{-- Jam Buka --}}
                             @php
-                                $now = now()->format('H:i');
-                                $isOpen = $umkm->jam_buka && $umkm->jam_tutup && $now >= $umkm->jam_buka && $now <= $umkm->jam_tutup;
+                                $now = now()->setTimezone('Asia/Jakarta');
+                                $currentTime = $now->format('H:i');
+                                $isOpen = false;
+                                if ($umkm->jam_buka && $umkm->jam_tutup) {
+                                    $buka = \Carbon\Carbon::parse($umkm->jam_buka)->format('H:i');
+                                    $tutup = \Carbon\Carbon::parse($umkm->jam_tutup)->format('H:i');
+                                    if ($tutup < $buka) {
+                                        $isOpen = $currentTime >= $buka || $currentTime <= $tutup;
+                                    } else {
+                                        $isOpen = $currentTime >= $buka && $currentTime <= $tutup;
+                                    }
+                                }
                             @endphp
                             <div class="mb-6">
                                 <div class="flex justify-between items-center mb-2">
@@ -382,6 +436,71 @@
                             </div>
                         </div>
 
+                        {{-- 2. CARD INPUT RATING --}}
+                        <div class="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-sm border border-gray-200 dark:border-gray-700">
+                            <h4 class="font-bold text-gray-900 dark:text-white mb-4 pb-3 border-b border-gray-100 dark:border-gray-700 flex items-center gap-2">
+                                <span class="material-symbols-outlined text-amber-500">rate_review</span> Beri Ulasan
+                            </h4>
+
+                            @auth
+                                <form action="{{ route('reviews.store', $umkm->id) }}" method="POST" x-data="{ rating: 0, hoverRating: 0 }">
+                                    @csrf
+                                    
+                                    {{-- Input Bintang Interaktif --}}
+                                    <div class="flex flex-col items-center mb-4">
+                                        <p class="text-sm text-gray-500 mb-2">Bagaimana pengalaman Anda?</p>
+                                        <div class="flex gap-1" @mouseleave="hoverRating = 0">
+                                            @for ($i = 1; $i <= 5; $i++)
+                                                <button type="button" 
+                                                        @click="rating = {{ $i }}" 
+                                                        @mouseover="hoverRating = {{ $i }}"
+                                                        class="focus:outline-none transition-transform hover:scale-110 duration-200">
+                                                    <span class="material-symbols-outlined text-3xl"
+                                                          :class="(hoverRating >= {{ $i }} || (!hoverRating && rating >= {{ $i }})) ? 'text-amber-400 filled' : 'text-gray-300'">
+                                                        star
+                                                    </span>
+                                                </button>
+                                            @endfor
+                                        </div>
+                                        <input type="hidden" name="rating" :value="rating" required>
+                                        
+                                        <div class="h-5 mt-1">
+                                            <span x-show="rating == 1 || hoverRating == 1" class="text-xs font-bold text-red-500">Sangat Buruk</span>
+                                            <span x-show="rating == 2 || hoverRating == 2" class="text-xs font-bold text-orange-500">Buruk</span>
+                                            <span x-show="rating == 3 || hoverRating == 3" class="text-xs font-bold text-yellow-500">Cukup</span>
+                                            <span x-show="rating == 4 || hoverRating == 4" class="text-xs font-bold text-lime-500">Bagus</span>
+                                            <span x-show="rating == 5 || hoverRating == 5" class="text-xs font-bold text-green-600">Sangat Bagus!</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="mb-4">
+                                        <label for="comment" class="sr-only">Komentar</label>
+                                        <textarea name="comment" id="comment" rows="3" 
+                                                  class="w-full rounded-xl border-gray-200 dark:border-gray-600 dark:bg-gray-700/50 text-sm focus:border-primary-orange focus:ring-primary-orange placeholder:text-gray-400"
+                                                  placeholder="Tulis ulasan Anda di sini... (Opsional)"></textarea>
+                                    </div>
+
+                                    <button type="submit" 
+                                            :disabled="rating === 0"
+                                            :class="rating === 0 ? 'opacity-50 cursor-not-allowed bg-gray-400' : 'bg-primary-orange hover:bg-orange-600 shadow-lg shadow-orange-500/30'"
+                                            class="w-full py-2.5 rounded-xl text-white font-bold text-sm transition-all flex items-center justify-center gap-2">
+                                        <span class="material-symbols-outlined text-lg">send</span> Kirim Ulasan
+                                    </button>
+                                </form>
+                            @else
+                                <div class="text-center py-6">
+                                    <div class="size-12 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center mx-auto mb-3 text-gray-400">
+                                        <span class="material-symbols-outlined text-2xl">lock</span>
+                                    </div>
+                                    <p class="text-sm text-gray-600 dark:text-gray-300 mb-4">
+                                        Silakan login untuk memberikan ulasan pada UMKM ini.
+                                    </p>
+                                    <a href="{{ route('login') }}" class="block w-full py-2.5 rounded-xl border border-primary-orange text-primary-orange font-bold text-sm hover:bg-orange-50 transition-colors">
+                                        Login Sekarang
+                                    </a>
+                                </div>
+                            @endauth
+                        </div>
                     </div>
                 </div>
 

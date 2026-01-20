@@ -79,7 +79,8 @@ class Umkm extends Model
     {
         return $this->hasMany(UmkmPhoto::class, 'umkm_id');
     }
-    // [BARU] Relasi ke Menu
+
+    // Relasi ke Menu
     public function menus()
     {
         return $this->hasMany(UmkmMenu::class, 'umkm_id');
@@ -89,6 +90,37 @@ class Umkm extends Model
     {
         return $this->hasOne(UmkmPhoto::class, 'umkm_id')->where('is_primary', true);
     }
+
+    /**
+     * [BARU] Relasi ke Reviews
+     * Mengambil ulasan terkait UMKM ini, diurutkan dari yang terbaru.
+     */
+    public function reviews()
+    {
+        return $this->hasMany(Review::class, 'umkm_id')->latest();
+    }
+
+    // --- LOGIC / ACTIONS ---
+
+    /**
+     * [BARU] Hitung Ulang Rating
+     * Fungsi ini dipanggil setiap kali ada review baru masuk atau dihapus.
+     */
+    public function refreshRating()
+    {
+        // 1. Hitung rata-rata dari tabel reviews
+        $avg = $this->reviews()->avg('rating');
+        
+        // 2. Hitung jumlah total ulasan
+        $count = $this->reviews()->count();
+
+        // 3. Update kolom di tabel umkm
+        $this->update([
+            'rating' => $avg ? number_format($avg, 1) : 0,
+            'total_reviews' => $count
+        ]);
+    }
+
     // --- SCOPES & HELPERS ---
 
     public function scopeApproved($query)
@@ -104,6 +136,4 @@ class Umkm extends Model
         }
         return 'https://wa.me/' . $number;
     }
-
-    // ... method lain (isApproved, etc) bisa dibiarkan ...
 }
