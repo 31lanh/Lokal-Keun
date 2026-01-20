@@ -15,16 +15,6 @@
                     {{ now()->translatedFormat('l, d F Y') }}
                 </p>
             </div>
-            <div class="hidden md:flex items-center gap-3">
-                <div
-                    class="bg-gradient-to-br from-orange-500 to-red-500 text-white px-6 py-3 rounded-xl shadow-lg shadow-orange-200">
-                    <p class="text-xs opacity-90 font-medium">Status Sistem</p>
-                    <p class="text-lg font-bold flex items-center gap-2">
-                        <span class="w-2 h-2 bg-green-300 rounded-full animate-pulse"></span>
-                        Aktif
-                    </p>
-                </div>
-            </div>
         </div>
     </div>
 
