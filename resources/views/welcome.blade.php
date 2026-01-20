@@ -98,7 +98,7 @@
                 @endphp
 
                 @foreach ($categories as $cat)
-                    <a href="{{ route('jelajah', ['kategori' => $cat['slug']]) }}" class="group relative">
+                    <a href="{{ route('kategori.detail', $cat['slug']) }}" class="group relative">
                         <div
                             class="absolute inset-0 bg-gradient-to-br from-primary-{{ $cat['color'] }} to-{{ $cat['color'] }}-dark rounded-2xl opacity-0 group-hover:opacity-10 transition-opacity">
                         </div>
