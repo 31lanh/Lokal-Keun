@@ -121,9 +121,6 @@ Route::get('/', function () {
             return redirect()->route('admin.dashboard');
         } elseif ($role === 'penjual') {
             return redirect()->route('seller.dashboard');
-        } elseif ($role === 'pembeli') {
-            // [FIXED] Pembeli diarahkan ke dashboard khusus pembeli
-            return redirect()->route('buyer.dashboard');
         }
     }
     // Jika tamu (belum login), tampilkan landing page
