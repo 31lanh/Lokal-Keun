@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Str;
+use App\Models\UmkmVisit;
 
 class Umkm extends Model
 {
@@ -65,6 +66,28 @@ class Umkm extends Model
 
     // --- RELASI ---
 
+
+    // Relasi ke Visits
+    public function visits()
+    {
+        return $this->hasMany(UmkmVisit::class);
+    }
+
+    // Helper untuk ambil total kunjungan
+    public function getTotalVisitsAttribute()
+    {
+        return $this->visits()->count();
+    }
+
+    // Helper untuk kunjungan bulan ini (untuk grafik/stats bulanan)
+    public function getMonthlyVisitsAttribute()
+    {
+        return $this->visits()
+            ->whereMonth('created_at', now()->month)
+            ->whereYear('created_at', now()->year)
+            ->count();
+    }
+
     public function user()
     {
         return $this->belongsTo(User::class);
@@ -118,7 +141,7 @@ class Umkm extends Model
     {
         // 1. Hitung rata-rata dari tabel reviews
         $avg = $this->reviews()->avg('rating');
-        
+
         // 2. Hitung jumlah total ulasan
         $count = $this->reviews()->count();
 

@@ -83,7 +83,7 @@ class SellerController extends Controller
                         'umkm_id'    => $umkm->id,
                         'photo_path' => 'umkm/photos/' . $filename,
                         'photo_url'  => '/umkm/photos/' . $filename,
-                        'is_primary' => $index === 0, 
+                        'is_primary' => $index === 0,
                         'order'      => $index,
                     ]);
                 }
@@ -131,7 +131,12 @@ class SellerController extends Controller
         }
 
         $umkm = auth()->user()->umkm->load(['menus', 'photos']);
-        return view('penjual.dashboard', compact('umkm'));
+
+        // Ambil data kunjungan (Total & Bulan Ini)
+        $totalVisits = $umkm->total_visits;
+        $monthlyVisits = $umkm->monthly_visits;
+
+        return view('penjual.dashboard', compact('umkm', 'totalVisits', 'monthlyVisits'));
     }
 
     /**
@@ -291,31 +296,31 @@ class SellerController extends Controller
             'logo' => 'nullable|image',
             'banner' => 'nullable|image',
         ]);
-        
+
         $user = auth()->user();
         $umkm = $user->umkm;
 
         if ($request->hasFile('logo')) {
-             $path = $request->file('logo')->store('profile-photos', 'public');
-             $user->update(['profile_photo_path' => $path]);
+            $path = $request->file('logo')->store('profile-photos', 'public');
+            $user->update(['profile_photo_path' => $path]);
         }
 
         if ($request->hasFile('banner')) {
             $bannerFile = $request->file('banner');
             $bannerPath = $bannerFile->store('umkm-photos', 'public');
-            
+
             $existingBanner = UmkmPhoto::where('umkm_id', $umkm->id)->where('is_primary', true)->first();
-            
+
             if ($existingBanner) {
-                 $existingBanner->update(['photo_path' => $bannerPath, 'photo_url' => Storage::url($bannerPath)]);
+                $existingBanner->update(['photo_path' => $bannerPath, 'photo_url' => Storage::url($bannerPath)]);
             } else {
-                 UmkmPhoto::create([
+                UmkmPhoto::create([
                     'umkm_id' => $umkm->id,
                     'photo_path' => $bannerPath,
                     'photo_url' => Storage::url($bannerPath),
                     'is_primary' => true,
                     'order' => 0
-                 ]);
+                ]);
             }
         }
 
@@ -332,7 +337,7 @@ class SellerController extends Controller
 
         // Security Check: Hanya pembeli yang boleh akses ini
         if ($user->role !== 'pembeli') {
-            return redirect()->back(); 
+            return redirect()->back();
         }
 
         try {
@@ -341,7 +346,6 @@ class SellerController extends Controller
 
             // 2. Direct ke halaman pendaftaran UMKM (daftar.blade.php)
             return redirect()->route('seller.daftar')->with('success', 'Akun berhasil diupgrade! Silakan lengkapi data usaha Anda.');
-
         } catch (\Exception $e) {
             return redirect()->back()->with('error', 'Gagal mengubah role.');
         }
