@@ -1,8 +1,8 @@
 @extends('layouts.app')
 
 @section('content')
+    {{-- 1. SECTION BERANDA --}}
     <section id="beranda" class="relative min-h-screen flex items-center justify-center overflow-hidden pt-16">
-        {{-- ... (Isi section beranda sama seperti sebelumnya) ... --}}
         <div class="absolute inset-0 z-0">
             <div class="absolute top-20 right-10 w-72 h-72 bg-primary-orange/20 rounded-full blur-3xl animate-pulse-slow"></div>
             <div class="absolute bottom-20 left-10 w-96 h-96 bg-primary-green/20 rounded-full blur-3xl animate-pulse-slow" style="animation-delay: 1s;"></div>
@@ -67,143 +67,33 @@
         </div>
     </section>
 
-    <section id="tentang"
-    class="min-h-screen flex items-center justify-center py-20 bg-background-light dark:bg-background-dark overflow-hidden">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
-        <div class="grid lg:grid-cols-2 gap-16 items-center">
-            <div class="relative order-2 lg:order-1">
-                <div class="absolute -top-4 -left-4 w-72 h-72 bg-primary-green/20 rounded-full blur-3xl"></div>
-
-                <div
-                    class="relative rounded-3xl overflow-hidden shadow-2xl border-4 border-white dark:border-surface-dark transform rotate-[-2deg] hover:rotate-0 transition-transform duration-500">
-                    <img src="https://images.unsplash.com/photo-1576669801775-ffdeb4403cb0?q=80&w=1000&auto=format&fit=crop"
-                        alt="Tentang Lokal-keun" class="w-full h-full object-cover">
-                </div>
-
-                <div
-                    class="absolute -bottom-6 -right-6 bg-white dark:bg-surface-dark p-6 rounded-2xl shadow-xl animate-float">
-                    <div class="flex items-center gap-4">
-                        <div class="p-3 bg-orange-light rounded-full text-primary-orange">
-                            <span class="material-symbols-outlined">diversity_3</span>
-                        </div>
-                        <div>
-                            <p class="text-xs text-gray-500">Komunitas</p>
-                            <p class="font-bold text-gray-900 dark:text-white">{{ $stats['total_umkm'] }}+ Mitra</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="order-1 lg:order-2">
-                <div
-                    class="inline-flex items-center gap-2 px-3 py-1 bg-green-light dark:bg-green-900/30 rounded-full mb-4">
-                    <span class="text-xs font-bold text-primary-green uppercase tracking-wider">Tentang Kami</span>
-                </div>
-
-                <h2 class="text-4xl font-bold mb-6">Mengenal Lebih Dekat <br><span
-                        class="gradient-text">Lokal-keun</span></h2>
-
-                <p class="text-gray-600 dark:text-gray-300 text-lg mb-6 leading-relaxed">
-                    <strong>Lokal-Keun</strong> hadir sebagai platform untuk mendukung dan mempromosikan UMKM lokal
-                    Indonesia. Kami percaya setiap produk lokal memiliki cerita dan kualitas yang layak dikenal lebih
-                    luas.
-                    Bersama tim yang berdedikasi, kami berupaya menghubungkan pelaku
-                    UMKM dengan konsumen yang menghargai karya asli Indonesia, sehingga setiap transaksi bukan hanya
-                    soal jual beli, tapi juga tentang mendukung pertumbuhan komunitas dan kreativitas lokal.
-                </p>
-
-                <ul class="space-y-4 mb-8">
-                    <li class="flex items-start gap-3">
-                        <span class="material-symbols-outlined text-primary-orange mt-1">check_circle</span>
-                        <div>
-                            <h4 class="font-bold text-gray-900 dark:text-white">Kurasi Kualitas Terbaik</h4>
-                            <p class="text-sm text-gray-500">Hanya produk lokal pilihan yang telah lolos standar
-                                kualitas kami.</p>
-                        </div>
-                    </li>
-                    <li class="flex items-start gap-3">
-                        <span class="material-symbols-outlined text-primary-green mt-1">handshake</span>
-                        <div>
-                            <h4 class="font-bold text-gray-900 dark:text-white">Pemberdayaan Ekonomi</h4>
-                            <p class="text-sm text-gray-500">Setiap transaksi berdampak langsung pada kesejahteraan
-                                pelaku UMKM.</p>
-                        </div>
-                    </li>
-                </ul>
-            </div>
-        </div>
-    </div>
-</section>
-
-    <section id="kategori" class="min-h-screen flex items-center justify-center py-20 bg-white dark:bg-surface-dark">
-        {{-- ... (Isi section kategori sama seperti sebelumnya) ... --}}
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
-            <div class="text-center mb-12">
-                <h2 class="text-4xl font-bold mb-4">Kategori <span class="gradient-text">Pilihan</span></h2>
-                <p class="text-gray-600 dark:text-gray-300">Jelajahi beragam produk lokal berkualitas</p>
-            </div>
-
-            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
-                @php
-                    $categories = [
-                        ['name' => 'Kuliner', 'icon' => 'restaurant', 'color' => 'orange', 'slug' => 'kuliner'],
-                        ['name' => 'Fashion', 'icon' => 'checkroom', 'color' => 'green', 'slug' => 'fashion'],
-                        ['name' => 'Kerajinan', 'icon' => 'palette', 'color' => 'orange', 'slug' => 'kerajinan'],
-                        ['name' => 'Jasa', 'icon' => 'design_services', 'color' => 'green', 'slug' => 'jasa'],
-                        ['name' => 'Kecantikan', 'icon' => 'spa', 'color' => 'orange', 'slug' => 'kecantikan'],
-                        ['name' => 'Pertanian', 'icon' => 'agriculture', 'color' => 'green', 'slug' => 'pertanian'],
-                    ];
-                @endphp
-
-                @foreach ($categories as $cat)
-                    <a href="{{ route('kategori.detail', $cat['slug']) }}" class="group relative">
-                        <div class="absolute inset-0 bg-gradient-to-br from-primary-{{ $cat['color'] }} to-{{ $cat['color'] }}-dark rounded-2xl opacity-0 group-hover:opacity-10 transition-opacity"></div>
-                        <div class="relative p-6 bg-{{ $cat['color'] }}-light dark:bg-{{ $cat['color'] }}-900/20 rounded-2xl text-center transform group-hover:scale-105 group-hover:shadow-xl transition-all">
-                            <div class="size-16 mx-auto mb-4 bg-gradient-to-br from-primary-{{ $cat['color'] }} to-{{ $cat['color'] }}-dark rounded-xl flex items-center justify-center shadow-lg">
-                                <span class="material-symbols-outlined text-white text-3xl">{{ $cat['icon'] }}</span>
-                            </div>
-                            <span class="font-bold text-gray-900 dark:text-white">{{ $cat['name'] }}</span>
-                        </div>
-                    </a>
-                @endforeach
-            </div>
-        </div>
-    </section>
-
-<<<<<<< HEAD
-    <section id="jelajah" class="min-h-screen flex items-center justify-center py-20 bg-background-light dark:bg-background-dark">
-        {{-- ... (Isi section jelajah / UMKM unggulan sama seperti sebelumnya) ... --}}
-=======
-    <section id="tentang"
-        class="min-h-screen flex items-center justify-center py-20 bg-background-light dark:bg-background-dark overflow-hidden">
+    {{-- 2. SECTION TENTANG --}}
+    <section id="tentang" class="min-h-screen flex items-center justify-center py-20 bg-background-light dark:bg-background-dark overflow-hidden">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
             <div class="grid lg:grid-cols-2 gap-16 items-center">
                 <div class="relative order-2 lg:order-1">
                     <div class="absolute -top-4 -left-4 w-72 h-72 bg-primary-green/20 rounded-full blur-3xl"></div>
 
-                    <div
-                        class="relative rounded-3xl overflow-hidden shadow-2xl border-4 border-white dark:border-surface-dark transform rotate-[-2deg] hover:rotate-0 transition-transform duration-500">
+                    <div class="relative rounded-3xl overflow-hidden shadow-2xl border-4 border-white dark:border-surface-dark transform rotate-[-2deg] hover:rotate-0 transition-transform duration-500">
                         <img src="https://images.unsplash.com/photo-1576669801775-ffdeb4403cb0?q=80&w=1000&auto=format&fit=crop"
                             alt="Tentang Lokal-keun" class="w-full h-full object-cover">
                     </div>
 
-                    <div
-                        class="absolute -bottom-6 -right-6 bg-white dark:bg-surface-dark p-6 rounded-2xl shadow-xl animate-float">
+                    <div class="absolute -bottom-6 -right-6 bg-white dark:bg-surface-dark p-6 rounded-2xl shadow-xl animate-float">
                         <div class="flex items-center gap-4">
                             <div class="p-3 bg-orange-light rounded-full text-primary-orange">
                                 <span class="material-symbols-outlined">diversity_3</span>
                             </div>
                             <div>
                                 <p class="text-xs text-gray-500">Komunitas</p>
-                                <p class="font-bold text-gray-900 dark:text-white">1000+ Mitra</p>
+                                <p class="font-bold text-gray-900 dark:text-white">{{ $stats['total_umkm'] }}+ Mitra</p>
                             </div>
                         </div>
                     </div>
                 </div>
 
                 <div class="order-1 lg:order-2">
-                    <div
-                        class="inline-flex items-center gap-2 px-3 py-1 bg-green-light dark:bg-green-900/30 rounded-full mb-4">
+                    <div class="inline-flex items-center gap-2 px-3 py-1 bg-green-light dark:bg-green-900/30 rounded-full mb-4">
                         <span class="text-xs font-bold text-primary-green uppercase tracking-wider">Tentang Kami</span>
                     </div>
 
@@ -242,9 +132,43 @@
         </div>
     </section>
 
-    <section id="jelajah"
-        class="min-h-screen flex items-center justify-center py-20 bg-background-light dark:bg-background-dark">
->>>>>>> 1137acae6c97749d5f9d7ab1a1d3482b5732f3fd
+    {{-- 3. SECTION KATEGORI --}}
+    <section id="kategori" class="min-h-screen flex items-center justify-center py-20 bg-white dark:bg-surface-dark">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
+            <div class="text-center mb-12">
+                <h2 class="text-4xl font-bold mb-4">Kategori <span class="gradient-text">Pilihan</span></h2>
+                <p class="text-gray-600 dark:text-gray-300">Jelajahi beragam produk lokal berkualitas</p>
+            </div>
+
+            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
+                @php
+                    $categories = [
+                        ['name' => 'Kuliner', 'icon' => 'restaurant', 'color' => 'orange', 'slug' => 'kuliner'],
+                        ['name' => 'Fashion', 'icon' => 'checkroom', 'color' => 'green', 'slug' => 'fashion'],
+                        ['name' => 'Kerajinan', 'icon' => 'palette', 'color' => 'orange', 'slug' => 'kerajinan'],
+                        ['name' => 'Jasa', 'icon' => 'design_services', 'color' => 'green', 'slug' => 'jasa'],
+                        ['name' => 'Kecantikan', 'icon' => 'spa', 'color' => 'orange', 'slug' => 'kecantikan'],
+                        ['name' => 'Pertanian', 'icon' => 'agriculture', 'color' => 'green', 'slug' => 'pertanian'],
+                    ];
+                @endphp
+
+                @foreach ($categories as $cat)
+                    <a href="{{ route('kategori.detail', $cat['slug']) }}" class="group relative">
+                        <div class="absolute inset-0 bg-gradient-to-br from-primary-{{ $cat['color'] }} to-{{ $cat['color'] }}-dark rounded-2xl opacity-0 group-hover:opacity-10 transition-opacity"></div>
+                        <div class="relative p-6 bg-{{ $cat['color'] }}-light dark:bg-{{ $cat['color'] }}-900/20 rounded-2xl text-center transform group-hover:scale-105 group-hover:shadow-xl transition-all">
+                            <div class="size-16 mx-auto mb-4 bg-gradient-to-br from-primary-{{ $cat['color'] }} to-{{ $cat['color'] }}-dark rounded-xl flex items-center justify-center shadow-lg">
+                                <span class="material-symbols-outlined text-white text-3xl">{{ $cat['icon'] }}</span>
+                            </div>
+                            <span class="font-bold text-gray-900 dark:text-white">{{ $cat['name'] }}</span>
+                        </div>
+                    </a>
+                @endforeach
+            </div>
+        </div>
+    </section>
+
+    {{-- 4. SECTION JELAJAH (UMKM Unggulan) --}}
+    <section id="jelajah" class="min-h-screen flex items-center justify-center py-20 bg-background-light dark:bg-background-dark">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
             <div class="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-4">
                 <div>
@@ -322,91 +246,90 @@
         </div>
     </section>
 
+    {{-- 5. SECTION GABUNG MITRA --}}
     <section id="gabung-mitra" 
-    class="min-h-screen flex items-center justify-center py-20 bg-white dark:bg-surface-dark"
-    x-data="{ showConfirmModal: false }"> {{-- Inisialisasi Alpine --}}
-    
-<div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
-   <div class="relative bg-gradient-to-br from-primary-orange via-orange-dark to-primary-green rounded-3xl p-10 md:p-12 overflow-hidden shadow-2xl">
-       <div class="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full -mr-20 -mt-20 blur-3xl"></div>
-       <div class="absolute bottom-0 left-0 w-96 h-96 bg-white/10 rounded-full -ml-32 -mb-32 blur-3xl"></div>
+             class="min-h-screen flex items-center justify-center py-20 bg-white dark:bg-surface-dark"
+             x-data="{ showConfirmModal: false }"> 
+             
+        <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
+            <div class="relative bg-gradient-to-br from-primary-orange via-orange-dark to-primary-green rounded-3xl p-10 md:p-12 overflow-hidden shadow-2xl">
+                <div class="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full -mr-20 -mt-20 blur-3xl"></div>
+                <div class="absolute bottom-0 left-0 w-96 h-96 bg-white/10 rounded-full -ml-32 -mb-32 blur-3xl"></div>
 
-       <div class="relative z-10 text-center text-white">
-           <div class="inline-flex items-center gap-2 px-3 py-1.5 bg-white/20 backdrop-blur-sm rounded-full mb-5">
-               <span class="w-2 h-2 bg-white rounded-full animate-pulse"></span>
-               <span class="text-xs font-semibold">Bergabung Sekarang</span>
-           </div>
+                <div class="relative z-10 text-center text-white">
+                    <div class="inline-flex items-center gap-2 px-3 py-1.5 bg-white/20 backdrop-blur-sm rounded-full mb-5">
+                        <span class="w-2 h-2 bg-white rounded-full animate-pulse"></span>
+                        <span class="text-xs font-semibold">Bergabung Sekarang</span>
+                    </div>
 
-           <h2 class="text-4xl md:text-5xl font-extrabold mb-5 leading-tight">
-               Punya Usaha Sendiri?<br />Waktunya Go Digital!
-           </h2>
+                    <h2 class="text-4xl md:text-5xl font-extrabold mb-5 leading-tight">
+                        Punya Usaha Sendiri?<br />Waktunya Go Digital!
+                    </h2>
 
-           <p class="text-lg text-white/90 mb-10 max-w-xl mx-auto">
-               Bergabunglah dengan ribuan UMKM lainnya dan tingkatkan penjualan hingga 300%. Gratis tanpa biaya tersembunyi!
-           </p>
+                    <p class="text-lg text-white/90 mb-10 max-w-xl mx-auto">
+                        Bergabunglah dengan ribuan UMKM lainnya dan tingkatkan penjualan hingga 300%. Gratis tanpa biaya tersembunyi!
+                    </p>
 
-           <div class="flex flex-col sm:flex-row justify-center gap-4 mb-10">
-               
-               @auth
-                   {{-- SKENARIO 2: User Login sebagai PEMBELI --}}
-                   @if(auth()->user()->role === 'pembeli')
-                       <button @click="showConfirmModal = true" 
-                          class="px-8 py-3 bg-white text-primary-orange font-bold rounded-xl hover:bg-gray-100 transition-all transform hover:scale-105 shadow-xl flex items-center justify-center gap-2">
-                           <span class="material-symbols-outlined">store</span>
-                           <span>Daftar Sebagai Mitra</span>
-                       </button>
+                    <div class="flex flex-col sm:flex-row justify-center gap-4 mb-10">
+                        @auth
+                            {{-- SKENARIO 2: User Login sebagai PEMBELI --}}
+                            @if(auth()->user()->role === 'pembeli')
+                                <button @click="showConfirmModal = true" 
+                                   class="px-8 py-3 bg-white text-primary-orange font-bold rounded-xl hover:bg-gray-100 transition-all transform hover:scale-105 shadow-xl flex items-center justify-center gap-2">
+                                    <span class="material-symbols-outlined">store</span>
+                                    <span>Daftar Sebagai Mitra</span>
+                                </button>
 
-                   {{-- SKENARIO 4: User Login sebagai PENJUAL (Sudah Mitra) --}}
-                   @elseif(auth()->user()->role === 'penjual')
-                       <a href="{{ route('seller.dashboard') }}" 
-                          class="px-8 py-3 bg-white text-primary-orange font-bold rounded-xl hover:bg-gray-100 transition-all transform hover:scale-105 shadow-xl flex items-center justify-center gap-2">
-                           <span class="material-symbols-outlined">dashboard</span>
-                           <span>Ke Dashboard Toko</span>
-                       </a>
-                   
-                   {{-- User Login sebagai ADMIN --}}
-                   @elseif(auth()->user()->role === 'admin')
-                       <a href="{{ route('admin.dashboard') }}" 
-                          class="px-8 py-3 bg-white text-primary-orange font-bold rounded-xl hover:bg-gray-100 transition-all shadow-xl">
-                           Ke Dashboard Admin
-                       </a>
-                   @endif
+                            {{-- SKENARIO 4: User Login sebagai PENJUAL (Sudah Mitra) --}}
+                            @elseif(auth()->user()->role === 'penjual')
+                                <a href="{{ route('seller.dashboard') }}" 
+                                   class="px-8 py-3 bg-white text-primary-orange font-bold rounded-xl hover:bg-gray-100 transition-all transform hover:scale-105 shadow-xl flex items-center justify-center gap-2">
+                                    <span class="material-symbols-outlined">dashboard</span>
+                                    <span>Ke Dashboard Toko</span>
+                                </a>
+                            
+                            {{-- User Login sebagai ADMIN --}}
+                            @elseif(auth()->user()->role === 'admin')
+                                <a href="{{ route('admin.dashboard') }}" 
+                                   class="px-8 py-3 bg-white text-primary-orange font-bold rounded-xl hover:bg-gray-100 transition-all shadow-xl">
+                                    Ke Dashboard Admin
+                                </a>
+                            @endif
 
-               @else
-                   {{-- SKENARIO 1: Belum Login (GUEST) -> Ke Register --}}
-                   <a href="{{ route('register') }}" 
-                      class="px-8 py-3 bg-white text-primary-orange font-bold rounded-xl hover:bg-gray-100 transition-all transform hover:scale-105 shadow-xl flex items-center justify-center gap-2">
-                       <span class="material-symbols-outlined">rocket_launch</span>
-                       <span>Daftar Sebagai Mitra</span>
-                   </a>
-               @endauth
+                        @else
+                            {{-- SKENARIO 1: Belum Login (GUEST) -> Ke Register --}}
+                            <a href="{{ route('register') }}" 
+                               class="px-8 py-3 bg-white text-primary-orange font-bold rounded-xl hover:bg-gray-100 transition-all transform hover:scale-105 shadow-xl flex items-center justify-center gap-2">
+                                <span class="material-symbols-outlined">rocket_launch</span>
+                                <span>Daftar Sebagai Mitra</span>
+                            </a>
+                        @endauth
+                    </div>
 
-           </div>
+                    <div class="flex flex-wrap justify-center gap-6 md:gap-8 text-white/90 text-sm">
+                        <div class="flex items-center gap-2">
+                            <span class="material-symbols-outlined">verified</span>
+                            <span class="font-semibold">100% Gratis</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span class="material-symbols-outlined">speed</span>
+                            <span class="font-semibold">Setup 5 Menit</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span class="material-symbols-outlined">support_agent</span>
+                            <span class="font-semibold">Support 24/7</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-           <div class="flex flex-wrap justify-center gap-6 md:gap-8 text-white/90 text-sm">
-               <div class="flex items-center gap-2">
-                   <span class="material-symbols-outlined">verified</span>
-                   <span class="font-semibold">100% Gratis</span>
-               </div>
-               <div class="flex items-center gap-2">
-                   <span class="material-symbols-outlined">speed</span>
-                   <span class="font-semibold">Setup 5 Menit</span>
-               </div>
-               <div class="flex items-center gap-2">
-                   <span class="material-symbols-outlined">support_agent</span>
-                   <span class="font-semibold">Support 24/7</span>
-               </div>
-           </div>
-       </div>
-   </div>
-</div>
+        {{-- INCLUDE POP-UP (Hanya dirender jika user adalah pembeli) --}}
+        @auth
+            @if(auth()->user()->role === 'pembeli')
+                @include('partials.become-seller-modal')
+            @endif
+        @endauth
 
-{{-- INCLUDE POP-UP (Hanya dirender jika user adalah pembeli) --}}
-@auth
-   @if(auth()->user()->role === 'pembeli')
-       @include('partials.become-seller-modal')
-   @endif
-@endauth
-
-</section>
+    </section>
 @endsection
