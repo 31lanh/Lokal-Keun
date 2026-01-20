@@ -14,8 +14,8 @@ class PublicController extends Controller
         // 1. Ambil 4 UMKM Unggulan (Rating tertinggi & Approved)
         $featuredUmkms = Umkm::where('status', 'approved')
             ->with('primaryPhoto')
-            ->orderByDesc('rating') // [PERBAIKAN] Menggunakan sintaks orderByDesc
-            ->orderByDesc('total_reviews') // [TAMBAHAN] Jika rating sama, urutkan berdasarkan jumlah ulasan terbanyak
+            ->orderByDesc('rating')
+            ->orderByDesc('total_reviews')
             ->take(4)
             ->get();
 
@@ -31,7 +31,6 @@ class PublicController extends Controller
 
     public function index(Request $request)
     {
-        // [PERBAIKAN] Tambahkan where('status', 'approved') agar toko pending/rejected tidak muncul
         $query = Umkm::where('status', 'approved')->with(['photos', 'menus']);
 
         // Filter Search Bar 
@@ -59,20 +58,20 @@ class PublicController extends Controller
             $query->where('alamat', 'like', "%{$request->location}%");
         }
 
-        // [PERBAIKAN] Logika Sorting (Termasuk Rating Tertinggi)
+        // Sorting
         if ($request->sort == 'Terbaru') {
             $query->latest();
         } elseif ($request->sort == 'Terlama') {
             $query->oldest();
         } elseif ($request->sort == 'Rating Tertinggi') {
-            $query->orderByDesc('rating'); // Sort berdasarkan bintang tertinggi
+            $query->orderByDesc('rating');
         } else {
-            $query->latest(); // Default
+            $query->latest();
         }
 
         $umkms = $query->paginate(9)->withQueryString();
 
-        // Ambil ID UMKM yang difavoritkan oleh user yang sedang login
+        // Ambil ID UMKM yang difavoritkan (Untuk tombol Love)
         $favoritedUmkmIds = [];
         if (auth()->check()) {
             $favoritedUmkmIds = auth()->user()->favorites()->pluck('umkm_id')->toArray();
@@ -83,7 +82,6 @@ class PublicController extends Controller
 
     public function direktori(Request $request)
     {
-        // [PERBAIKAN] Pastikan hanya mengambil yang approved
         $query = Umkm::where('status', 'approved');
 
         if ($request->has('q')) {
@@ -96,19 +94,26 @@ class PublicController extends Controller
 
         $umkms = $query->paginate(12);
 
-        // Menggunakan view jelajah sebagai template
-        return view('jelajah', compact('umkms'));
+        // Pastikan variabel favorit juga dikirim jika direktori menggunakan tombol love
+        $favoritedUmkmIds = [];
+        if (auth()->check()) {
+            $favoritedUmkmIds = auth()->user()->favorites()->pluck('umkm_id')->toArray();
+        }
+
+        return view('jelajah', compact('umkms', 'favoritedUmkmIds'));
     }
 
     public function category(Request $request, $slug)
     {
-        // [PERBAIKAN] Tambahkan where('status', 'approved')
+        // [PERBAIKAN 1] Definisikan nama kategori
+        $category = $slug; 
+
         $query = Umkm::where('status', 'approved')->with(['photos', 'menus']);
 
-        // Filter berdasarkan kategori dari URL (Slug)
+        // Filter berdasarkan kategori dari URL
         $query->where('kategori', $slug);
 
-        // Filter Search (tetap memungkinkan pencarian dalam kategori)
+        // Filter Search
         if ($request->filled('q')) {
             $search = $request->q;
             $query->where(function ($q) use ($search) {
@@ -127,19 +132,26 @@ class PublicController extends Controller
             $query->where('alamat', 'like', "%{$request->location}%");
         }
 
-        // [PERBAIKAN] Logika Sorting (Termasuk Rating Tertinggi)
+        // Sorting
         if ($request->sort == 'Terbaru') {
             $query->latest();
         } elseif ($request->sort == 'Terlama') {
             $query->oldest();
         } elseif ($request->sort == 'Rating Tertinggi') {
-            $query->orderByDesc('rating'); // Sort berdasarkan bintang tertinggi
+            $query->orderByDesc('rating');
         } else {
             $query->latest();
         }
 
         $umkms = $query->paginate(9)->withQueryString();
 
-        return view('kategori_detail', compact('umkms', 'slug')); // Mengirim variable slug sebagai kategori
+        // [PERBAIKAN 2] Tambahkan logika Favorit agar tidak error di view
+        $favoritedUmkmIds = [];
+        if (auth()->check()) {
+            $favoritedUmkmIds = auth()->user()->favorites()->pluck('umkm_id')->toArray();
+        }
+
+        // [PERBAIKAN 3] Kirim 'category' dan 'favoritedUmkmIds'
+        return view('kategori_detail', compact('umkms', 'category', 'favoritedUmkmIds')); 
     }
 }

@@ -175,9 +175,6 @@
                     <h2 class="text-4xl font-bold mb-2">UMKM <span class="gradient-text">Unggulan</span></h2>
                     <p class="text-gray-600 dark:text-gray-300">Produk terbaik dari mitra lokal kami</p>
                 </div>
-                <div class="flex gap-2 bg-white dark:bg-surface-dark p-1.5 rounded-xl shadow-inner">
-                    <a href="{{ route('umkm.index') }}" class="px-5 py-2 rounded-lg bg-gradient-to-r from-primary-orange to-primary-green text-white text-sm font-bold shadow-md">Lihat Semua</a>
-                </div>
             </div>
 
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
