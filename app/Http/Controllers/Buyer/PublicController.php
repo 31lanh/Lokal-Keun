@@ -72,7 +72,13 @@ class PublicController extends Controller
             ->paginate(9)
             ->withQueryString();
 
-        return view('jelajah', compact('umkms'));
+        // Ambil ID UMKM yang difavoritkan oleh user yang sedang login
+        $favoritedUmkmIds = [];
+        if (auth()->check()) {
+            $favoritedUmkmIds = auth()->user()->favorites()->pluck('umkm_id')->toArray();
+        }
+
+        return view('jelajah', compact('umkms', 'favoritedUmkmIds'));
     }
 
     public function direktori(Request $request)

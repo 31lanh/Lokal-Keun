@@ -89,6 +89,15 @@ class Umkm extends Model
     {
         return $this->hasOne(UmkmPhoto::class, 'umkm_id')->where('is_primary', true);
     }
+
+    /**
+     * Relationship: Umkm favorited by many Users
+     */
+    public function favoritedBy()
+    {
+        return $this->belongsToMany(User::class, 'favorites', 'umkm_id', 'user_id')->withTimestamps();
+    }
+
     // --- SCOPES & HELPERS ---
 
     public function scopeApproved($query)

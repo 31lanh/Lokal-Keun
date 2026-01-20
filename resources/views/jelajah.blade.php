@@ -299,14 +299,15 @@
                                     $now = now()->format('H:i');
                                     $isOpen = $now >= $umkm->jam_buka && $now <= $umkm->jam_tutup;
                                 }
+                                $isFavorited = auth()->check() && in_array($umkm->id, $favoritedUmkmIds ?? []);
                             @endphp
                             <div
                                 class="group bg-white dark:bg-surface-dark rounded-3xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 border border-gray-100 dark:border-gray-800">
                                 <div class="relative h-56 overflow-hidden">
                                     <div class="absolute top-4 right-4 z-10">
-                                        <button
-                                            class="p-2.5 rounded-full bg-white/90 backdrop-blur-sm text-gray-400 hover:bg-white hover:text-red-500 transition-all shadow-lg transform hover:scale-110">
-                                            <span class="material-symbols-outlined text-[22px]">favorite</span>
+                                        <button onclick="toggleFavorite(this, {{ $umkm->id }})"
+                                            class="p-2.5 rounded-full bg-white/90 backdrop-blur-sm transition-all shadow-lg transform hover:scale-110 {{ $isFavorited ? 'text-red-500' : 'text-gray-400 hover:text-red-500' }}">
+                                            <span class="material-symbols-outlined text-[22px] {{ $isFavorited ? 'filled' : '' }}">favorite</span>
                                         </button>
                                     </div>
                                     <div class="absolute top-4 left-4 z-10">
@@ -388,4 +389,54 @@
         </main>
 
     </form>
+
+    {{-- Script AJAX untuk Favorite --}}
+    <script>
+        function toggleFavorite(btn, umkmId) {
+            @auth
+                // Animasi klik sederhana
+                btn.style.transform = "scale(0.8)";
+                setTimeout(() => btn.style.transform = "scale(1.1)", 150);
+
+                fetch("{{ url('/favorite') }}/" + umkmId, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    }
+                })
+                .then(response => {
+                    if (response.status === 401) {
+                        window.location.href = "{{ route('login') }}";
+                        return;
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    const icon = btn.querySelector('span');
+                    if (data.status === 'added') {
+                        btn.classList.remove('text-gray-400');
+                        btn.classList.add('text-red-500');
+                        icon.classList.add('filled'); // Material Symbols filled style
+                    } else {
+                        btn.classList.add('text-gray-400');
+                        btn.classList.remove('text-red-500');
+                        icon.classList.remove('filled');
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+            @else
+                // Jika belum login, arahkan ke login
+                window.location.href = "{{ route('login') }}";
+            @endauth
+        }
+    </script>
+
+    <style>
+        /* Helper class untuk Material Symbols Filled */
+        .material-symbols-outlined.filled {
+            font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
 @endsection

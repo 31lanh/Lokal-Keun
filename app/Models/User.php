@@ -134,4 +134,12 @@ class User extends Authenticatable
             default => 'home',
         };
     }
+
+    /**
+     * Relationship: User favorites many Umkms
+     */
+    public function favorites()
+    {
+        return $this->belongsToMany(Umkm::class, 'favorites', 'user_id', 'umkm_id')->withTimestamps();
+    }
 }

@@ -106,6 +106,9 @@ Route::middleware(['auth'])->group(function () {
             // Ini route dashboard khusus pembeli yang baru kita buat
             Route::get('/dashboard', [BuyerController::class, 'index'])->name('dashboard');
         });
+
+    // Toggle Favorite (Bisa diakses semua user yang login)
+    Route::post('/favorite/{id}', [BuyerController::class, 'toggleFavorite'])->name('favorite.toggle');
 });
 
 /*
