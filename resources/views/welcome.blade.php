@@ -116,6 +116,74 @@
         </div>
     </section>
 
+    <section id="tentang"
+        class="min-h-screen flex items-center justify-center py-20 bg-background-light dark:bg-background-dark overflow-hidden">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
+            <div class="grid lg:grid-cols-2 gap-16 items-center">
+                <div class="relative order-2 lg:order-1">
+                    <div class="absolute -top-4 -left-4 w-72 h-72 bg-primary-green/20 rounded-full blur-3xl"></div>
+
+                    <div
+                        class="relative rounded-3xl overflow-hidden shadow-2xl border-4 border-white dark:border-surface-dark transform rotate-[-2deg] hover:rotate-0 transition-transform duration-500">
+                        <img src="https://images.unsplash.com/photo-1576669801775-ffdeb4403cb0?q=80&w=1000&auto=format&fit=crop"
+                            alt="Tentang Lokal-keun" class="w-full h-full object-cover">
+                    </div>
+
+                    <div
+                        class="absolute -bottom-6 -right-6 bg-white dark:bg-surface-dark p-6 rounded-2xl shadow-xl animate-float">
+                        <div class="flex items-center gap-4">
+                            <div class="p-3 bg-orange-light rounded-full text-primary-orange">
+                                <span class="material-symbols-outlined">diversity_3</span>
+                            </div>
+                            <div>
+                                <p class="text-xs text-gray-500">Komunitas</p>
+                                <p class="font-bold text-gray-900 dark:text-white">1000+ Mitra</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="order-1 lg:order-2">
+                    <div
+                        class="inline-flex items-center gap-2 px-3 py-1 bg-green-light dark:bg-green-900/30 rounded-full mb-4">
+                        <span class="text-xs font-bold text-primary-green uppercase tracking-wider">Tentang Kami</span>
+                    </div>
+
+                    <h2 class="text-4xl font-bold mb-6">Mengenal Lebih Dekat <br><span
+                            class="gradient-text">Lokal-keun</span></h2>
+
+                    <p class="text-gray-600 dark:text-gray-300 text-lg mb-6 leading-relaxed">
+                        <strong>Lokal-Keun</strong> hadir sebagai platform untuk mendukung dan mempromosikan UMKM lokal
+                        Indonesia. Kami percaya setiap produk lokal memiliki cerita dan kualitas yang layak dikenal lebih
+                        luas.
+                        Bersama tim yang berdedikasi, kami berupaya menghubungkan pelaku
+                        UMKM dengan konsumen yang menghargai karya asli Indonesia, sehingga setiap transaksi bukan hanya
+                        soal jual beli, tapi juga tentang mendukung pertumbuhan komunitas dan kreativitas lokal.
+                    </p>
+
+                    <ul class="space-y-4 mb-8">
+                        <li class="flex items-start gap-3">
+                            <span class="material-symbols-outlined text-primary-orange mt-1">check_circle</span>
+                            <div>
+                                <h4 class="font-bold text-gray-900 dark:text-white">Kurasi Kualitas Terbaik</h4>
+                                <p class="text-sm text-gray-500">Hanya produk lokal pilihan yang telah lolos standar
+                                    kualitas kami.</p>
+                            </div>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <span class="material-symbols-outlined text-primary-green mt-1">handshake</span>
+                            <div>
+                                <h4 class="font-bold text-gray-900 dark:text-white">Pemberdayaan Ekonomi</h4>
+                                <p class="text-sm text-gray-500">Setiap transaksi berdampak langsung pada kesejahteraan
+                                    pelaku UMKM.</p>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <section id="jelajah"
         class="min-h-screen flex items-center justify-center py-20 bg-background-light dark:bg-background-dark">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
