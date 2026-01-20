@@ -492,7 +492,7 @@
                             Kategori Populer
                         </h3>
                         <div class="space-y-2">
-                            <a href="{{ route('jelajah', ['kategori' => 'kuliner']) }}"
+                            <a href="{{ route('kategori.detail', 'kuliner') }}"
                                 class="flex items-center justify-between p-3 bg-orange-50 dark:bg-orange-900/20 rounded-xl hover:shadow-md transition-all group border border-orange-100 dark:border-orange-800">
                                 <div class="flex items-center gap-3">
                                     <span class="material-symbols-outlined text-orange-600">restaurant</span>
@@ -502,7 +502,7 @@
                                     class="material-symbols-outlined text-gray-400 group-hover:translate-x-1 transition-transform text-sm">arrow_forward</span>
                             </a>
 
-                            <a href="{{ route('jelajah', ['kategori' => 'fashion']) }}"
+                            <a href="{{ route('kategori.detail', 'fashion') }}"
                                 class="flex items-center justify-between p-3 bg-pink-50 dark:bg-pink-900/20 rounded-xl hover:shadow-md transition-all group border border-pink-100 dark:border-pink-800">
                                 <div class="flex items-center gap-3">
                                     <span class="material-symbols-outlined text-pink-600">checkroom</span>
@@ -512,7 +512,7 @@
                                     class="material-symbols-outlined text-gray-400 group-hover:translate-x-1 transition-transform text-sm">arrow_forward</span>
                             </a>
 
-                            <a href="{{ route('jelajah', ['kategori' => 'kerajinan']) }}"
+                            <a href="{{ route('kategori.detail', 'kerajinan') }}"
                                 class="flex items-center justify-between p-3 bg-green-50 dark:bg-green-900/20 rounded-xl hover:shadow-md transition-all group border border-green-100 dark:border-green-800">
                                 <div class="flex items-center gap-3">
                                     <span class="material-symbols-outlined text-green-600">handyman</span>
