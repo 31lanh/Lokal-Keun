@@ -8,7 +8,8 @@ use App\Http\Controllers\Buyer\PublicController;
 use App\Http\Controllers\Buyer\BuyerController;
 use App\Http\Controllers\Front\UmkmDetailController;
 use App\Http\Controllers\Admin\AdminController;
-use App\Http\Controllers\Buyer\ReviewController;
+use App\Http\Controllers\Buyer\ReviewController; // [Punya Anda]
+use App\Http\Controllers\Buyer\ProfileController; // [Punya Teman]
 
 /*
 |--------------------------------------------------------------------------
@@ -35,22 +36,38 @@ Route::post('/logout', [LoginController::class, 'logout'])->name('logout')->midd
 
 Route::middleware(['auth'])->group(function () {
 
+    // =====================
+    // PROFILE (ALL ROLES)
+    // =====================
+    // [GABUNGAN]: Route profile edit dan update (dari kode teman)
     Route::get('/profile', function () {
         return view('profile.edit');
     })->name('profile.edit');
+    Route::post('/profile/update', [ProfileController::class, 'update'])->name('profile.update');
 
-    // [BARU] Route untuk mengubah role Pembeli -> Penjual
+    // =====================
+    // SWITCH ROLE (Pembeli -> Penjual)
+    // =====================
+    // [PUNYA ANDA]
     Route::post('/switch-to-seller', [SellerController::class, 'switchRole'])->name('seller.switch');
 
-    // ==========================================
-    // [BARU] REVIEW ROUTES (Simpan & Hapus)
-    // ==========================================
-    // Simpan Ulasan
+    // =====================
+    // REVIEW ROUTES (Simpan & Hapus)
+    // =====================
+    // [PUNYA ANDA]
     Route::post('/umkm/{id}/review', [ReviewController::class, 'store'])->name('reviews.store');
-    // Hapus Ulasan
     Route::delete('/reviews/{id}', [ReviewController::class, 'destroy'])->name('reviews.destroy');
 
+    // =====================
+    // FAVORITE (Toggle)
+    // =====================
+    // [PUNYA TEMAN]
+    Route::post('/favorite/{id}', [BuyerController::class, 'toggleFavorite'])->name('favorite.toggle');
+
+
+    // =====================
     // SELLER ROUTES
+    // =====================
     Route::middleware('role:penjual')->prefix('seller')->name('seller.')->group(function () {
         Route::get('/dashboard', [SellerController::class, 'dashboard'])->name('dashboard');
         Route::get('/daftar', [SellerController::class, 'showDaftarForm'])->name('daftar');
@@ -63,7 +80,9 @@ Route::middleware(['auth'])->group(function () {
         Route::delete('/menu/{id}/delete', [SellerController::class, 'deleteMenu'])->name('menu.delete');
     });
 
+    // =====================
     // ADMIN ROUTES
+    // =====================
     Route::middleware('role:admin')->prefix('admin')->name('admin.')->group(function () {
         Route::get('/dashboard', [AdminController::class, 'index'])->name('dashboard');
         Route::get('/umkm', [AdminController::class, 'umkmIndex'])->name('umkm.index');
@@ -73,7 +92,9 @@ Route::middleware(['auth'])->group(function () {
         Route::delete('/users/{id}', [AdminController::class, 'userDestroy'])->name('users.destroy');
     });
 
+    // =====================
     // BUYER ROUTES
+    // =====================
     Route::middleware('role:pembeli')->prefix('buyer')->name('buyer.')->group(function () {
         Route::get('/dashboard', [BuyerController::class, 'index'])->name('dashboard');
     });

@@ -20,7 +20,10 @@ class User extends Authenticatable
         'email',
         'password',
         'role',                 // Pastikan ini ada
-        'profile_photo_path',   // <--- TAMBAHKAN BARIS INI
+        'profile_photo_path',
+        'map_link',
+        'whatsapp',
+        'address',  // <--- TAMBAHKAN BARIS INI
     ];
 
 
@@ -130,5 +133,13 @@ class User extends Authenticatable
             'pembeli' => 'home', // Pembeli ke home
             default => 'home',
         };
+    }
+
+    /**
+     * Relationship: User favorites many Umkms
+     */
+    public function favorites()
+    {
+        return $this->belongsToMany(Umkm::class, 'favorites', 'user_id', 'umkm_id')->withTimestamps();
     }
 }

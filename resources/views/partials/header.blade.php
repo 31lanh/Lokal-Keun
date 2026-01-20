@@ -21,16 +21,16 @@
                 </div>
             </a>
 
-            {{-- DESKTOP MENU (Urutan Sudah Dirapikan) --}}
+            {{-- DESKTOP MENU --}}
             <div class="hidden md:flex items-center gap-8">
                 @php
-                    $isHome = Request::is('/'); // Cek apakah sedang di halaman depan
+                    $isHome = Request::is('/'); 
                     $menus = [
                         ['label' => 'Beranda',      'type' => 'anchor', 'target' => '#beranda'],
-                        ['label' => 'Tentang',      'type' => 'anchor', 'target' => '#tentang'],      // Urutan ke-2
-                        ['label' => 'Kategori',     'type' => 'anchor', 'target' => '#kategori'],     // Urutan ke-3
-                        ['label' => 'Jelajah',      'type' => 'anchor', 'target' => '#jelajah'],      // Urutan ke-4
-                        ['label' => 'Gabung Mitra', 'type' => 'anchor', 'target' => '#gabung-mitra'],// Urutan ke-5
+                        ['label' => 'Tentang',      'type' => 'anchor', 'target' => '#tentang'],
+                        ['label' => 'Kategori',     'type' => 'anchor', 'target' => '#kategori'],
+                        ['label' => 'Jelajah',      'type' => 'anchor', 'target' => '#jelajah'],
+                        ['label' => 'Gabung Mitra', 'type' => 'anchor', 'target' => '#gabung-mitra'],
                     ];
                 @endphp
 
@@ -39,9 +39,6 @@
                         if ($menu['type'] === 'route') {
                             $href = route($menu['target']);
                         } else {
-                            // LOGIKA PENTING:
-                            // Jika sedang di Home, link hanya berupa #id (agar scroll halus).
-                            // Jika sedang di halaman lain (misal Detail), link menjadi url_website/#id (agar pindah ke home lalu scroll).
                             $href = $isHome ? $menu['target'] : url('/' . $menu['target']);
                         }
                     @endphp
@@ -53,9 +50,10 @@
                 @endforeach
             </div>
 
-            {{-- AUTH BUTTONS (Login/Register/User Menu) --}}
+            {{-- AUTH BUTTONS --}}
             <div class="hidden md:flex items-center gap-3">
                 @auth
+                    {{-- Kondisi untuk PEMBELI --}}
                     @if (auth()->user()->role === 'pembeli')
                         <div class="relative">
                             <button @click="open = !open" @click.away="open = false"
@@ -80,27 +78,36 @@
                                 style="display: none;">
 
                                 <div class="p-4 bg-gradient-to-br from-orange-50 to-green-50 dark:from-orange-900/20 dark:to-green-900/20 border-b border-gray-200 dark:border-gray-700">
-                                    <p class="font-bold text-gray-900 dark:text-white truncate">{{ auth()->user()->name }}
-                                    </p>
-                                    <p class="text-xs text-gray-600 dark:text-gray-400 truncate">{{ auth()->user()->email }}
-                                    </p>
-
+                                    <p class="font-bold text-gray-900 dark:text-white truncate">{{ auth()->user()->name }}</p>
+                                    <p class="text-xs text-gray-600 dark:text-gray-400 truncate">{{ auth()->user()->email }}</p>
                                     <div class="mt-2 inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wide bg-green-100 text-green-700 border border-green-200 dark:bg-green-900/30 dark:text-green-300 dark:border-green-800">
                                         Member Account
                                     </div>
                                 </div>
 
                                 <div class="p-2">
-                                    <a href="#"
-                                        class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-orange-50 dark:hover:bg-orange-900/20 transition-all group/item">
+                                    {{-- Menu Profil --}}
+                                    <button @click="open = false; $dispatch('open-profile')"
+                                        class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-orange-50 dark:hover:bg-orange-900/20 transition-all group/item w-full text-left">
                                         <span class="material-symbols-outlined text-primary-orange group-hover/item:scale-110 transition-transform">person</span>
                                         <span class="text-sm font-semibold text-gray-700 dark:text-gray-300">Profil Saya</span>
-                                    </a>
-                                    <a href="#"
-                                        class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-green-50 dark:hover:bg-green-900/20 transition-all group/item">
-                                        <span class="material-symbols-outlined text-primary-green group-hover/item:scale-110 transition-transform">receipt_long</span>
-                                        <span class="text-sm font-semibold text-gray-700 dark:text-gray-300">Pesanan Saya</span>
-                                    </a>
+                                    </button>
+
+                                    {{-- Menu Favorit (Dari Teman) --}}
+                                    <button @click="open = false; $dispatch('open-favorites')"
+                                        class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20 transition-all group/item w-full text-left">
+                                        <span class="material-symbols-outlined text-red-500 group-hover/item:scale-110 transition-transform">favorite</span>
+                                        <span class="text-sm font-semibold text-gray-700 dark:text-gray-300">Favorit</span>
+                                    </button>
+
+                                    {{-- Menu Alamat (Dari Teman) --}}
+                                    <button @click="open = false; $dispatch('open-address')"
+                                        class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-all group/item w-full text-left">
+                                        <span class="material-symbols-outlined text-blue-500 group-hover/item:scale-110 transition-transform">location_on</span>
+                                        <span class="text-sm font-semibold text-gray-700 dark:text-gray-300">Alamat</span>
+                                    </button>
+
+                                    {{-- LOGOUT --}}
                                     <div class="p-2 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50 mt-1">
                                         <form action="{{ route('logout') }}" method="POST">
                                             @csrf
@@ -116,6 +123,7 @@
                         </div>
                     @endif
                 @else
+                    {{-- GUEST BUTTONS --}}
                     <a href="{{ route('login') }}"
                         class="px-6 py-2.5 text-sm font-bold text-gray-700 dark:text-gray-300 hover:text-primary-orange transition-all rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800">
                         Masuk

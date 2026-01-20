@@ -92,7 +92,7 @@ class Umkm extends Model
     }
 
     /**
-     * [BARU] Relasi ke Reviews
+     * [PUNYA ANDA] Relasi ke Reviews
      * Mengambil ulasan terkait UMKM ini, diurutkan dari yang terbaru.
      */
     public function reviews()
@@ -100,10 +100,18 @@ class Umkm extends Model
         return $this->hasMany(Review::class, 'umkm_id')->latest();
     }
 
+    /**
+     * [PUNYA TEMAN] Relationship: Umkm favorited by many Users
+     */
+    public function favoritedBy()
+    {
+        return $this->belongsToMany(User::class, 'favorites', 'umkm_id', 'user_id')->withTimestamps();
+    }
+
     // --- LOGIC / ACTIONS ---
 
     /**
-     * [BARU] Hitung Ulang Rating
+     * [PUNYA ANDA] Hitung Ulang Rating
      * Fungsi ini dipanggil setiap kali ada review baru masuk atau dihapus.
      */
     public function refreshRating()
