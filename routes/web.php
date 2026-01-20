@@ -8,6 +8,7 @@ use App\Http\Controllers\Buyer\PublicController;
 use App\Http\Controllers\Buyer\BuyerController; // [BARU] Import Controller Dashboard Pembeli
 use App\Http\Controllers\Front\UmkmDetailController;
 use App\Http\Controllers\Admin\AdminController;
+use App\Http\Controllers\Buyer\ProfileController;
 
 /*
 |--------------------------------------------------------------------------
@@ -42,12 +43,14 @@ Route::post('/logout', [LoginController::class, 'logout'])->name('logout')->midd
 
 Route::middleware(['auth'])->group(function () {
 
-    // =====================
-    // PROFILE (ALL ROLES)
-    // =====================
-    Route::get('/profile', function () {
-        return view('profile.edit');
-    })->name('profile.edit');
+        // =====================
+        // PROFILE (ALL ROLES)
+        // =====================
+        Route::get('/profile', function () {
+            return view('profile.edit');
+        })->name('profile.edit');
+        Route::post('/profile/update', [ProfileController::class, 'update'])
+        ->name('profile.update');
 
     // =====================
     // SELLER / PENJUAL ROUTES

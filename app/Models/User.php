@@ -20,7 +20,10 @@ class User extends Authenticatable
         'email',
         'password',
         'role',                 // Pastikan ini ada
-        'profile_photo_path',   // <--- TAMBAHKAN BARIS INI
+        'profile_photo_path',
+        'map_link',
+        'whatsapp',
+        'address',  // <--- TAMBAHKAN BARIS INI
     ];
 
 

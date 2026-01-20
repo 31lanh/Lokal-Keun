@@ -23,7 +23,7 @@
                             <span class="material-symbols-outlined text-gray-500">phone</span>
                             <div class="flex-1">
                                 <p class="text-xs text-gray-500 dark:text-gray-400">Nomor Telepon</p>
-                                <p class="text-sm font-medium text-gray-900 dark:text-white">{{ auth()->user()->phone ?? '-' }}</p>
+                                <p class="text-sm font-medium text-gray-900 dark:text-white">{{ auth()->user()->whatsapp ?? '-' }}</p>
                             </div>
                         </div>
                         <div class="flex items-center gap-3 p-3 bg-gray-50 dark:bg-gray-700/50 rounded-xl border border-gray-100 dark:border-gray-700">
