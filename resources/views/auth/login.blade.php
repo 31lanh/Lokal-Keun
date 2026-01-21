@@ -190,10 +190,6 @@
                     <div class="absolute inset-0 flex items-center">
                         <div class="w-full border-t border-gray-200 dark:border-gray-700"></div>
                     </div>
-                    <div class="relative flex justify-center text-xs">
-                        <span class="px-3 bg-white dark:bg-gray-800 text-gray-500 font-medium">atau lanjutkan
-                            dengan</span>
-                    </div>
                 </div>
 
 

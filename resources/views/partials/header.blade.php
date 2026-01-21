@@ -32,20 +32,16 @@
                         ['label' => 'Beranda',      'type' => 'anchor', 'target' => '#beranda'],
                         ['label' => 'Tentang',      'type' => 'anchor', 'target' => '#tentang'],
                         ['label' => 'Kategori',     'type' => 'anchor', 'target' => '#kategori'],
-                        ['label' => 'Jelajah',      'type' => 'anchor', 'target' => '#jelajah'],
+                        ['label' => 'Jelajah',      'type' => 'anchor', 'target' => '#jelajah'], 
                         ['label' => 'Gabung Mitra', 'type' => 'anchor', 'target' => '#gabung-mitra'],
                     ];
                 @endphp
 
                 @foreach ($menus as $menu)
                     @php
-                        if ($menu['type'] === 'route') {
-                            $href = route($menu['target']);
-                        } else {
-                            $href = $isHome ? $menu['target'] : url('/' . $menu['target']);
-                        }
+                        $href = $isHome ? $menu['target'] : url('/' . $menu['target']);
                     @endphp
-                    <a class="text-sm font-semibold text-gray-700 dark:text-gray-300 hover:text-primary-orange transition-colors relative group"
+                    <a class="text-sm font-semibold text-gray-700 dark:text-gray-300 hover:text-primary-orange transition-colors relative group cursor-pointer"
                         href="{{ $href }}">
                         {{ $menu['label'] }}
                         <span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-primary-orange to-primary-green group-hover:w-full transition-all duration-300"></span>
@@ -53,10 +49,9 @@
                 @endforeach
             </div>
 
-            {{-- AUTH BUTTONS --}}
+            {{-- AUTH BUTTONS (DESKTOP) --}}
             <div class="hidden md:flex items-center gap-3">
                 @auth
-                    {{-- Kondisi untuk PEMBELI --}}
                     @if (auth()->user()->role === 'pembeli')
                         <div class="relative">
                             <button @click="open = !open" @click.away="open = false"
@@ -72,7 +67,7 @@
                                     :class="open ? 'rotate-180' : ''">expand_more</span>
                             </button>
 
-                            {{-- Dropdown Menu --}}
+                            {{-- Dropdown Menu Desktop --}}
                             <div x-show="open" x-transition:enter="transition ease-out duration-200"
                                 x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100"
                                 x-transition:leave="transition ease-in duration-150"
@@ -89,28 +84,24 @@
                                 </div>
 
                                 <div class="p-2">
-                                    {{-- Menu Profil --}}
                                     <button @click="open = false; $dispatch('open-profile')"
                                         class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-orange-50 dark:hover:bg-orange-900/20 transition-all group/item w-full text-left">
                                         <span class="material-symbols-outlined text-primary-orange group-hover/item:scale-110 transition-transform">person</span>
                                         <span class="text-sm font-semibold text-gray-700 dark:text-gray-300">Profil Saya</span>
                                     </button>
 
-                                    {{-- Menu Favorit (Dari Teman) --}}
                                     <button @click="open = false; $dispatch('open-favorites')"
                                         class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20 transition-all group/item w-full text-left">
                                         <span class="material-symbols-outlined text-red-500 group-hover/item:scale-110 transition-transform">favorite</span>
                                         <span class="text-sm font-semibold text-gray-700 dark:text-gray-300">Favorit</span>
                                     </button>
 
-                                    {{-- Menu Alamat (Dari Teman) --}}
                                     <button @click="open = false; $dispatch('open-address')"
                                         class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-all group/item w-full text-left">
                                         <span class="material-symbols-outlined text-blue-500 group-hover/item:scale-110 transition-transform">location_on</span>
                                         <span class="text-sm font-semibold text-gray-700 dark:text-gray-300">Alamat</span>
                                     </button>
 
-                                    {{-- LOGOUT --}}
                                     <div class="p-2 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50 mt-1">
                                         <form action="{{ route('logout') }}" method="POST" id="logout-form-buyer">
                                             @csrf
@@ -126,7 +117,6 @@
                         </div>
                     @endif
                 @else
-                    {{-- GUEST BUTTONS --}}
                     <a href="{{ route('login') }}"
                         class="px-6 py-2.5 text-sm font-bold text-gray-700 dark:text-gray-300 hover:text-primary-orange transition-all rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800">
                         Masuk
@@ -138,12 +128,84 @@
                 @endauth
             </div>
 
-            {{-- Mobile Menu Button --}}
+            {{-- MOBILE MENU BUTTON --}}
             <button @click="mobileOpen = !mobileOpen"
                 class="md:hidden p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors">
-                <span class="material-symbols-outlined">menu</span>
+                <span class="material-symbols-outlined" x-text="mobileOpen ? 'close' : 'menu'">menu</span>
             </button>
         </div>
+    </div>
+
+    {{-- MOBILE MENU DROPDOWN --}}
+    <div x-show="mobileOpen" 
+         x-transition:enter="transition ease-out duration-200"
+         x-transition:enter-start="opacity-0 -translate-y-2"
+         x-transition:enter-end="opacity-100 translate-y-0"
+         x-transition:leave="transition ease-in duration-150"
+         x-transition:leave-start="opacity-100 translate-y-0"
+         x-transition:leave-end="opacity-0 -translate-y-2"
+         class="md:hidden absolute top-20 left-0 w-full bg-white dark:bg-surface-dark border-b border-gray-100 dark:border-gray-800 shadow-xl py-4 px-4 flex flex-col gap-2 max-h-[calc(100vh-80px)] overflow-y-auto"
+         style="display: none;">
+        
+        {{-- Link Navigasi Utama Mobile --}}
+        @foreach ($menus as $menu)
+            @php $href = $isHome ? $menu['target'] : url('/' . $menu['target']); @endphp
+            <a href="{{ $href }}" 
+               @click="mobileOpen = false" 
+               class="block px-4 py-3 rounded-lg text-base font-semibold text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 hover:text-primary-orange transition-all">
+                {{ $menu['label'] }}
+            </a>
+        @endforeach
+
+        <div class="h-px bg-gray-100 dark:bg-gray-800 my-2"></div>
+
+        @auth
+             {{-- Header Profil Mobile --}}
+             <div class="px-4 py-3 bg-gradient-to-br from-orange-50 to-green-50 dark:from-orange-900/20 dark:to-green-900/20 rounded-xl mb-2 flex items-center gap-3">
+                <div class="size-10 bg-gradient-to-br from-primary-orange to-primary-green rounded-full flex items-center justify-center text-white font-bold text-sm shrink-0">
+                    {{ substr(auth()->user()->name, 0, 1) }}
+                </div>
+                <div class="overflow-hidden">
+                    <p class="font-bold text-gray-900 dark:text-white truncate">{{ auth()->user()->name }}</p>
+                    <p class="text-xs text-gray-500 dark:text-gray-400 truncate">{{ auth()->user()->email }}</p>
+                </div>
+             </div>
+
+             {{-- Menu Profil Mobile (Sama seperti Desktop) --}}
+             <button @click="mobileOpen = false; $dispatch('open-profile')"
+                class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-orange-50 dark:hover:bg-orange-900/20 transition-all w-full text-left">
+                <span class="material-symbols-outlined text-primary-orange">person</span>
+                <span class="text-base font-semibold text-gray-700 dark:text-gray-300">Profil Saya</span>
+            </button>
+
+            <button @click="mobileOpen = false; $dispatch('open-favorites')"
+                class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20 transition-all w-full text-left">
+                <span class="material-symbols-outlined text-red-500">favorite</span>
+                <span class="text-base font-semibold text-gray-700 dark:text-gray-300">Favorit</span>
+            </button>
+
+            <button @click="mobileOpen = false; $dispatch('open-address')"
+                class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-all w-full text-left">
+                <span class="material-symbols-outlined text-blue-500">location_on</span>
+                <span class="text-base font-semibold text-gray-700 dark:text-gray-300">Alamat</span>
+            </button>
+
+             <form action="{{ route('logout') }}" method="POST" id="logout-form-mobile">
+                @csrf
+                <button type="button" onclick="confirmLogout('logout-form-mobile')" 
+                    class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20 transition-all w-full text-left mt-1 border-t border-gray-100 dark:border-gray-800 pt-3">
+                    <span class="material-symbols-outlined text-red-500">logout</span>
+                    <span class="text-base font-bold text-red-500">Keluar</span>
+                </button>
+            </form>
+        @else
+            <a href="{{ route('login') }}" class="block w-full text-center px-4 py-3 rounded-lg border border-gray-200 dark:border-gray-700 font-bold text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
+                Masuk
+            </a>
+            <a href="{{ route('register') }}" class="block w-full text-center px-4 py-3 rounded-lg bg-gradient-to-r from-primary-orange to-primary-green text-white font-bold hover:shadow-lg transition-shadow">
+                Daftar Gratis
+            </a>
+        @endauth
     </div>
 </header>
 
@@ -154,8 +216,8 @@
             text: "Anda harus login kembali untuk mengakses akun.",
             icon: 'warning',
             showCancelButton: true,
-            confirmButtonColor: '#ef4444', // Red-500
-            cancelButtonColor: '#6b7280', // Gray-500
+            confirmButtonColor: '#ef4444', 
+            cancelButtonColor: '#6b7280', 
             confirmButtonText: 'Ya, Keluar',
             cancelButtonText: 'Batal'
         }).then((result) => {

@@ -3,20 +3,59 @@
 @section('title', 'Data Pengguna')
 
 @section('content')
-    {{-- Header & Pencarian --}}
-    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+    {{-- Header, Pencarian & Filter --}}
+    <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-6">
         <div>
             <h1 class="text-2xl font-bold text-gray-900">Data Pengguna</h1>
             <p class="text-gray-500 text-sm mt-1">Kelola akun pembeli dan penjual.</p>
         </div>
 
-        <form action="{{ route('admin.users.index') }}" method="GET" class="relative w-full md:w-64">
-            <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
-                <span class="material-symbols-outlined text-xl">search</span>
-            </span>
-            <input type="text" name="q" value="{{ request('q') }}" placeholder="Cari nama atau email..."
-                class="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-orange focus:border-transparent text-sm transition-all">
-        </form>
+        <div class="flex flex-col md:flex-row gap-3 w-full md:w-auto">
+            {{-- Form Filter & Search digabung dalam satu form agar query parameter tidak hilang --}}
+            <form action="{{ route('admin.users.index') }}" method="GET" class="flex flex-col md:flex-row gap-3 w-full">
+                
+                {{-- Filter Role --}}
+                <div class="relative min-w-[140px]">
+                    <select name="role" onchange="this.form.submit()" 
+                        class="w-full pl-3 pr-8 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-orange focus:border-transparent text-sm bg-white appearance-none cursor-pointer">
+                        <option value="">Semua Role</option>
+                        <option value="admin" {{ request('role') == 'admin' ? 'selected' : '' }}>Admin</option>
+                        <option value="penjual" {{ request('role') == 'penjual' ? 'selected' : '' }}>Penjual</option>
+                        <option value="pembeli" {{ request('role') == 'pembeli' ? 'selected' : '' }}>Pembeli</option>
+                    </select>
+                </div>
+
+                {{-- Filter Sort By --}}
+                <div class="relative min-w-[160px]">
+                    <select name="sort" onchange="this.form.submit()" 
+                        class="w-full pl-3 pr-8 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-orange focus:border-transparent text-sm bg-white appearance-none cursor-pointer">
+                        <option value="newest" {{ request('sort') == 'newest' ? 'selected' : '' }}>Terbaru Bergabung</option>
+                        <option value="oldest" {{ request('sort') == 'oldest' ? 'selected' : '' }}>Terlama Bergabung</option>
+                        <option value="name_asc" {{ request('sort') == 'name_asc' ? 'selected' : '' }}>Nama (A-Z)</option>
+                        <option value="name_desc" {{ request('sort') == 'name_desc' ? 'selected' : '' }}>Nama (Z-A)</option>
+                    </select>
+                </div>
+
+                {{-- Search Box --}}
+                <div class="relative w-full md:w-64">
+                    <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
+                        <span class="material-symbols-outlined text-xl">search</span>
+                    </span>
+                    <input type="text" name="q" value="{{ request('q') }}" placeholder="Cari nama atau email..."
+                        class="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-orange focus:border-transparent text-sm transition-all">
+                </div>
+
+                {{-- Tombol Reset Filter (Muncul jika ada filter aktif) --}}
+                @if(request('q') || request('role') || request('sort'))
+                    <a href="{{ route('admin.users.index') }}" 
+                       class="flex items-center justify-center px-3 py-2 bg-gray-100 hover:bg-gray-200 text-gray-600 rounded-xl transition-colors"
+                       title="Reset Filter">
+                        <span class="material-symbols-outlined text-xl">restart_alt</span>
+                    </a>
+                @endif
+
+            </form>
+        </div>
     </div>
 
     {{-- Tabel User --}}
@@ -37,8 +76,7 @@
                         <tr class="hover:bg-gray-50 transition-colors group">
                             <td class="px-6 py-4">
                                 <div class="flex items-center gap-3">
-                                    <div
-                                        class="w-10 h-10 rounded-full bg-gray-100 overflow-hidden border border-gray-200 shrink-0">
+                                    <div class="w-10 h-10 rounded-full bg-gray-100 overflow-hidden border border-gray-200 shrink-0">
                                         <img src="{{ $user->profile_photo_path ? asset('storage/' . $user->profile_photo_path) : 'https://ui-avatars.com/api/?name=' . urlencode($user->name) . '&background=random' }}"
                                             class="w-full h-full object-cover">
                                     </div>
@@ -50,18 +88,15 @@
                             </td>
                             <td class="px-6 py-4">
                                 @if ($user->role == 'admin')
-                                    <span
-                                        class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800 border border-purple-200">
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800 border border-purple-200">
                                         Admin
                                     </span>
                                 @elseif($user->role == 'penjual')
-                                    <span
-                                        class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-orange-100 text-orange-800 border border-orange-200">
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-orange-100 text-orange-800 border border-orange-200">
                                         Penjual
                                     </span>
                                 @else
-                                    <span
-                                        class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 border border-green-200">
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 border border-green-200">
                                         Pembeli
                                     </span>
                                 @endif
@@ -99,8 +134,11 @@
                     @empty
                         <tr>
                             <td colspan="5" class="px-6 py-12 text-center text-gray-400">
-                                <span class="material-symbols-outlined text-4xl mb-2">search_off</span>
-                                <p>Tidak ada pengguna ditemukan.</p>
+                                <div class="flex flex-col items-center justify-center">
+                                    <span class="material-symbols-outlined text-4xl mb-2 text-gray-300">search_off</span>
+                                    <p class="text-base font-medium text-gray-500">Tidak ada pengguna ditemukan.</p>
+                                    <p class="text-xs text-gray-400 mt-1">Coba ubah kata kunci pencarian atau filter Anda.</p>
+                                </div>
                             </td>
                         </tr>
                     @endforelse
