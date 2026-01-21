@@ -324,11 +324,6 @@
 
     </form>
 
-    {{-- Loading Overlay --}}
-    <div id="loading-overlay" class="fixed inset-0 z-50 flex items-center justify-center bg-white/10 backdrop-blur-md hidden transition-opacity duration-300">
-        <div class="w-16 h-16 border-[6px] border-gray-200/20 border-t-primary-orange border-b-primary-green rounded-full animate-spin"></div>
-    </div>
-
     {{-- Script AJAX untuk Favorite --}}
     <script>
         function toggleFavorite(btn, umkmId) {
@@ -372,11 +367,6 @@
                 window.location.href = "{{ route('login') }}";
             @endauth
         }
-
-        // Tampilkan loading overlay saat halaman akan di-refresh atau navigasi
-        window.addEventListener('beforeunload', function(e) {
-            document.getElementById('loading-overlay').classList.remove('hidden');
-        });
     </script>
 
     <style>
