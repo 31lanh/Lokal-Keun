@@ -70,7 +70,7 @@ class SellerController extends Controller
                 'maps_link'     => $validated['maps_link'] ?? null,
                 'jam_buka'      => $validated['jam_buka'] ?? null,
                 'jam_tutup'     => $validated['jam_tutup'] ?? null,
-                'status'        => 'pending',
+                'status'        => 'pending', // [PENTING] Set default status ke pending
             ]);
 
             // Upload Foto Galeri (Multiple)
@@ -112,8 +112,8 @@ class SellerController extends Controller
             }
 
             DB::commit();
-            return redirect()->route('seller.dashboard')
-                ->with('success', 'Pendaftaran berhasil! Data Anda sedang direview.');
+            // Redirect ke dashboard, nanti dicegat oleh logic di method dashboard()
+            return redirect()->route('seller.dashboard'); 
         } catch (\Exception $e) {
             DB::rollBack();
             return back()->withInput()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
@@ -125,12 +125,28 @@ class SellerController extends Controller
      */
     public function dashboard()
     {
+        // 1. Cek apakah user sudah punya UMKM?
         if (!auth()->user()->hasCompletedUmkmRegistration()) {
             return redirect()->route('seller.daftar')
                 ->with('info', 'Silakan lengkapi data UMKM Anda terlebih dahulu.');
         }
 
-        $umkm = auth()->user()->umkm->load(['menus', 'photos']);
+        $umkm = auth()->user()->umkm;
+
+        // 2. [LOGIC BARU] Cek Status UMKM
+        // Jika statusnya 'pending', alihkan ke tampilan menunggu
+        if ($umkm->status === 'pending') {
+            return view('penjual.pending'); 
+        }
+        
+        // Opsional: Jika direject, bisa diarahkan ke view lain atau tampilkan pesan
+        if ($umkm->status === 'rejected') {
+             // return view('penjual.rejected', compact('umkm')); 
+             // Untuk sementara kita biarkan akses dashboard tapi mungkin dengan alert
+        }
+
+        // 3. Jika Approved, baru load data lengkap dashboard
+        $umkm->load(['menus', 'photos']);
 
         // Ambil data kunjungan (Total & Bulan Ini)
         $totalVisits = $umkm->total_visits;
@@ -146,6 +162,9 @@ class SellerController extends Controller
     {
         $umkm = auth()->user()->umkm;
         if (!$umkm) return redirect()->route('seller.daftar');
+
+        // Opsional: Cek juga di sini jika mau membatasi edit saat pending
+        // if ($umkm->status === 'pending') return redirect()->route('seller.dashboard');
 
         $umkm->load(['menus', 'photos']);
         return view('penjual.edit', compact('umkm'));
@@ -204,9 +223,6 @@ class SellerController extends Controller
                         'name'        => $menuData['name'],
                         'price'       => $menuData['price'],
                         'description' => $menuData['description'] ?? null,
-                        
-                        // [PERBAIKAN LOGIKA DISINI]
-                        // Ambil value langsung. Jika '0' akan tersimpan 0 (false), jika '1' tersimpan 1 (true).
                         'is_recommended' => $menuData['is_recommended'] ?? 0, 
                     ];
 

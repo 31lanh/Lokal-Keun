@@ -288,72 +288,86 @@
                                 }
                                 $isFavorited = auth()->check() && in_array($umkm->id, $favoritedUmkmIds ?? []);
                             @endphp
-                            <div
-                                class="group bg-white dark:bg-surface-dark rounded-3xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 border border-gray-100 dark:border-gray-800">
-                                <div class="relative h-56 overflow-hidden">
-                                    <div class="absolute top-4 right-4 z-10">
-                                        <button onclick="toggleFavorite(this, {{ $umkm->id }})"
-                                            class="p-2.5 rounded-full bg-white/90 backdrop-blur-sm transition-all shadow-lg transform hover:scale-110 {{ $isFavorited ? 'text-red-500' : 'text-gray-400 hover:text-red-500' }}">
-                                            <span class="material-symbols-outlined text-[22px] {{ $isFavorited ? 'filled' : '' }}">favorite</span>
-                                        </button>
-                                    </div>
-                                    <div class="absolute top-4 left-4 z-10">
+                        <div
+                            class="group bg-white dark:bg-surface-dark rounded-3xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 border border-gray-100 dark:border-gray-800 flex flex-col h-full">
+                            <div class="relative h-56 overflow-hidden shrink-0">
+                                <div class="absolute top-4 right-4 z-10">
+                                    <button onclick="toggleFavorite(this, {{ $umkm->id }})"
+                                        class="p-2.5 rounded-full bg-white/90 backdrop-blur-sm transition-all shadow-lg transform hover:scale-110 {{ $isFavorited ? 'text-red-500' : 'text-gray-400 hover:text-red-500' }}">
                                         <span
-                                            class="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-bold {{ $isOpen ? 'bg-gradient-to-r from-green-400 to-green-600 text-white' : 'bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200' }} shadow-lg">
-                                            @if ($isOpen)
-                                                <span class="w-1.5 h-1.5 bg-white rounded-full mr-2 animate-pulse"></span>
-                                            @endif
-                                            {{ $isOpen ? 'Buka' : 'Tutup' }}
+                                            class="material-symbols-outlined text-[22px] {{ $isFavorited ? 'filled' : '' }}">favorite</span>
+                                    </button>
+                                </div>
+                                <div class="absolute top-4 left-4 z-10">
+                                    <span
+                                        class="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-bold {{ $isOpen ? 'bg-gradient-to-r from-green-400 to-green-600 text-white' : 'bg-red-500  text-white' }} shadow-lg">
+                                        @if ($isOpen)
+                                            <span class="w-1.5 h-1.5 bg-white rounded-full mr-2 animate-pulse"></span>
+                                        @endif
+                                        {{ $isOpen ? 'Buka' : 'Tutup' }}
+                                    </span>
+                                </div>
+                                <a href="{{ route('umkm.show', $umkm->slug) }}">
+                                    <img class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                                        src="{{ $photoUrl }}" alt="{{ $umkm->nama_usaha }}" />
+                                </a>
+                            </div>
+
+                            {{-- BODY CARD: flex-col & flex-1 untuk mengisi ruang tersisa --}}
+                            <div class="p-6 flex flex-col flex-1">
+
+                                <div class="flex justify-between items-start mb-3">
+                                    <span
+                                        class="text-xs font-bold tracking-wide uppercase text-primary-orange bg-orange-light dark:bg-orange-900/30 px-3 py-1.5 rounded-lg">
+                                        {{ ucfirst($umkm->kategori) }}
+                                    </span>
+                                    <div
+                                        class="flex items-center gap-1 bg-amber-50 dark:bg-amber-900/20 px-2.5 py-1.5 rounded-lg shrink-0">
+                                        <span
+                                            class="material-symbols-outlined text-[16px] text-amber-500 filled">star</span>
+                                        <span class="text-sm font-bold text-amber-600 dark:text-amber-400">
+                                            {{ $umkm->rating > 0 ? number_format($umkm->rating, 1) : '-' }}
+                                        </span>
+                                        <span class="text-xs text-gray-400">({{ $umkm->total_reviews ?? 0 }})</span>
+                                    </div>
+                                </div>
+
+                                <a href="{{ route('umkm.show', $umkm->slug) }}" class="block mb-2">
+                                    <h3
+                                        class="text-xl font-bold text-gray-900 dark:text-white group-hover:text-primary-orange transition-colors cursor-pointer line-clamp-1">
+                                        {{ $umkm->nama_usaha }}
+                                    </h3>
+                                </a>
+
+                                <div class="flex items-center text-gray-500 dark:text-gray-400 text-sm mb-4">
+                                    <span
+                                        class="material-symbols-outlined text-[18px] mr-1 text-primary-green shrink-0">location_on</span>
+                                    <span class="line-clamp-1">{{ Str::limit($umkm->alamat, 30) }}</span>
+                                </div>
+
+                                {{-- FOOTER CARD: Diperbarui dengan layout flex-col sm:flex-row dan spacing --}}
+                                <div
+                                    class="pt-4 border-t border-gray-100 dark:border-gray-800 mt-auto flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+
+                                    {{-- Harga: Layout bertumpuk (label di atas, harga di bawah) --}}
+                                    <div class="flex flex-col">
+                                        <span class="text-xs text-gray-500 dark:text-gray-400 font-medium">Mulai dari</span>
+                                        <span class="text-sm font-bold text-primary-orange">
+                                            {{ $minPrice ? 'Rp ' . number_format($minPrice, 0, ',', '.') : '-' }}
                                         </span>
                                     </div>
-                                    {{-- Menggunakan route umkm.show dengan slug, bukan detail --}}
-                                    <a href="{{ route('umkm.show', $umkm->slug) }}">
-                                        <img class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                                            src="{{ $photoUrl }}" alt="{{ $umkm->nama_usaha }}" />
+
+                                    {{-- Tombol Lihat Detail: Diberi style button agar lebih jelas --}}
+                                    <a href="{{ route('umkm.show', $umkm->slug) }}"
+                                        class="inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl bg-orange-50 dark:bg-orange-900/20 text-primary-orange text-sm font-bold hover:bg-primary-orange hover:text-white transition-all group/link w-full sm:w-auto">
+                                        Lihat Detail
+                                        <span
+                                            class="material-symbols-outlined text-[18px] group-hover/link:translate-x-1 transition-transform">arrow_forward</span>
                                     </a>
                                 </div>
-                                <div class="p-6">
-                                    <div class="flex justify-between items-start mb-3">
-                                        <span
-                                            class="text-xs font-bold tracking-wide uppercase text-primary-orange bg-orange-light dark:bg-orange-900/30 px-3 py-1.5 rounded-lg">{{ ucfirst($umkm->kategori) }}</span>
-                                        <div
-                                            class="flex items-center gap-1 bg-amber-50 dark:bg-amber-900/20 px-2.5 py-1.5 rounded-lg">
-                                            <span
-                                                class="material-symbols-outlined text-[16px] text-amber-500 filled">star</span>
-                                            <span
-                                                class="text-sm font-bold text-amber-600 dark:text-amber-400">{{ $umkm->rating ?? '-' }}</span>
-                                            <span class="text-xs text-gray-400">({{ $umkm->total_reviews ?? 0 }})</span>
-                                        </div>
-                                    </div>
 
-                                    <a href="{{ route('umkm.show', $umkm->slug) }}">
-                                        <h3
-                                            class="text-xl font-bold text-gray-900 dark:text-white mb-2 group-hover:text-primary-orange transition-colors cursor-pointer line-clamp-1">
-                                            {{ $umkm->nama_usaha }}
-                                        </h3>
-                                    </a>
-
-                                    <div class="flex items-center text-gray-500 dark:text-gray-400 text-sm mb-4">
-                                        <span
-                                            class="material-symbols-outlined text-[18px] mr-1 text-primary-green">location_on</span>
-                                        <span class="line-clamp-1">{{ Str::limit($umkm->alamat, 30) }}</span>
-                                    </div>
-                                    <div
-                                        class="pt-4 border-t border-gray-100 dark:border-gray-800 flex items-center justify-between">
-                                        <span class="text-sm text-gray-600 dark:text-gray-400 font-semibold">Mulai dari
-                                            <span
-                                                class="text-primary-orange font-bold">{{ $minPrice ? 'Rp ' . number_format($minPrice, 0, ',', '.') : '-' }}</span></span>
-
-                                        {{-- PERBAIKAN DISINI: Menggunakan umkm.show dan slug --}}
-                                        <a class="text-sm font-bold text-primary-orange hover:text-orange-dark flex items-center gap-1 group/link"
-                                            href="{{ route('umkm.show', $umkm->slug) }}">
-                                            Lihat Detail
-                                            <span
-                                                class="material-symbols-outlined text-[18px] group-hover/link:translate-x-1 transition-transform">arrow_forward</span>
-                                        </a>
-                                    </div>
-                                </div>
                             </div>
+                        </div>
                         @empty
                             <div class="col-span-full text-center py-12">
                                 <div

@@ -3,10 +3,5 @@
         <p class="text-xs text-gray-500">
             &copy; {{ date('Y') }} LokalKeun Admin Panel. All rights reserved.
         </p>
-        <div class="flex items-center gap-4 text-xs text-gray-500">
-            <a href="#" class="hover:text-primary-orange transition-colors">Bantuan</a>
-            <a href="#" class="hover:text-primary-orange transition-colors">Dokumentasi</a>
-            <a href="#" class="hover:text-primary-orange transition-colors">Kontak</a>
-        </div>
     </div>
 </footer>
