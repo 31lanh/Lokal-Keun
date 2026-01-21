@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8" />
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
-    <title>Masuk - Lokal-keun</title>
+    <title>Masuk - LokalKeun</title>
 
     <link href="https://fonts.googleapis.com" rel="preconnect" />
     <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
@@ -72,7 +72,7 @@
                         class="size-10 bg-gradient-to-br from-primary-orange to-primary-green rounded-xl flex items-center justify-center shadow-lg">
                         <span class="material-symbols-outlined text-white text-2xl">store</span>
                     </div>
-                    <span class="text-xl font-bold gradient-text">Lokal-keun</span>
+                    <span class="text-xl font-bold gradient-text">LokalKeun</span>
                 </div>
 
                 <div class="space-y-4">
@@ -84,15 +84,15 @@
 
                 <div class="flex gap-8">
                     <div>
-                        <div class="text-2xl font-bold text-gray-900">10K+</div>
+                        <div class="text-2xl font-bold text-gray-900">{{ $stats['total_umkm'] }}+</div>
                         <div class="text-sm text-gray-600">UMKM</div>
                     </div>
                     <div>
-                        <div class="text-2xl font-bold text-gray-900">50K+</div>
+                        <div class="text-2xl font-bold text-gray-900">{{ $stats['total_products'] }}+</div>
                         <div class="text-sm text-gray-600">Produk</div>
                     </div>
                     <div>
-                        <div class="text-2xl font-bold text-gray-900">100K+</div>
+                        <div class="text-2xl font-bold text-gray-900">{{ $stats['total_users'] }}+</div>
                         <div class="text-sm text-gray-600">Pengguna</div>
                     </div>
                 </div>
@@ -105,7 +105,7 @@
                         class="size-10 bg-gradient-to-br from-primary-orange to-primary-green rounded-xl flex items-center justify-center">
                         <span class="material-symbols-outlined text-white text-2xl">store</span>
                     </div>
-                    <span class="text-xl font-bold gradient-text">Lokal-keun</span>
+                    <span class="text-xl font-bold gradient-text">LokalKeun</span>
                 </div>
 
                 <div class="mb-6">
@@ -120,7 +120,7 @@
                         Masuk ke akun
                     </h1>
                     <p class="text-gray-600 dark:text-gray-400 text-sm">
-                        Kelola toko dan pesanan kamu dengan mudah – semua dalam satu platform.
+                        Kelola toko dan pesanan kamu dengan mudah semua dalam satu platform.
                     </p>
                 </div>
 

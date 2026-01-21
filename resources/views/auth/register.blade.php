@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8" />
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
-    <title>Daftar - Lokal-keun</title>
+    <title>Daftar - LokalKeun</title>
 
     <link href="https://fonts.googleapis.com" rel="preconnect" />
     <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
@@ -86,7 +86,7 @@
                         class="size-10 bg-gradient-to-br from-primary-orange to-primary-green rounded-xl flex items-center justify-center shadow-lg">
                         <span class="material-symbols-outlined text-white text-2xl">store</span>
                     </div>
-                    <span class="text-xl font-bold gradient-text">Lokal-keun</span>
+                    <span class="text-xl font-bold gradient-text">LokalKeun</span>
                 </div>
 
                 <div class="space-y-4">
@@ -134,7 +134,7 @@
                         class="size-10 bg-gradient-to-br from-primary-orange to-primary-green rounded-xl flex items-center justify-center">
                         <span class="material-symbols-outlined text-white text-2xl">store</span>
                     </div>
-                    <span class="text-xl font-bold gradient-text">Lokal-keun</span>
+                    <span class="text-xl font-bold gradient-text">LokalKeun</span>
                 </div>
 
                 <div class="mb-6">

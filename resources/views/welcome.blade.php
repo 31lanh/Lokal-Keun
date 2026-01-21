@@ -91,26 +91,46 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
             <div class="grid lg:grid-cols-2 gap-16 items-center">
                 
-                {{-- Gambar Kiri: Fade Right --}}
+                {{-- Info Grid Kiri: Fade Right --}}
                 <div class="relative order-2 lg:order-1" data-aos="fade-right">
-                    <div class="absolute -top-4 -left-4 w-72 h-72 bg-primary-green/20 rounded-full blur-3xl"></div>
+                    {{-- Background Blob --}}
+                    <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] h-[120%] bg-gradient-to-tr from-orange-100 to-green-100 dark:from-orange-900/20 dark:to-green-900/20 rounded-full blur-3xl -z-10"></div>
 
-                    <div class="relative rounded-3xl overflow-hidden shadow-2xl border-4 border-white dark:border-surface-dark transform rotate-[-2deg] hover:rotate-0 transition-transform duration-500">
-                        <img src="https://images.unsplash.com/photo-1576669801775-ffdeb4403cb0?q=80&w=1000&auto=format&fit=crop"
-                            alt="Tentang Lokal-keun" class="w-full h-full object-cover">
-                    </div>
+                    <div class="grid grid-cols-2 gap-6">
+                        {{-- Card 1 --}}
+                        <div class="bg-white dark:bg-surface-dark p-6 rounded-3xl shadow-xl border border-orange-100 dark:border-gray-700 transform hover:-translate-y-2 transition-transform duration-300">
+                            <div class="w-14 h-14 bg-orange-50 dark:bg-orange-900/30 rounded-2xl flex items-center justify-center mb-4 text-primary-orange">
+                                <span class="material-symbols-outlined text-3xl">storefront</span>
+                            </div>
+                            <h3 class="text-3xl font-extrabold text-gray-900 dark:text-white mb-1">{{ $stats['total_umkm'] }}+</h3>
+                            <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Mitra UMKM Bergabung</p>
+                        </div>
 
-                    {{-- Badge Float: Zoom In --}}
-                    <div class="absolute -bottom-6 -right-6 bg-white dark:bg-surface-dark p-6 rounded-2xl shadow-xl animate-float" 
-                         data-aos="zoom-in" data-aos-delay="300">
-                        <div class="flex items-center gap-4">
-                            <div class="p-3 bg-orange-light rounded-full text-primary-orange">
-                                <span class="material-symbols-outlined">diversity_3</span>
+                        {{-- Card 2 (Offset Down) --}}
+                        <div class="bg-white dark:bg-surface-dark p-6 rounded-3xl shadow-xl border border-green-100 dark:border-gray-700 transform translate-y-8 hover:translate-y-6 transition-transform duration-300">
+                            <div class="w-14 h-14 bg-green-50 dark:bg-green-900/30 rounded-2xl flex items-center justify-center mb-4 text-primary-green">
+                                <span class="material-symbols-outlined text-3xl">inventory_2</span>
                             </div>
-                            <div>
-                                <p class="text-xs text-gray-500">Komunitas</p>
-                                <p class="font-bold text-gray-900 dark:text-white">{{ $stats['total_umkm'] }}+ Mitra</p>
+                            <h3 class="text-3xl font-extrabold text-gray-900 dark:text-white mb-1">{{ $stats['total_products'] }}+</h3>
+                            <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Produk Lokal Unik</p>
+                        </div>
+
+                        {{-- Card 3 --}}
+                        <div class="bg-white dark:bg-surface-dark p-6 rounded-3xl shadow-xl border border-blue-100 dark:border-gray-700 transform hover:-translate-y-2 transition-transform duration-300">
+                            <div class="w-14 h-14 bg-blue-50 dark:bg-blue-900/30 rounded-2xl flex items-center justify-center mb-4 text-blue-600">
+                                <span class="material-symbols-outlined text-3xl">groups</span>
                             </div>
+                            <h3 class="text-3xl font-extrabold text-gray-900 dark:text-white mb-1">{{ $stats['total_users'] }}+</h3>
+                            <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Pengguna Aktif</p>
+                        </div>
+
+                        {{-- Card 4 (Offset Down) --}}
+                        <div class="bg-white dark:bg-surface-dark p-6 rounded-3xl shadow-xl border border-amber-100 dark:border-gray-700 transform translate-y-8 hover:translate-y-6 transition-transform duration-300">
+                            <div class="w-14 h-14 bg-amber-50 dark:bg-amber-900/30 rounded-2xl flex items-center justify-center mb-4 text-amber-500">
+                                <span class="material-symbols-outlined text-3xl">verified</span>
+                            </div>
+                            <h3 class="text-3xl font-extrabold text-gray-900 dark:text-white mb-1">100%</h3>
+                            <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Terverifikasi & Aman</p>
                         </div>
                     </div>
                 </div>
@@ -121,10 +141,10 @@
                         <span class="text-xs font-bold text-primary-green uppercase tracking-wider">Tentang Kami</span>
                     </div>
 
-                    <h2 class="text-4xl font-bold mb-6">Mengenal Lebih Dekat <br><span class="gradient-text">Lokal-keun</span></h2>
+                    <h2 class="text-4xl font-bold mb-6">Mengenal Lebih Dekat <br><span class="gradient-text">LokalKeun</span></h2>
 
                     <p class="text-gray-600 dark:text-gray-300 text-lg mb-6 leading-relaxed">
-                        <strong>Lokal-Keun</strong> hadir sebagai platform untuk mendukung dan mempromosikan UMKM lokal
+                        <strong class="gradient-text">LokalKeun</strong> hadir sebagai platform untuk mendukung dan mempromosikan UMKM lokal
                         Indonesia. Kami percaya setiap produk lokal memiliki cerita dan kualitas yang layak dikenal lebih
                         luas.
                         Bersama tim yang berdedikasi, kami berupaya menghubungkan pelaku

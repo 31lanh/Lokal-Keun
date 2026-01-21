@@ -4,6 +4,9 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\Models\Umkm;
+use App\Models\UmkmMenu;
+use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\ValidationException;
 
@@ -14,7 +17,13 @@ class LoginController extends Controller
      */
     public function showLoginForm()
     {
-        return view('auth.login');
+        $stats = [
+            'total_umkm' => Umkm::where('status', 'approved')->count(),
+            'total_products' => UmkmMenu::count(),
+            'total_users' => User::where('role', 'pembeli')->count(),
+        ];
+
+        return view('auth.login', compact('stats'));
     }
 
     /**
