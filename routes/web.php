@@ -126,3 +126,12 @@ Route::middleware(['auth'])->get('/dashboard-redirect', function () {
     elseif ($user->role === 'penjual') return redirect()->route('seller.dashboard');
     else return redirect()->route('buyer.dashboard');
 })->name('dashboard');
+
+Route::get('/run-seeder', function () {
+    try {
+        \Illuminate\Support\Facades\Artisan::call('db:seed', ['--force' => true]);
+        return 'Seeder successfully run!';
+    } catch (\Exception $e) {
+        return 'Error: ' . $e->getMessage();
+    }
+});
