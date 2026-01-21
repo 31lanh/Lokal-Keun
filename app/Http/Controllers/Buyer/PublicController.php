@@ -135,24 +135,24 @@ class PublicController extends Controller
         return view('jelajah', compact('umkms', 'favoritedUmkmIds'));
     }
 
-    public function direktori(Request $request)
-    {
-        // [PERBAIKAN] Pastikan hanya mengambil yang approved
-        $query = Umkm::where('status', 'approved');
+    // public function direktori(Request $request)
+    // {
+    //     // [PERBAIKAN] Pastikan hanya mengambil yang approved
+    //     $query = Umkm::where('status', 'approved');
 
-        if ($request->has('q')) {
-            $search = $request->q;
-            $query->where(function($q) use ($search) {
-                $q->where('nama_usaha', 'LIKE', "%{$search}%")
-                  ->orWhere('deskripsi', 'LIKE', "%{$search}%");
-            });
-        }
+    //     if ($request->has('q')) {
+    //         $search = $request->q;
+    //         $query->where(function($q) use ($search) {
+    //             $q->where('nama_usaha', 'LIKE', "%{$search}%")
+    //               ->orWhere('deskripsi', 'LIKE', "%{$search}%");
+    //         });
+    //     }
 
-        $umkms = $query->paginate(12);
+    //     $umkms = $query->paginate(12);
 
-        // Menggunakan view jelajah sebagai template
-        return view('jelajah', compact('umkms'));
-    }
+    //     // Menggunakan view jelajah sebagai template
+    //     return view('jelajah', compact('umkms'));
+    // }
 
     public function category(Request $request, $slug)
     {

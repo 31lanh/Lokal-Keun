@@ -280,7 +280,7 @@
             </div>
 
             <div class="mt-12 text-center" data-aos="fade-up">
-                <a href="{{ route('umkm.index') }}" class="inline-block px-8 py-4 bg-gradient-to-r from-primary-orange to-primary-green hover:shadow-xl hover:shadow-orange-500/30 text-white font-bold rounded-xl transition-all transform hover:scale-105">
+                <a href="{{ route('jelajah') }}" class="inline-block px-8 py-4 bg-gradient-to-r from-primary-orange to-primary-green hover:shadow-xl hover:shadow-orange-500/30 text-white font-bold rounded-xl transition-all transform hover:scale-105">
                     Lihat Lebih Banyak UMKM →
                 </a>
             </div>

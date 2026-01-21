@@ -118,7 +118,7 @@ Route::get('/', function () {
 Route::get('/jelajah', [PublicController::class, 'index'])->name('jelajah');
 Route::get('/kategori/{slug}', [PublicController::class, 'category'])->name('kategori.detail');
 Route::get('/umkm/{slug}', [UmkmDetailController::class, 'show'])->name('umkm.show');
-Route::get('/direktori-umkm', [PublicController::class, 'direktori'])->name('umkm.index');
+// Route::get('/direktori-umkm', [PublicController::class, 'direktori'])->name('umkm.index');
 
 Route::middleware(['auth'])->get('/dashboard-redirect', function () {
     $user = auth()->user();
