@@ -25,31 +25,23 @@
                     </div>
 
                     <div class="rounded-xl overflow-hidden border border-gray-200 dark:border-gray-700 bg-gray-100 dark:bg-gray-900 relative aspect-video flex items-center justify-center group">
-                        {{-- PERBAIKAN LOGIKA IF-ELSEIF DI SINI --}}
-                        @if(auth()->user()->map_link)
-                            @if(str_contains(auth()->user()->map_link, 'embed'))
-                                <iframe src="{{ auth()->user()->map_link }}" width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
-                            @else
-                                <div class="flex flex-col items-center justify-center h-full p-6 text-center">
-                                    <span class="material-symbols-outlined text-gray-400 text-4xl mb-2">link_off</span>
-                                    <p class="text-sm text-gray-600 dark:text-gray-300 font-medium">Link Maps tidak valid untuk ditampilkan.</p>
-                                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-1 mb-3">Gunakan link "Sematkan Peta" (Embed) agar peta muncul di sini.</p>
-                                    <a href="{{ auth()->user()->map_link }}" target="_blank" class="inline-flex items-center justify-center rounded-lg bg-primary-orange px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-orange-600 transition-colors">
-                                        Buka di Google Maps
-                                    </a>
-                                </div>
+                        @if(auth()->user()->address)
+                            <iframe width="100%" height="100%" frameborder="0" scrolling="no" marginheight="0" marginwidth="0" 
+                                src="https://maps.google.com/maps?q={{ urlencode(auth()->user()->address) }}&t=&z=15&ie=UTF8&iwloc=&output=embed">
+                            </iframe>
+                            
+                            @if(auth()->user()->map_link)
+                                <a href="{{ auth()->user()->map_link }}" target="_blank" class="absolute inset-0 z-10 bg-transparent cursor-pointer" title="Buka di Google Maps"></a>
                             @endif
-                        
                         @else
                             <div class="text-center p-6">
-                                <span class="material-symbols-outlined text-gray-400 text-4xl mb-2">map</span>
-                                <p class="text-sm text-gray-500 dark:text-gray-400">Link peta belum diatur.</p>
+                                <span class="material-symbols-outlined text-gray-400 text-4xl mb-2">location_off</span>
+                                <p class="text-sm text-gray-500 dark:text-gray-400">Alamat belum diatur.</p>
                                 <button @click="open = false; $dispatch('open-edit-profile')" class="mt-2 text-primary-orange text-xs font-bold hover:underline">
-                                    Upload Sekarang
+                                    Atur Alamat Sekarang
                                 </button>
                             </div>
                         @endif
-                        {{-- SELESAI PERBAIKAN --}}
                     </div>
                 </div>
             </div>

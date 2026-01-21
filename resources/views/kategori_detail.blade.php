@@ -125,10 +125,28 @@
                     </h3>
                     <div class="space-y-3">
                         <label class="flex items-center gap-3 cursor-pointer group p-2 rounded-lg hover:bg-amber-50 dark:hover:bg-amber-900/20 transition-all">
-                            <input disabled class="h-5 w-5 rounded border-gray-300 text-amber-500 focus:ring-amber-500 dark:border-gray-600 dark:bg-gray-800" type="checkbox" />
+                            <input name="rating" value="" type="radio" onchange="this.form.submit()" {{ !request('rating') ? 'checked' : '' }} class="h-5 w-5 border-gray-300 text-amber-500 focus:ring-amber-500 dark:border-gray-600 dark:bg-gray-800" />
+                            <span class="text-sm text-gray-700 dark:text-gray-300 font-medium">Semua Rating</span>
+                        </label>
+                        <label class="flex items-center gap-3 cursor-pointer group p-2 rounded-lg hover:bg-amber-50 dark:hover:bg-amber-900/20 transition-all">
+                            <input name="rating" value="lt_4" type="radio" onchange="this.form.submit()" {{ request('rating') == 'lt_4' ? 'checked' : '' }} class="h-5 w-5 border-gray-300 text-amber-500 focus:ring-amber-500 dark:border-gray-600 dark:bg-gray-800" />
                             <div class="flex items-center text-amber-400">
-                                @for($i=0; $i<5; $i++) <span class="material-symbols-outlined fill-current text-[18px]">star</span> @endfor
-                                <span class="text-sm text-gray-700 dark:text-gray-300 ml-2 font-medium">& Up</span>
+                                @for ($i = 0; $i < 3; $i++)
+                                    <span class="material-symbols-outlined fill-current text-[18px]">star</span>
+                                @endfor
+                                <span class="material-symbols-outlined text-[18px] text-gray-300">star</span>
+                                <span class="material-symbols-outlined text-[18px] text-gray-300">star</span>
+                                <span class="text-sm text-gray-700 dark:text-gray-300 ml-2 font-medium">Rating 1-3</span>
+                            </div>
+                        </label>
+                        <label class="flex items-center gap-3 cursor-pointer group p-2 rounded-lg hover:bg-amber-50 dark:hover:bg-amber-900/20 transition-all">
+                            <input name="rating" value="4" type="radio" onchange="this.form.submit()" {{ request('rating') == '4' ? 'checked' : '' }} class="h-5 w-5 border-gray-300 text-amber-500 focus:ring-amber-500 dark:border-gray-600 dark:bg-gray-800" />
+                            <div class="flex items-center text-amber-400">
+                                @for ($i = 0; $i < 4; $i++)
+                                    <span class="material-symbols-outlined fill-current text-[18px]">star</span>
+                                @endfor
+                                <span class="material-symbols-outlined text-[18px] text-gray-300">star</span>
+                                <span class="text-sm text-gray-700 dark:text-gray-300 ml-2 font-medium">Rating 4+</span>
                             </div>
                         </label>
                     </div>

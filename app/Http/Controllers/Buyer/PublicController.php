@@ -59,6 +59,15 @@ class PublicController extends Controller
             $query->where('alamat', 'like', "%{$request->location}%");
         }
 
+        // Filter Rating
+        if ($request->filled('rating')) {
+            if ($request->rating == 'lt_4') {
+                $query->where('rating', '>=', 1)->where('rating', '<', 4);
+            } else {
+                $query->where('rating', '>=', $request->rating);
+            }
+        }
+
         // [PERBAIKAN] Logika Sorting (Termasuk Rating Tertinggi)
         if ($request->sort == 'Terbaru') {
             $query->latest();
@@ -125,6 +134,15 @@ class PublicController extends Controller
         // Filter Lokasi
         if ($request->filled('location') && $request->location != 'Semua Lokasi') {
             $query->where('alamat', 'like', "%{$request->location}%");
+        }
+
+        // Filter Rating
+        if ($request->filled('rating')) {
+            if ($request->rating == 'lt_4') {
+                $query->where('rating', '>=', 1)->where('rating', '<', 4);
+            } else {
+                $query->where('rating', '>=', $request->rating);
+            }
         }
 
         // [PERBAIKAN] Logika Sorting (Termasuk Rating Tertinggi)
