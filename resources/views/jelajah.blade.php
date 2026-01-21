@@ -396,6 +396,11 @@
 
     </form>
 
+    {{-- Loading Overlay --}}
+    <div id="loading-overlay" class="fixed inset-0 z-50 flex items-center justify-center bg-white/10 backdrop-blur-md hidden transition-opacity duration-300">
+        <div class="w-16 h-16 border-[6px] border-gray-200/20 border-t-primary-orange border-b-primary-green rounded-full animate-spin"></div>
+    </div>
+
     {{-- Script AJAX untuk Favorite --}}
     <script>
         function toggleFavorite(btn, umkmId) {
@@ -431,7 +436,8 @@
                         icon.classList.remove('filled');
                     }
                     // Auto refresh halaman setelah berhasil
-                    window.location.reload();
+                    document.getElementById('loading-overlay').classList.remove('hidden');
+                    setTimeout(() => window.location.reload(), 500);
                 })
                 .catch(error => console.error('Error:', error));
         @else
