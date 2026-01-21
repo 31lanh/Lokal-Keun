@@ -24,6 +24,9 @@
 
             $now = now()->format('H:i');
             $isOpen = $umkm->jam_buka && $umkm->jam_tutup && $now >= $umkm->jam_buka && $now <= $umkm->jam_tutup;
+            
+            // Filter Produk Unggulan
+            $recommendedMenus = $umkm->menus->where('is_recommended', true);
         @endphp
 
         {{-- 2. HERO SECTION (BANNER) --}}
@@ -171,14 +174,12 @@
 
                         <div class="flex flex-col">
                             <div class="flex items-baseline gap-2">
-                                {{-- UPDATE: Menggunakan variabel $totalVisits --}}
                                 <span class="text-4xl font-bold text-blue-900 dark:text-blue-100">
                                     {{ $totalVisits ?? 0 }}
                                 </span>
                                 <span class="text-base text-blue-600 dark:text-blue-300 font-normal">Views</span>
                             </div>
 
-                            {{-- UPDATE: Menambahkan info kunjungan bulan ini --}}
                             <div class="flex items-center gap-1 mt-1 text-blue-600 dark:text-blue-400 text-xs">
                                 <span class="material-symbols-outlined text-[14px]">trending_up</span>
                                 <span>+{{ $monthlyVisits ?? 0 }} bulan ini</span>
@@ -217,7 +218,8 @@
                             <div>
                                 <label class="block text-sm text-gray-400 mb-1">Kategori</label>
                                 <p class="text-base font-medium text-gray-700 dark:text-gray-300 capitalize">
-                                    {{ $umkm->kategori }}</p>
+                                    {{ $umkm->kategori }}
+                                </p>
                             </div>
                             <div>
                                 <label class="block text-sm text-gray-400 mb-1">Jam Operasional</label>
@@ -233,7 +235,44 @@
                         </div>
                     </div>
 
-                    {{-- Gallery Grid (FILTER IS_PRIMARY = FALSE) --}}
+                    {{-- [BARU] PRODUK UNGGULAN SECTION (SIDEBAR) --}}
+                    @if($recommendedMenus->count() > 0)
+                    <div class="bg-gradient-to-br from-primary-orange to-orange-600 rounded-2xl shadow-lg p-6 text-white relative overflow-hidden">
+                        <div class="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full blur-2xl -mr-16 -mt-16"></div>
+                        
+                        <h3 class="text-base font-bold mb-4 flex items-center gap-2 relative z-10">
+                            <span class="material-symbols-outlined text-yellow-300">verified</span> Produk Unggulan
+                        </h3>
+
+                        <div class="space-y-3 relative z-10">
+                            @foreach($recommendedMenus->take(3) as $menu)
+                                <div class="flex items-center gap-3 bg-white/10 p-2 rounded-xl backdrop-blur-sm border border-white/10">
+                                    <div class="shrink-0 w-12 h-12 rounded-lg bg-white/20 overflow-hidden">
+                                        @if($menu->photo_path)
+                                            <img src="{{ asset(ltrim($menu->photo_path, '/')) }}" class="w-full h-full object-cover">
+                                        @else
+                                            <div class="w-full h-full flex items-center justify-center text-white/50">
+                                                <span class="material-symbols-outlined text-lg">fastfood</span>
+                                            </div>
+                                        @endif
+                                    </div>
+                                    <div class="flex-1 min-w-0">
+                                        <p class="font-medium text-sm truncate">{{ $menu->name }}</p>
+                                        <p class="text-xs text-white/80">Rp {{ number_format($menu->price, 0, ',', '.') }}</p>
+                                    </div>
+                                </div>
+                            @endforeach
+                        </div>
+                        
+                        @if($recommendedMenus->count() > 3)
+                            <div class="mt-3 text-center">
+                                <span class="text-xs text-white/70 italic">+{{ $recommendedMenus->count() - 3 }} produk lainnya</span>
+                            </div>
+                        @endif
+                    </div>
+                    @endif
+
+                    {{-- Gallery Grid --}}
                     <div class="bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 shadow-sm p-6">
                         <div class="flex justify-between items-center mb-5">
                             <h3 class="text-base font-semibold text-gray-900 dark:text-white flex items-center gap-2">
@@ -243,7 +282,6 @@
                                 class="text-orange-500 text-sm font-medium hover:underline">Edit</a>
                         </div>
                         <div class="grid grid-cols-3 gap-3">
-                            {{-- FILTER BANNER DI SINI --}}
                             @forelse($umkm->photos->where('is_primary', false)->take(6) as $photo)
                                 <div class="aspect-square rounded-xl bg-gray-100 overflow-hidden border border-gray-100">
                                     <img src="{{ $photo->photo_url ? asset(ltrim($photo->photo_url, '/')) : asset('storage/' . $photo->photo_path) }}"
@@ -280,49 +318,67 @@
                             @if ($umkm->menus->count() > 0)
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                                     @foreach ($umkm->menus as $menu)
-                                        <div
-                                            class="group relative flex gap-5 p-5 rounded-2xl border border-gray-100 bg-white hover:border-orange-200 transition-all hover:shadow-lg">
-                                            <div
-                                                class="shrink-0 w-24 h-24 rounded-xl bg-gray-50 overflow-hidden border border-gray-100">
-                                                @if ($menu->photo_path)
-                                                    <img src="{{ asset(ltrim($menu->photo_path, '/')) }}"
-                                                        class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
-                                                @else
-                                                    <div
-                                                        class="w-full h-full flex items-center justify-center text-gray-300">
-                                                        <span class="material-symbols-outlined text-3xl">fastfood</span>
-                                                    </div>
-                                                @endif
-                                            </div>
-                                            <div class="flex-1 min-w-0 flex flex-col justify-center">
-                                                <div class="flex justify-between items-start">
-                                                    <h4
-                                                        class="text-lg font-medium text-gray-800 truncate pr-6 group-hover:text-primary-orange transition-colors">
-                                                        {{ $menu->name }}</h4>
+                                        <div class="group flex flex-col p-4 rounded-2xl border border-gray-100 bg-white hover:border-orange-200 transition-all hover:shadow-lg h-full relative overflow-hidden">
+                                            
+                                            {{-- [BARU] Label Unggulan di Card --}}
+                                            @if($menu->is_recommended)
+                                                <div class="absolute top-0 right-0 bg-yellow-400 text-yellow-900 text-[10px] font-bold px-3 py-1 rounded-bl-xl z-10 shadow-sm flex items-center gap-1">
+                                                    <span class="material-symbols-outlined text-[14px]">star</span> UNGGULAN
                                                 </div>
-                                                <p class="text-sm text-gray-500 line-clamp-1 mt-1 mb-2 font-normal">
-                                                    {{ $menu->description ?? 'Tidak ada deskripsi' }}
-                                                </p>
-                                                <p class="font-semibold text-base text-primary-orange">
+                                            @endif
+
+                                            {{-- Top Section: Image & Content --}}
+                                            <div class="flex gap-4 mb-4">
+                                                {{-- Image --}}
+                                                <div
+                                                    class="shrink-0 w-20 h-20 rounded-xl bg-gray-50 overflow-hidden border border-gray-100">
+                                                    @if ($menu->photo_path)
+                                                        <img src="{{ asset(ltrim($menu->photo_path, '/')) }}"
+                                                            class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                                                    @else
+                                                        <div
+                                                            class="w-full h-full flex items-center justify-center text-gray-300">
+                                                            <span class="material-symbols-outlined text-3xl">fastfood</span>
+                                                        </div>
+                                                    @endif
+                                                </div>
+
+                                                {{-- Content --}}
+                                                <div class="flex-1 min-w-0">
+                                                    <h4 class="text-lg font-medium text-gray-800 truncate group-hover:text-primary-orange transition-colors"
+                                                        title="{{ $menu->name }}">
+                                                        {{ $menu->name }}
+                                                    </h4>
+                                                    <p
+                                                        class="text-sm text-gray-500 line-clamp-2 mt-1 font-normal leading-relaxed h-[2.5em]">
+                                                        {{ $menu->description ?? 'Tidak ada deskripsi' }}
+                                                    </p>
+                                                </div>
+                                            </div>
+
+                                            {{-- Bottom Section: Price & Actions --}}
+                                            <div class="mt-auto pt-3 border-t border-gray-50 flex items-center justify-between">
+                                                <p class="font-bold text-base text-primary-orange">
                                                     Rp {{ number_format($menu->price, 0, ',', '.') }}
                                                 </p>
-                                            </div>
-                                            <div
-                                                class="absolute top-4 right-4 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                                                <a href="{{ route('seller.umkm.edit') }}#menu-container"
-                                                    class="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
-                                                    title="Edit">
-                                                    <span class="material-symbols-outlined text-base">edit</span>
-                                                </a>
-                                                <form action="{{ route('seller.menu.delete', $menu->id) }}"
-                                                    method="POST" onsubmit="return confirm('Hapus menu ini?');">
-                                                    @csrf @method('DELETE')
-                                                    <button type="submit"
-                                                        class="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                                                        title="Hapus">
-                                                        <span class="material-symbols-outlined text-base">delete</span>
-                                                    </button>
-                                                </form>
+
+                                                <div class="flex items-center gap-3">
+                                                    <a href="{{ route('seller.umkm.edit') }}#menu-container"
+                                                        class="inline-flex items-center justify-center w-10 h-10 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-xl transition-all"
+                                                        title="Edit Menu">
+                                                        <span class="material-symbols-outlined text-xl">edit</span>
+                                                    </a>
+
+                                                    <form action="{{ route('seller.menu.delete', $menu->id) }}"
+                                                        method="POST" onsubmit="return confirm('Hapus menu ini?');">
+                                                        @csrf @method('DELETE')
+                                                        <button type="submit"
+                                                            class="inline-flex items-center justify-center w-10 h-10 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-xl transition-all"
+                                                            title="Hapus Menu">
+                                                            <span class="material-symbols-outlined text-xl">delete</span>
+                                                        </button>
+                                                    </form>
+                                                </div>
                                             </div>
                                         </div>
                                     @endforeach

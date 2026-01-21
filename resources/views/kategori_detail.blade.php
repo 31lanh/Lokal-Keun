@@ -191,11 +191,18 @@
                     <div class="p-6">
                         <div class="flex justify-between items-start mb-3">
                             <span class="text-xs font-bold tracking-wide uppercase text-primary-orange bg-orange-light dark:bg-orange-900/30 px-3 py-1.5 rounded-lg">{{ ucfirst($umkm->kategori) }}</span>
+                            
+                            {{-- [PERBAIKAN] Menampilkan Rating Dinamis --}}
                             <div class="flex items-center gap-1 bg-amber-50 dark:bg-amber-900/20 px-2.5 py-1.5 rounded-lg">
                                 <span class="material-symbols-outlined text-[16px] text-amber-500 filled">star</span>
-                                <span class="text-sm font-bold text-amber-600 dark:text-amber-400">-</span>
-                                <span class="text-xs text-gray-400">(0)</span>
+                                <span class="text-sm font-bold text-amber-600 dark:text-amber-400">
+                                    {{ $umkm->rating > 0 ? number_format($umkm->rating, 1) : '-' }}
+                                </span>
+                                <span class="text-xs text-gray-400">
+                                    ({{ $umkm->total_reviews ?? 0 }})
+                                </span>
                             </div>
+
                         </div>
                         <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-2 group-hover:text-primary-orange transition-colors cursor-pointer line-clamp-1">
                             {{ $umkm->nama_usaha }}

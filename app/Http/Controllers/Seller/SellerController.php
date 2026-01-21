@@ -76,15 +76,15 @@ class SellerController extends Controller
             // Upload Foto Galeri (Multiple)
             if ($request->hasFile('photos')) {
                 foreach ($request->file('photos') as $index => $photo) {
-                    $filename = 'place_' . $umkm->id . '_' . time() . $index . '.' . $photo->getClientOriginalExtension();
+                    $filename = 'gallery_' . $umkm->id . '_' . time() . $index . '.' . $photo->getClientOriginalExtension();
                     $photo->move(public_path('umkm/photos'), $filename);
 
                     UmkmPhoto::create([
                         'umkm_id'    => $umkm->id,
                         'photo_path' => 'umkm/photos/' . $filename,
                         'photo_url'  => '/umkm/photos/' . $filename,
-                        'is_primary' => $index === 0,
-                        'order'      => $index,
+                        'is_primary' => false,
+                        'order'      => $index + 1,
                     ]);
                 }
             }
@@ -174,6 +174,7 @@ class SellerController extends Controller
             'menus.*.name'  => 'required_with:menus',
             'menus.*.price' => 'required_with:menus|numeric',
             'menus.*.photo' => 'nullable|image|max:2048',
+            'menus.*.is_recommended' => 'nullable',
         ]);
 
         try {
@@ -191,7 +192,7 @@ class SellerController extends Controller
                 'jam_tutup'    => $validated['jam_tutup'] ?? null,
             ]);
 
-            // Handle Menu
+            // Handle Menu Update
             if ($request->has('menus')) {
                 $submittedIds = collect($request->menus)->pluck('id')->filter()->toArray();
                 $umkm->menus()->whereNotIn('id', $submittedIds)->delete();
@@ -203,6 +204,10 @@ class SellerController extends Controller
                         'name'        => $menuData['name'],
                         'price'       => $menuData['price'],
                         'description' => $menuData['description'] ?? null,
+                        
+                        // [PERBAIKAN LOGIKA DISINI]
+                        // Ambil value langsung. Jika '0' akan tersimpan 0 (false), jika '1' tersimpan 1 (true).
+                        'is_recommended' => $menuData['is_recommended'] ?? 0, 
                     ];
 
                     if (isset($menuData['photo']) && $menuData['photo'] instanceof \Illuminate\Http\UploadedFile) {
@@ -223,11 +228,11 @@ class SellerController extends Controller
             // Handle Foto Galeri Baru
             if ($request->hasFile('photos')) {
                 $photos = $request->file('photos');
-                $currentMaxOrder = $umkm->photos()->max('order') ?? -1;
+                $currentMaxOrder = $umkm->photos()->max('order') ?? 0; 
                 $order = $currentMaxOrder + 1;
 
                 foreach ($photos as $index => $photo) {
-                    $filename = 'place_' . $umkm->id . '_' . time() . $index . '.' . $photo->getClientOriginalExtension();
+                    $filename = 'gallery_' . $umkm->id . '_' . time() . $index . '.' . $photo->getClientOriginalExtension();
                     $photo->move(public_path('umkm/photos'), $filename);
 
                     UmkmPhoto::create([

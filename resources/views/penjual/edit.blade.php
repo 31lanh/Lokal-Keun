@@ -169,7 +169,7 @@
                     </div>
                 </div>
 
-                {{-- EDIT MENU --}}
+                {{-- EDIT MENU (DENGAN REKOMENDASI) --}}
                 <div class="group relative bg-white dark:bg-surface-dark rounded-3xl shadow-lg border-2 border-transparent hover:border-red-500/20 overflow-hidden transition-all">
                     <div class="relative p-6 sm:p-8">
                         <div class="flex items-center justify-between mb-6 pb-5 border-b border-gray-100 dark:border-gray-700">
@@ -179,7 +179,7 @@
                                 </div>
                                 <div>
                                     <h2 class="text-gray-900 dark:text-white text-2xl font-bold">Edit Menu</h2>
-                                    <p class="text-sm text-gray-500">Kelola menu toko Anda</p>
+                                    <p class="text-sm text-gray-500">Kelola menu & produk unggulan</p>
                                 </div>
                             </div>
                             <span id="menu-count" class="px-3 py-1 bg-red-50 dark:bg-red-900/20 text-red-600 rounded-full text-xs font-bold border border-red-100 dark:border-red-800">
@@ -230,6 +230,19 @@
                                             <label class="block text-xs font-bold text-gray-500 mb-1">Deskripsi</label>
                                             <textarea name="menus[{{ $index }}][description]" rows="2" class="w-full p-3 rounded-lg text-sm border-2 border-gray-200 dark:border-slate-600 bg-white dark:bg-slate-800 focus:border-red-500 focus:ring-0 resize-none" placeholder="Deskripsi menu...">{{ $menu->description }}</textarea>
                                         </div>
+
+                                        {{-- [BARU] TOGGLE REKOMENDASI --}}
+                                        <div class="flex items-center gap-2 pt-2">
+                                            <input type="hidden" name="menus[{{ $index }}][is_recommended]" value="0"> {{-- Default Value --}}
+                                            <label class="relative inline-flex items-center cursor-pointer">
+                                                <input type="checkbox" name="menus[{{ $index }}][is_recommended]" value="1" class="sr-only peer" {{ $menu->is_recommended ? 'checked' : '' }}>
+                                                <div class="w-9 h-5 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-orange-300 dark:peer-focus:ring-orange-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all dark:border-gray-600 peer-checked:bg-primary-orange"></div>
+                                                <span class="ml-2 text-xs font-medium text-gray-900 dark:text-gray-300 flex items-center gap-1">
+                                                    <span class="material-symbols-outlined text-sm text-yellow-500">star</span>
+                                                    Jadikan Unggulan
+                                                </span>
+                                            </label>
+                                        </div>
                                     </div>
 
                                     <button type="button" class="btn-remove-menu absolute -top-2 -right-2 bg-white text-red-500 p-1 rounded-full shadow-md border border-gray-200 hover:scale-110 transition-all z-20">
@@ -248,7 +261,7 @@
                     </div>
                 </div>
 
-                {{-- 6. GALERI FOTO (AJAX DELETE + MULTIPLE UPLOAD) --}}
+                {{-- GALERI FOTO (AJAX DELETE + MULTIPLE UPLOAD) --}}
                 <div class="group relative bg-white dark:bg-surface-dark rounded-3xl shadow-lg border-2 border-transparent hover:border-primary-orange/20 overflow-hidden transition-all">
                     <div class="relative p-6 sm:p-8">
                         <div class="flex items-center gap-4 mb-6 pb-5 border-b border-gray-100 dark:border-gray-700">
@@ -349,6 +362,19 @@
                 <label class="block text-xs font-bold text-gray-500 mb-1">Deskripsi</label>
                 <textarea name="menus[INDEX][description]" rows="2" class="w-full p-3 rounded-lg text-sm border-2 border-gray-200 dark:border-slate-600 bg-white dark:bg-slate-800 focus:border-red-500 focus:ring-0 resize-none" placeholder="Deskripsi menu..."></textarea>
             </div>
+
+            {{-- [BARU] TOGGLE REKOMENDASI UNTUK ITEM BARU --}}
+            <div class="flex items-center gap-2 pt-2">
+                <input type="hidden" name="menus[INDEX][is_recommended]" value="0">
+                <label class="relative inline-flex items-center cursor-pointer">
+                    <input type="checkbox" name="menus[INDEX][is_recommended]" value="1" class="sr-only peer">
+                    <div class="w-9 h-5 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-orange-300 dark:peer-focus:ring-orange-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all dark:border-gray-600 peer-checked:bg-primary-orange"></div>
+                    <span class="ml-2 text-xs font-medium text-gray-900 dark:text-gray-300 flex items-center gap-1">
+                        <span class="material-symbols-outlined text-sm text-yellow-500">star</span>
+                        Jadikan Unggulan
+                    </span>
+                </label>
+            </div>
         </div>
         <button type="button" class="btn-remove-menu absolute -top-2 -right-2 bg-white text-red-500 p-1 rounded-full shadow-md border border-gray-200 hover:scale-110 transition-all z-20">
             <span class="material-symbols-outlined text-lg">close</span>
@@ -371,7 +397,7 @@
             }
         }
 
-        input.files = dt.files; // Sinkronisasi
+        input.files = dt.files; // Sinkronisasi input form
         renderGalleryPreview();
     }
 
@@ -410,21 +436,18 @@
     // B. LOGIC HAPUS FOTO LAMA (AJAX FETCH)
     // --------------------------------------------------------
     function deleteExistingPhoto(photoId) {
-        // Ambil CSRF Token
         const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
         const url = `/seller/photo/${photoId}/delete`; 
 
         fetch(url, {
-            method: 'GET', 
+            method: 'GET', // Harusnya DELETE, tapi di routes pakai GET (atau sesuaikan)
             headers: {
-                // Header ini WAJIB agar Controller tahu ini AJAX
                 'X-Requested-With': 'XMLHttpRequest', 
                 'Accept': 'application/json',
                 'Content-Type': 'application/json'
             }
         })
         .then(response => {
-            // Cek jika respon bukan JSON (misal error 404/500 html page)
             if (!response.ok) {
                 throw new Error('Network response was not ok');
             }
@@ -432,7 +455,6 @@
         })
         .then(data => {
             if (data.success) {
-                // Hapus elemen visual
                 const el = document.getElementById(`photo-${photoId}`);
                 if(el) {
                     el.style.transition = 'all 0.3s';
@@ -440,7 +462,6 @@
                     el.style.transform = 'scale(0.9)';
                     setTimeout(() => el.remove(), 300);
                 }
-                // Tutup modal jika pakai modal
                 if(typeof closeDeleteModal === 'function') closeDeleteModal();
             } else {
                 alert('Gagal: ' + (data.message || 'Terjadi kesalahan.'));
@@ -448,8 +469,6 @@
         })
         .catch(error => {
             console.error('Error:', error);
-            // Jangan alert "Koneksi Error" jika sebenarnya berhasil tapi parsing gagal
-            // Cek manual element, jika masih ada baru alert
             const el = document.getElementById(`photo-${photoId}`);
             if(el) {
                  alert('Terjadi kesalahan koneksi atau server.');

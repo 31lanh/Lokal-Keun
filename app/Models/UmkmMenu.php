@@ -17,6 +17,12 @@ class UmkmMenu extends Model
         'price',
         'description',
         'photo_path',
+        'is_recommended', // [BARU] Tambahkan ini
+    ];
+
+    protected $casts = [
+        'is_recommended' => 'boolean', // [BARU] Casting ke boolean
+        'price' => 'integer',
     ];
 
     public function umkm()

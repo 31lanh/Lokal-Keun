@@ -20,7 +20,7 @@
             <nav class="mb-6 flex items-center text-sm text-gray-500 dark:text-gray-400 overflow-x-auto whitespace-nowrap pb-2">
                 <a href="/" class="hover:text-primary-orange transition-colors">Beranda</a>
                 <span class="mx-2 material-symbols-outlined text-xs">chevron_right</span>
-                <span class="hover:text-primary-orange transition-colors cursor-pointer">{{ $umkm->kategori }}</span>
+                <span class="hover:text-primary-orange transition-colors cursor-pointer capitalize">{{ $umkm->kategori }}</span>
                 <span class="mx-2 material-symbols-outlined text-xs">chevron_right</span>
                 <span class="font-semibold text-gray-900 dark:text-white">{{ $umkm->nama_usaha }}</span>
             </nav>
@@ -84,36 +84,36 @@
                         </div>
                     </div>
                 </div>
+            </div>
 
-                {{-- NAVIGASI TAB (STICKY & INTERACTIVE) --}}
-                <div class="border-t border-gray-100 dark:border-gray-700 sticky top-[80px] bg-white dark:bg-gray-800 z-30 transition-all" id="profil-tabs">
-                    <div class="flex overflow-x-auto no-scrollbar px-6 gap-8">
-                        <button @click="activeTab = 'about'" 
-                                :class="activeTab === 'about' ? 'text-primary-orange border-primary-orange' : 'text-gray-500 hover:text-gray-900 border-transparent'"
-                                class="py-4 text-sm font-bold border-b-2 transition-colors whitespace-nowrap">
-                            Tentang
-                        </button>
-                        <button @click="activeTab = 'products'" 
-                                :class="activeTab === 'products' ? 'text-primary-orange border-primary-orange' : 'text-gray-500 hover:text-gray-900 border-transparent'"
-                                class="py-4 text-sm font-bold border-b-2 transition-colors whitespace-nowrap">
-                            Menu
-                        </button>
-                        <button @click="activeTab = 'gallery'" 
-                                :class="activeTab === 'gallery' ? 'text-primary-orange border-primary-orange' : 'text-gray-500 hover:text-gray-900 border-transparent'"
-                                class="py-4 text-sm font-bold border-b-2 transition-colors whitespace-nowrap">
-                            Galeri
-                        </button>
-                        <button @click="activeTab = 'reviews'" 
-                                :class="activeTab === 'reviews' ? 'text-primary-orange border-primary-orange' : 'text-gray-500 hover:text-gray-900 border-transparent'"
-                                class="py-4 text-sm font-bold border-b-2 transition-colors whitespace-nowrap">
-                            Ulasan
-                        </button>
-                    </div>
+            {{-- NAVIGASI TAB (STICKY & INTERACTIVE) --}}
+            <div class="border-t border-gray-100 dark:border-gray-700 sticky top-[80px] bg-white dark:bg-gray-800 z-30 transition-all" id="profil-tabs">
+                <div class="flex overflow-x-auto no-scrollbar px-6 gap-8">
+                    <button @click="activeTab = 'about'" 
+                            :class="activeTab === 'about' ? 'text-primary-orange border-primary-orange' : 'text-gray-500 hover:text-gray-900 border-transparent'"
+                            class="py-4 text-sm font-bold border-b-2 transition-colors whitespace-nowrap">
+                        Tentang
+                    </button>
+                    <button @click="activeTab = 'products'" 
+                            :class="activeTab === 'products' ? 'text-primary-orange border-primary-orange' : 'text-gray-500 hover:text-gray-900 border-transparent'"
+                            class="py-4 text-sm font-bold border-b-2 transition-colors whitespace-nowrap">
+                        Menu
+                    </button>
+                    <button @click="activeTab = 'gallery'" 
+                            :class="activeTab === 'gallery' ? 'text-primary-orange border-primary-orange' : 'text-gray-500 hover:text-gray-900 border-transparent'"
+                            class="py-4 text-sm font-bold border-b-2 transition-colors whitespace-nowrap">
+                        Galeri
+                    </button>
+                    <button @click="activeTab = 'reviews'" 
+                            :class="activeTab === 'reviews' ? 'text-primary-orange border-primary-orange' : 'text-gray-500 hover:text-gray-900 border-transparent'"
+                            class="py-4 text-sm font-bold border-b-2 transition-colors whitespace-nowrap">
+                        Ulasan
+                    </button>
                 </div>
             </div>
 
             {{-- MAIN CONTENT GRID --}}
-            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start relative">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start relative mt-8">
                 
                 {{-- LEFT CONTENT (Dynamic Content based on Tab) --}}
                 <div class="lg:col-span-8 min-h-[500px]">
@@ -158,7 +158,7 @@
                             </div>
                         </section>
 
-                        {{-- Preview Menu (Limit 3) --}}
+                        {{-- Preview Menu (Prioritaskan yg Unggulan) --}}
                         <section class="bg-white dark:bg-gray-800 rounded-2xl p-6 md:p-8 shadow-sm border border-gray-200 dark:border-gray-700">
                             <div class="flex items-center justify-between mb-6">
                                 <h3 class="text-lg font-bold text-gray-900 dark:text-white flex items-center gap-2">
@@ -166,8 +166,24 @@
                                 </h3>
                             </div>
                             <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-                                @forelse($umkm->menus->take(3) as $menu)
-                                    <div class="bg-white dark:bg-gray-900 rounded-xl overflow-hidden border border-gray-100 dark:border-gray-700 shadow-sm hover:shadow-md transition-all group">
+                                @php
+                                    $highlightMenus = $umkm->menus->where('is_recommended', true)->take(3);
+                                    if ($highlightMenus->count() < 3) {
+                                        $remaining = 3 - $highlightMenus->count();
+                                        $regularMenus = $umkm->menus->where('is_recommended', false)->take($remaining);
+                                        $highlightMenus = $highlightMenus->merge($regularMenus);
+                                    }
+                                @endphp
+
+                                @forelse($highlightMenus as $menu)
+                                    <div class="bg-white dark:bg-gray-900 rounded-xl overflow-hidden border border-gray-100 dark:border-gray-700 shadow-sm hover:shadow-md transition-all group relative">
+                                        
+                                        @if($menu->is_recommended)
+                                            <div class="absolute top-0 right-0 bg-yellow-400 text-yellow-900 text-[10px] font-bold px-3 py-1 rounded-bl-xl z-10 shadow-sm flex items-center gap-1">
+                                                <span class="material-symbols-outlined text-[14px]">star</span> UNGGULAN
+                                            </div>
+                                        @endif
+
                                         <div class="aspect-[4/3] bg-gray-100 relative overflow-hidden">
                                             @if ($menu->photo_path)
                                                 <img src="{{ asset(ltrim($menu->photo_path, '/')) }}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
@@ -239,8 +255,16 @@
                             </div>
 
                             <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-                                @foreach($umkm->menus as $menu)
-                                    <div class="bg-white dark:bg-gray-900 rounded-xl overflow-hidden border border-gray-100 dark:border-gray-700 shadow-sm hover:shadow-md transition-all group">
+                                {{-- Urutkan yang unggulan paling atas --}}
+                                @foreach($umkm->menus->sortByDesc('is_recommended') as $menu)
+                                    <div class="bg-white dark:bg-gray-900 rounded-xl overflow-hidden border border-gray-100 dark:border-gray-700 shadow-sm hover:shadow-md transition-all group relative">
+                                        
+                                        @if($menu->is_recommended)
+                                            <div class="absolute top-0 right-0 bg-yellow-400 text-yellow-900 text-[10px] font-bold px-3 py-1 rounded-bl-xl z-10 shadow-sm flex items-center gap-1">
+                                                <span class="material-symbols-outlined text-[14px]">star</span> UNGGULAN
+                                            </div>
+                                        @endif
+
                                         <div class="aspect-[4/3] bg-gray-100 relative overflow-hidden">
                                             @if ($menu->photo_path)
                                                 <img src="{{ asset(ltrim($menu->photo_path, '/')) }}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
@@ -286,7 +310,7 @@
                         </div>
                     </div>
 
-                    {{-- TAB 4: ULASAN (UPDATED) --}}
+                    {{-- TAB 4: ULASAN --}}
                     <div x-show="activeTab === 'reviews'" style="display: none;"
                          x-transition:enter="transition ease-out duration-300 transform"
                          x-transition:enter-start="opacity-0 translate-y-4"
@@ -330,10 +354,18 @@
                                             <div class="flex justify-between items-start">
                                                 <div>
                                                     <h5 class="font-bold text-gray-900 dark:text-white text-sm">{{ $review->user->name }}</h5>
+                                                    
+                                                    {{-- [PERBAIKAN] TAMPILAN BINTANG SESUAI RATING --}}
                                                     <div class="flex items-center gap-2 mt-1">
-                                                        <div class="flex text-amber-400 text-xs">
+                                                        <div class="flex items-center gap-0.5">
                                                             @for($r=1; $r<=5; $r++)
-                                                                <span class="material-symbols-outlined filled text-[14px]">star{{ $r > $review->rating ? '_border' : '' }}</span>
+                                                                @if($r <= $review->rating)
+                                                                    {{-- Bintang Penuh (Kuning) --}}
+                                                                    <span class="material-symbols-outlined text-[16px] text-amber-400 filled">star</span>
+                                                                @else
+                                                                    {{-- Bintang Kosong (Abu-abu) --}}
+                                                                    <span class="material-symbols-outlined text-[16px] text-gray-300">star</span>
+                                                                @endif
                                                             @endfor
                                                         </div>
                                                         <span class="text-xs text-gray-400">• {{ $review->created_at->diffForHumans() }}</span>
@@ -523,4 +555,11 @@
             }
         }
     </script>
+    
+    {{-- PASTIKAN STYLE INI ADA AGAR CLASS 'filled' BERFUNGSI --}}
+    <style>
+        .material-symbols-outlined.filled {
+            font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
 @endsection
