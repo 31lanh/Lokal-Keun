@@ -3,6 +3,24 @@
 @section('content')
     <div class="min-h-screen bg-[#F8F9FA] dark:bg-gray-900 font-sans text-gray-600 pb-20">
 
+        {{-- SweetAlert2 CDN --}}
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+        {{-- Flash Messages (Success/Error) --}}
+        @if(session('success'))
+            <script>
+                document.addEventListener('DOMContentLoaded', function() {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Berhasil',
+                        text: "{{ session('success') }}",
+                        timer: 3000,
+                        showConfirmButton: false
+                    });
+                });
+            </script>
+        @endif
+
         {{-- 1. LOGIC PHP --}}
         @php
             // Ambil Banner (is_primary = true)
@@ -364,15 +382,16 @@
 
                                                 <div class="flex items-center gap-3">
                                                     <a href="{{ route('seller.umkm.edit') }}#menu-container"
+                                                        onclick="confirmEdit(event, this.href)"
                                                         class="inline-flex items-center justify-center w-10 h-10 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-xl transition-all"
                                                         title="Edit Menu">
                                                         <span class="material-symbols-outlined text-xl">edit</span>
                                                     </a>
 
                                                     <form action="{{ route('seller.menu.delete', $menu->id) }}"
-                                                        method="POST" onsubmit="return confirm('Hapus menu ini?');">
+                                                        method="POST" id="delete-form-{{ $menu->id }}">
                                                         @csrf @method('DELETE')
-                                                        <button type="submit"
+                                                        <button type="button" onclick="confirmDelete('{{ $menu->id }}', '{{ $menu->name }}')"
                                                             class="inline-flex items-center justify-center w-10 h-10 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-xl transition-all"
                                                             title="Hapus Menu">
                                                             <span class="material-symbols-outlined text-xl">delete</span>
@@ -404,4 +423,42 @@
             </div>
         </div>
     </div>
+
+    {{-- Scripts SweetAlert --}}
+    <script>
+        function confirmDelete(menuId, menuName) {
+            Swal.fire({
+                title: 'Hapus Menu?',
+                text: "Anda yakin ingin menghapus menu \"" + menuName + "\"? Data tidak dapat dikembalikan.",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#ef4444', // Red-500
+                cancelButtonColor: '#6b7280', // Gray-500
+                confirmButtonText: 'Ya, Hapus!',
+                cancelButtonText: 'Batal'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    document.getElementById('delete-form-' + menuId).submit();
+                }
+            })
+        }
+
+        function confirmEdit(event, url) {
+            event.preventDefault();
+            Swal.fire({
+                title: 'Edit Menu?',
+                text: "Anda akan diarahkan ke halaman pengelolaan menu.",
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#f97316', // Orange-500
+                cancelButtonColor: '#6b7280',
+                confirmButtonText: 'Ya, Lanjutkan',
+                cancelButtonText: 'Batal'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = url;
+                }
+            })
+        }
+    </script>
 @endsection

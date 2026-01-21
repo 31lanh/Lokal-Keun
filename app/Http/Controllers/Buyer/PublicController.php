@@ -56,7 +56,50 @@ class PublicController extends Controller
 
         // Filter Lokasi
         if ($request->filled('location') && $request->location != 'Semua Lokasi') {
-            $query->where('alamat', 'like', "%{$request->location}%");
+            $location = $request->location;
+            $query->where(function ($q) use ($location) {
+                $q->where('alamat', 'like', "%{$location}%");
+                
+                // Mapping Kota ke Provinsi (Agar pencarian lebih akurat)
+                $maps = [
+                    'Jawa Barat' => ['Bandung', 'Bogor', 'Depok', 'Bekasi', 'Tasikmalaya', 'Cimahi', 'Sukabumi', 'Cirebon', 'Lembang', 'Garut'],
+                    'DKI Jakarta' => ['Jakarta', 'Jaksel', 'Jakpus', 'Jakbar', 'Jakut', 'Jaktim'],
+                    'DI Yogyakarta' => ['Yogyakarta', 'Jogja', 'Sleman', 'Bantul', 'Gunung Kidul'],
+                    'Jawa Timur' => ['Surabaya', 'Malang', 'Sidoarjo', 'Gresik', 'Banyuwangi', 'Kediri'],
+                    'Jawa Tengah' => ['Semarang', 'Solo', 'Surakarta', 'Magelang', 'Pekalongan', 'Tegal'],
+                    'Banten' => ['Tangerang', 'Serang', 'Cilegon', 'Pandeglang'],
+                    'Bali' => ['Denpasar', 'Ubud', 'Badung', 'Gianyar'],
+                    'Nusa Tenggara Barat' => ['Mataram', 'Lombok', 'Sumbawa', 'NTB'],
+                ];
+
+                if (isset($maps[$location])) {
+                    foreach ($maps[$location] as $city) {
+                        $q->orWhere('alamat', 'like', "%{$city}%");
+                    }
+                }
+            });
+            $location = $request->location;
+            $query->where(function ($q) use ($location) {
+                $q->where('alamat', 'like', "%{$location}%");
+                
+                // Mapping Kota ke Provinsi
+                $maps = [
+                    'Jawa Barat' => ['Bandung', 'Bogor', 'Depok', 'Bekasi', 'Tasikmalaya', 'Cimahi', 'Sukabumi', 'Cirebon', 'Lembang', 'Garut'],
+                    'DKI Jakarta' => ['Jakarta', 'Jaksel', 'Jakpus', 'Jakbar', 'Jakut', 'Jaktim'],
+                    'DI Yogyakarta' => ['Yogyakarta', 'Jogja', 'Sleman', 'Bantul', 'Gunung Kidul'],
+                    'Jawa Timur' => ['Surabaya', 'Malang', 'Sidoarjo', 'Gresik', 'Banyuwangi', 'Kediri'],
+                    'Jawa Tengah' => ['Semarang', 'Solo', 'Surakarta', 'Magelang', 'Pekalongan', 'Tegal'],
+                    'Banten' => ['Tangerang', 'Serang', 'Cilegon', 'Pandeglang'],
+                    'Bali' => ['Denpasar', 'Ubud', 'Badung', 'Gianyar'],
+                    'Nusa Tenggara Barat' => ['Mataram', 'Lombok', 'Sumbawa', 'NTB'],
+                ];
+
+                if (isset($maps[$location])) {
+                    foreach ($maps[$location] as $city) {
+                        $q->orWhere('alamat', 'like', "%{$city}%");
+                    }
+                }
+            });
         }
 
         // Filter Rating
@@ -133,7 +176,28 @@ class PublicController extends Controller
 
         // Filter Lokasi
         if ($request->filled('location') && $request->location != 'Semua Lokasi') {
-            $query->where('alamat', 'like', "%{$request->location}%");
+            $location = $request->location;
+            $query->where(function ($q) use ($location) {
+                $q->where('alamat', 'like', "%{$location}%");
+                
+                // Mapping Kota ke Provinsi
+                $maps = [
+                    'Jawa Barat' => ['Bandung', 'Bogor', 'Depok', 'Bekasi', 'Tasikmalaya', 'Cimahi', 'Sukabumi', 'Cirebon', 'Lembang', 'Garut'],
+                    'DKI Jakarta' => ['Jakarta', 'Jaksel', 'Jakpus', 'Jakbar', 'Jakut', 'Jaktim'],
+                    'DI Yogyakarta' => ['Yogyakarta', 'Jogja', 'Sleman', 'Bantul', 'Gunung Kidul'],
+                    'Jawa Timur' => ['Surabaya', 'Malang', 'Sidoarjo', 'Gresik', 'Banyuwangi', 'Kediri'],
+                    'Jawa Tengah' => ['Semarang', 'Solo', 'Surakarta', 'Magelang', 'Pekalongan', 'Tegal'],
+                    'Banten' => ['Tangerang', 'Serang', 'Cilegon', 'Pandeglang'],
+                    'Bali' => ['Denpasar', 'Ubud', 'Badung', 'Gianyar'],
+                    'Nusa Tenggara Barat' => ['Mataram', 'Lombok', 'Sumbawa', 'NTB'],
+                ];
+
+                if (isset($maps[$location])) {
+                    foreach ($maps[$location] as $city) {
+                        $q->orWhere('alamat', 'like', "%{$city}%");
+                    }
+                }
+            });
         }
 
         // Filter Rating

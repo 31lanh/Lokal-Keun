@@ -1,3 +1,6 @@
+{{-- SweetAlert2 CDN --}}
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 <header
     class="fixed top-0 z-50 w-full bg-white/80 dark:bg-surface-dark/80 backdrop-blur-lg border-b border-gray-100 dark:border-gray-800 shadow-sm"
     x-data="{ open: false, mobileOpen: false }">
@@ -109,9 +112,9 @@
 
                                     {{-- LOGOUT --}}
                                     <div class="p-2 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50 mt-1">
-                                        <form action="{{ route('logout') }}" method="POST">
+                                        <form action="{{ route('logout') }}" method="POST" id="logout-form-buyer">
                                             @csrf
-                                            <button type="submit"
+                                            <button type="button" onclick="confirmLogout('logout-form-buyer')"
                                                 class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/30 transition-all w-full text-left group/item">
                                                 <span class="material-symbols-outlined text-red-500 group-hover/item:scale-110 group-hover/item:rotate-12 transition-all">logout</span>
                                                 <span class="text-sm font-bold text-red-500">Keluar</span>
@@ -143,3 +146,22 @@
         </div>
     </div>
 </header>
+
+<script>
+    function confirmLogout(formId) {
+        Swal.fire({
+            title: 'Yakin ingin keluar?',
+            text: "Anda harus login kembali untuk mengakses akun.",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#ef4444', // Red-500
+            cancelButtonColor: '#6b7280', // Gray-500
+            confirmButtonText: 'Ya, Keluar',
+            cancelButtonText: 'Batal'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                document.getElementById(formId).submit();
+            }
+        })
+    }
+</script>

@@ -178,46 +178,18 @@
                                 <span class="material-symbols-outlined text-primary-green">location_on</span>
                                 <span>Lokasi</span>
                             </h3>
-                            <div class="relative mb-4">
+                            <div class="relative">
                                 <span
                                     class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-primary-green">
                                     <span class="material-symbols-outlined text-[20px]">pin_drop</span>
                                 </span>
                                 <select name="location" onchange="this.form.submit()"
                                     class="block w-full pl-10 pr-4 py-3 text-base border-gray-200 dark:border-gray-700 focus:outline-none focus:ring-2 focus:ring-primary-green focus:border-transparent rounded-xl dark:bg-gray-800 dark:text-white font-medium">
-                                    <option {{ request('location') == 'Semua Lokasi' ? 'selected' : '' }}>Semua Lokasi
-                                    </option>
-                                    <option {{ request('location') == 'Jakarta Selatan' ? 'selected' : '' }}>Jakarta
-                                        Selatan</option>
-                                    <option {{ request('location') == 'Jakarta Pusat' ? 'selected' : '' }}>Jakarta Pusat
-                                    </option>
-                                    <option {{ request('location') == 'Bandung' ? 'selected' : '' }}>Bandung</option>
-                                    <option {{ request('location') == 'Surabaya' ? 'selected' : '' }}>Surabaya</option>
+                                    <option {{ request('location') == 'Semua Lokasi' ? 'selected' : '' }}>Semua Lokasi</option>
+                                    @foreach (['Aceh', 'Sumatera Utara', 'Sumatera Barat', 'Riau', 'Jambi', 'Sumatera Selatan', 'Bengkulu', 'Lampung', 'Kep. Bangka Belitung', 'Kep. Riau', 'DKI Jakarta', 'Jawa Barat', 'Jawa Tengah', 'DI Yogyakarta', 'Jawa Timur', 'Banten', 'Bali', 'Nusa Tenggara Barat', 'Nusa Tenggara Timur', 'Kalimantan Barat', 'Kalimantan Tengah', 'Kalimantan Selatan', 'Kalimantan Timur', 'Kalimantan Utara', 'Sulawesi Utara', 'Sulawesi Tengah', 'Sulawesi Selatan', 'Sulawesi Tenggara', 'Gorontalo', 'Sulawesi Barat', 'Maluku', 'Maluku Utara', 'Papua', 'Papua Barat', 'Papua Selatan', 'Papua Tengah', 'Papua Pegunungan', 'Papua Barat Daya'] as $provinsi)
+                                        <option value="{{ $provinsi }}" {{ request('location') == $provinsi ? 'selected' : '' }}>{{ $provinsi }}</option>
+                                    @endforeach
                                 </select>
-                            </div>
-                            <div class="space-y-3">
-                                <label
-                                    class="flex items-center gap-3 cursor-pointer group p-2 rounded-lg hover:bg-green-light dark:hover:bg-green-900/20 transition-all">
-                                    <input
-                                        class="h-4 w-4 border-gray-300 text-primary-green focus:ring-primary-green dark:border-gray-600 dark:bg-gray-800"
-                                        name="distance" type="radio" />
-                                    <span class="text-sm text-gray-700 dark:text-gray-300 font-medium">
-                                        < 1 km</span>
-                                </label>
-                                <label
-                                    class="flex items-center gap-3 cursor-pointer group p-2 rounded-lg hover:bg-green-light dark:hover:bg-green-900/20 transition-all">
-                                    <input
-                                        class="h-4 w-4 border-gray-300 text-primary-green focus:ring-primary-green dark:border-gray-600 dark:bg-gray-800"
-                                        name="distance" type="radio" />
-                                    <span class="text-sm text-gray-700 dark:text-gray-300 font-medium">1 - 5 km</span>
-                                </label>
-                                <label
-                                    class="flex items-center gap-3 cursor-pointer group p-2 rounded-lg hover:bg-green-light dark:hover:bg-green-900/20 transition-all">
-                                    <input checked
-                                        class="h-4 w-4 border-gray-300 text-primary-green focus:ring-primary-green dark:border-gray-600 dark:bg-gray-800"
-                                        name="distance" type="radio" />
-                                    <span class="text-sm text-gray-700 dark:text-gray-300 font-medium">Semua Jarak</span>
-                                </label>
                             </div>
                         </div>
 

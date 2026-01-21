@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.seller')
 
 @section('content')
     <div class="min-h-screen pt-24 pb-12 bg-gray-50 dark:bg-gray-900">
