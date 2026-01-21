@@ -107,10 +107,10 @@
                         <p class="text-gray-500 dark:text-gray-400 max-w-xs mx-auto leading-relaxed">
                             Simpan UMKM yang Anda sukai agar mudah ditemukan kembali nanti.
                         </p>
-                        <button @click="open = false" class="mt-8 px-8 py-3 bg-gradient-to-r from-primary-orange to-primary-green text-white font-bold rounded-xl shadow-lg shadow-orange-500/20 hover:shadow-orange-500/40 hover:scale-105 transition-all duration-300 flex items-center gap-2">
+                        <a href="{{ route('jelajah') }}" @click="open = false" class="mt-8 px-8 py-3 bg-gradient-to-r from-primary-orange to-primary-green text-white font-bold rounded-xl shadow-lg shadow-orange-500/20 hover:shadow-orange-500/40 hover:scale-105 transition-all duration-300 flex items-center gap-2">
                             <span class="material-symbols-outlined">explore</span>
                             Mulai Jelajah
-                        </button>
+                        </a>
                     </div>
                 @endif
             </div>
