@@ -1,0 +1,76 @@
+modules = ["nodejs-20", "web", "php-8.4"]
+[agent]
+expertMode = true
+
+[nix]
+channel = "stable-25_05"
+
+[userenv]
+
+[userenv.shared]
+APP_NAME = "Laravel"
+APP_ENV = "local"
+APP_DEBUG = "true"
+APP_URL = "https://9dac135a-77f9-47d1-b50f-8d9669663ab6-00-kr3soteo0hkr.sisko.replit.dev"
+APP_LOCALE = "en"
+APP_FALLBACK_LOCALE = "en"
+APP_FAKER_LOCALE = "en_US"
+APP_MAINTENANCE_DRIVER = "file"
+BCRYPT_ROUNDS = "12"
+LOG_CHANNEL = "stack"
+LOG_STACK = "single"
+LOG_LEVEL = "debug"
+DB_CONNECTION = "pgsql"
+SESSION_DRIVER = "file"
+SESSION_LIFETIME = "120"
+SESSION_ENCRYPT = "false"
+SESSION_PATH = "/"
+BROADCAST_CONNECTION = "log"
+FILESYSTEM_DISK = "local"
+QUEUE_CONNECTION = "sync"
+CACHE_STORE = "file"
+MAIL_MAILER = "log"
+MAIL_HOST = "127.0.0.1"
+MAIL_PORT = "2525"
+MAIL_FROM_ADDRESS = "hello@example.com"
+MAIL_FROM_NAME = "Laravel"
+VITE_APP_NAME = "Laravel"
+DB_HOST = "helium"
+DB_PORT = "5432"
+DB_DATABASE = "heliumdb"
+DB_USERNAME = "postgres"
+DB_PASSWORD = "password"
+APP_KEY = "base64:dXfdxq/5gxxkTiju8fO/WbxSbDkLewoMqWzeu+RvlKE="
+
+[workflows]
+runButton = "Project"
+
+[[workflows.workflow]]
+name = "Project"
+mode = "parallel"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "Laravel Server"
+
+[[workflows.workflow]]
+name = "Laravel Server"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "php artisan serve --host=0.0.0.0 --port=5000"
+waitForPort = 5000
+
+[workflows.workflow.metadata]
+outputType = "webview"
+
+[[ports]]
+localPort = 5000
+externalPort = 80
+
+[deployment]
+deploymentTarget = "autoscale"
+run = ["php", "artisan", "serve", "--host=0.0.0.0", "--port=5000"]
+build = ["npm", "run", "build"]
