@@ -298,7 +298,7 @@
 
                                 <div class="relative h-56 overflow-hidden shrink-0">
                                     <div class="absolute top-4 right-4 z-10">
-                                        <button onclick="toggleFavorite(this, {{ $umkm->id }})"
+                                        <button type="button" onclick="toggleFavorite(this, {{ $umkm->id }})"
                                             class="p-2.5 rounded-full bg-white/90 backdrop-blur-sm transition-all shadow-lg transform hover:scale-110 {{ $isFavorited ? 'text-red-500' : 'text-gray-400 hover:text-red-500' }}">
                                             <span
                                                 class="material-symbols-outlined text-[22px] {{ $isFavorited ? 'filled' : '' }}">favorite</span>
@@ -430,6 +430,8 @@
                         btn.classList.remove('text-red-500');
                         icon.classList.remove('filled');
                     }
+                    // Auto refresh halaman setelah berhasil
+                    window.location.reload();
                 })
                 .catch(error => console.error('Error:', error));
         @else
