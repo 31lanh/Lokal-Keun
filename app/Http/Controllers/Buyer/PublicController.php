@@ -118,6 +118,8 @@ class PublicController extends Controller
             $query->oldest();
         } elseif ($request->sort == 'Rating Tertinggi') {
             $query->orderByDesc('rating'); // Sort berdasarkan bintang tertinggi
+        } elseif ($request->sort == 'Rating Terendah') {
+            $query->orderBy('rating');
         } else {
             $query->latest(); // Default
         }
@@ -216,6 +218,8 @@ class PublicController extends Controller
             $query->oldest();
         } elseif ($request->sort == 'Rating Tertinggi') {
             $query->orderByDesc('rating');
+        } elseif ($request->sort == 'Rating Terendah') {
+            $query->orderBy('rating');
         } else {
             $query->latest();
         }

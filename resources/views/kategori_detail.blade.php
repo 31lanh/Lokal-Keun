@@ -159,6 +159,8 @@
                             <option {{ request('sort') == 'Paling Relevan' ? 'selected' : '' }}>Paling Relevan</option>
                             <option {{ request('sort') == 'Terbaru' ? 'selected' : '' }}>Terbaru</option>
                             <option {{ request('sort') == 'Terlama' ? 'selected' : '' }}>Terlama</option>
+                            <option {{ request('sort') == 'Rating Tertinggi' ? 'selected' : '' }}>Rating Tertinggi</option>
+                            <option {{ request('sort') == 'Rating Terendah' ? 'selected' : '' }}>Rating Terendah</option>
                         </select>
                     </div>
                 </div>
