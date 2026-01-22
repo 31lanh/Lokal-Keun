@@ -174,12 +174,11 @@
                                 @php
                                     $photoUrl = 'https://via.placeholder.com/400x300/f97316/ffffff?text=No+Image';
                                     if ($menu->photo_path) {
-                                        $path = ltrim($menu->photo_path, '/');
-                                        if (file_exists(public_path($path))) {
-                                            $photoUrl = asset($path);
-                                        } elseif (file_exists(public_path('storage/' . $path))) {
-                                            $photoUrl = asset('storage/' . $path);
+                                        $path = $menu->photo_path;
+                                        if (Str::startsWith($path, ['http'])) {
+                                            $photoUrl = $path;
                                         } else {
+                                            $path = ltrim($path, '/');
                                             $photoUrl = asset('storage/' . $path);
                                         }
                                     }
@@ -278,12 +277,11 @@
                                 @php
                                     $photoUrl = 'https://via.placeholder.com/400x300/f97316/ffffff?text=No+Image';
                                     if ($menu->photo_path) {
-                                        $path = ltrim($menu->photo_path, '/');
-                                        if (file_exists(public_path($path))) {
-                                            $photoUrl = asset($path);
-                                        } elseif (file_exists(public_path('storage/' . $path))) {
-                                            $photoUrl = asset('storage/' . $path);
+                                        $path = $menu->photo_path;
+                                        if (Str::startsWith($path, ['http'])) {
+                                            $photoUrl = $path;
                                         } else {
+                                            $path = ltrim($path, '/');
                                             $photoUrl = asset('storage/' . $path);
                                         }
                                     }
@@ -368,7 +366,7 @@
                             <div class="flex items-center gap-4 mb-5">
                                 <div
                                     class="w-16 h-16 rounded-2xl bg-white/20 backdrop-blur-sm overflow-hidden border-2 border-white/30 shadow-xl flex-shrink-0">
-                                    <img src="{{ Auth::user()->profile_photo_path ? asset('storage/' . Auth::user()->profile_photo_path) : 'https://ui-avatars.com/api/?name=' . urlencode(Auth::user()->name) . '&background=fff&color=f97316&size=128' }}"
+                                    <img src="{{ Auth::user()->profile_photo_path ? (Str::startsWith(Auth::user()->profile_photo_path, ['http']) ? Auth::user()->profile_photo_path : asset('storage/' . Auth::user()->profile_photo_path)) : 'https://ui-avatars.com/api/?name=' . urlencode(Auth::user()->name) . '&background=fff&color=f97316&size=128' }}"
                                         class="w-full h-full object-cover">
                                 </div>
                                 <div class="flex-1 min-w-0">
@@ -444,7 +442,7 @@
                             @forelse($favoriteUmkms->take(5) as $umkm)
                                 @php
                                     $uPhoto = $umkm->primaryPhoto
-                                        ? asset('storage/' . $umkm->primaryPhoto->path)
+                                        ? (Str::startsWith($umkm->primaryPhoto->path, ['http']) ? $umkm->primaryPhoto->path : asset('storage/' . $umkm->primaryPhoto->path))
                                         : 'https://ui-avatars.com/api/?name=' .
                                             urlencode($umkm->nama_usaha) .
                                             '&background=random&size=128';

@@ -30,7 +30,9 @@
             if ($banner) {
                 if ($banner->photo_url) {
                     $cleanUrl = ltrim($banner->photo_url, '/');
-                    if (str_starts_with($cleanUrl, 'storage/') || file_exists(public_path($cleanUrl))) {
+                    if (str_starts_with($cleanUrl, 'http')) {
+                        $bannerUrl = $cleanUrl;
+                    } elseif (str_starts_with($cleanUrl, 'storage/') || file_exists(public_path($cleanUrl))) {
                         $bannerUrl = asset($cleanUrl);
                     } else {
                         $bannerUrl = asset('storage/' . $banner->photo_path);
@@ -76,7 +78,7 @@
                 <div class="relative group shrink-0 -mt-16 md:-mt-20 mx-auto md:mx-0">
                     <div
                         class="w-36 h-36 md:w-48 md:h-48 rounded-3xl border-[6px] border-white dark:border-gray-800 bg-white shadow-md overflow-hidden relative">
-                        <img src="{{ auth()->user()->profile_photo_path ? asset('storage/' . auth()->user()->profile_photo_path) : 'https://ui-avatars.com/api/?name=' . urlencode($umkm->nama_usaha) . '&background=random&size=200' }}"
+                        <img src="{{ auth()->user()->profile_photo_path ? (Str::startsWith(auth()->user()->profile_photo_path, ['http://', 'https://']) ? auth()->user()->profile_photo_path : asset('storage/' . auth()->user()->profile_photo_path)) : 'https://ui-avatars.com/api/?name=' . urlencode($umkm->nama_usaha) . '&background=random&size=200' }}"
                             class="w-full h-full object-cover">
 
                         <a href="{{ route('seller.branding') }}"
@@ -267,7 +269,7 @@
                                 <div class="flex items-center gap-3 bg-white/10 p-2 rounded-xl backdrop-blur-sm border border-white/10">
                                     <div class="shrink-0 w-12 h-12 rounded-lg bg-white/20 overflow-hidden">
                                         @if($menu->photo_path)
-                                            <img src="{{ asset(ltrim($menu->photo_path, '/')) }}" class="w-full h-full object-cover">
+                                            <img src="{{ Str::startsWith($menu->photo_path, ['http']) ? $menu->photo_path : asset(ltrim($menu->photo_path, '/')) }}" class="w-full h-full object-cover">
                                         @else
                                             <div class="w-full h-full flex items-center justify-center text-white/50">
                                                 <span class="material-symbols-outlined text-lg">fastfood</span>
@@ -302,7 +304,7 @@
                         <div class="grid grid-cols-3 gap-3">
                             @forelse($umkm->photos->where('is_primary', false)->take(6) as $photo)
                                 <div class="aspect-square rounded-xl bg-gray-100 overflow-hidden border border-gray-100">
-                                    <img src="{{ $photo->photo_url ? asset(ltrim($photo->photo_url, '/')) : asset('storage/' . $photo->photo_path) }}"
+                                    <img src="{{ $photo->photo_url ? (Str::startsWith($photo->photo_url, ['http']) ? $photo->photo_url : asset(ltrim($photo->photo_url, '/'))) : asset('storage/' . $photo->photo_path) }}"
                                         class="w-full h-full object-cover">
                                 </div>
                             @empty
@@ -351,7 +353,7 @@
                                                 <div
                                                     class="shrink-0 w-20 h-20 rounded-xl bg-gray-50 overflow-hidden border border-gray-100">
                                                     @if ($menu->photo_path)
-                                                        <img src="{{ asset(ltrim($menu->photo_path, '/')) }}"
+                                                        <img src="{{ Str::startsWith($menu->photo_path, ['http']) ? $menu->photo_path : asset(ltrim($menu->photo_path, '/')) }}"
                                                             class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
                                                     @else
                                                         <div

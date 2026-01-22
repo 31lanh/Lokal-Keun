@@ -33,14 +33,14 @@
                 if ($banner) {
                     if ($banner->photo_url) {
                         $cleanUrl = ltrim($banner->photo_url, '/');
-                        $bannerUrl = str_starts_with($cleanUrl, 'storage/') ? asset($cleanUrl) : asset('storage/' . $banner->photo_path);
+                        $bannerUrl = Str::startsWith($cleanUrl, ['http']) ? $cleanUrl : (str_starts_with($cleanUrl, 'storage/') ? asset($cleanUrl) : asset('storage/' . $banner->photo_path));
                     }
                 }
 
                 $logoUrl = 'https://ui-avatars.com/api/?name=' . urlencode($umkm->nama_usaha) . '&background=FF6B35&color=fff&size=256';
                 if ($umkm->user && $umkm->user->profile_photo_path) {
                     $cleanLogo = ltrim($umkm->user->profile_photo_path, '/');
-                    $logoUrl = str_starts_with($cleanLogo, 'storage/') ? asset($cleanLogo) : asset('storage/' . $umkm->user->profile_photo_path);
+                    $logoUrl = Str::startsWith($cleanLogo, ['http']) ? $cleanLogo : (str_starts_with($cleanLogo, 'storage/') ? asset($cleanLogo) : asset('storage/' . $umkm->user->profile_photo_path));
                 }
             @endphp
 
@@ -186,7 +186,7 @@
 
                                         <div class="aspect-[4/3] bg-gray-100 relative overflow-hidden">
                                             @if ($menu->photo_path)
-                                                <img src="{{ asset(ltrim($menu->photo_path, '/')) }}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
+                                                <img src="{{ Str::startsWith($menu->photo_path, ['http']) ? $menu->photo_path : asset(ltrim($menu->photo_path, '/')) }}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
                                             @else
                                                 <div class="w-full h-full flex items-center justify-center text-gray-300"><span class="material-symbols-outlined text-4xl">fastfood</span></div>
                                             @endif
@@ -220,7 +220,7 @@
                             <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
                                 @forelse($umkm->photos->take(4) as $photo)
                                     <div class="aspect-square rounded-xl overflow-hidden relative group shadow-sm border border-gray-200">
-                                        <img src="{{ $photo->photo_url ? asset(ltrim($photo->photo_url, '/')) : asset('storage/' . $photo->photo_path) }}" 
+                                        <img src="{{ $photo->photo_url ? (Str::startsWith($photo->photo_url, ['http']) ? $photo->photo_url : asset(ltrim($photo->photo_url, '/'))) : asset('storage/' . $photo->photo_path) }}" 
                                              class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
                                     </div>
                                 @empty
@@ -267,7 +267,7 @@
 
                                         <div class="aspect-[4/3] bg-gray-100 relative overflow-hidden">
                                             @if ($menu->photo_path)
-                                                <img src="{{ asset(ltrim($menu->photo_path, '/')) }}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
+                                                <img src="{{ Str::startsWith($menu->photo_path, ['http']) ? $menu->photo_path : asset(ltrim($menu->photo_path, '/')) }}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
                                             @else
                                                 <div class="w-full h-full flex items-center justify-center text-gray-300"><span class="material-symbols-outlined text-4xl">fastfood</span></div>
                                             @endif
@@ -302,7 +302,7 @@
                             <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
                                 @foreach($umkm->photos as $photo)
                                     <div class="aspect-square rounded-xl overflow-hidden relative group shadow-sm border border-gray-200 hover:scale-[1.02] transition-transform cursor-pointer">
-                                        <img src="{{ $photo->photo_url ? asset(ltrim($photo->photo_url, '/')) : asset('storage/' . $photo->photo_path) }}" 
+                                        <img src="{{ $photo->photo_url ? (Str::startsWith($photo->photo_url, ['http']) ? $photo->photo_url : asset(ltrim($photo->photo_url, '/'))) : asset('storage/' . $photo->photo_path) }}" 
                                              class="w-full h-full object-cover">
                                     </div>
                                 @endforeach
@@ -341,7 +341,7 @@
                                         {{-- Avatar User --}}
                                         <div class="shrink-0">
                                             @if($review->user->profile_photo_path)
-                                                 <img src="{{ asset('storage/' . $review->user->profile_photo_path) }}" class="size-10 rounded-full object-cover border border-gray-200">
+                                                 <img src="{{ Str::startsWith($review->user->profile_photo_path, ['http']) ? $review->user->profile_photo_path : asset('storage/' . $review->user->profile_photo_path) }}" class="size-10 rounded-full object-cover border border-gray-200">
                                             @else
                                                  <div class="size-10 rounded-full bg-gradient-to-br from-primary-orange to-orange-400 text-white flex items-center justify-center font-bold text-sm">
                                                      {{ substr($review->user->name, 0, 1) }}

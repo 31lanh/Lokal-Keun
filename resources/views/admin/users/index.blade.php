@@ -77,7 +77,7 @@
                             <td class="px-6 py-4">
                                 <div class="flex items-center gap-3">
                                     <div class="w-10 h-10 rounded-full bg-gray-100 overflow-hidden border border-gray-200 shrink-0">
-                                        <img src="{{ $user->profile_photo_path ? asset('storage/' . $user->profile_photo_path) : 'https://ui-avatars.com/api/?name=' . urlencode($user->name) . '&background=random' }}"
+                                        <img src="{{ $user->profile_photo_path ? (Str::startsWith($user->profile_photo_path, ['http']) ? $user->profile_photo_path : asset('storage/' . $user->profile_photo_path)) : 'https://ui-avatars.com/api/?name=' . urlencode($user->name) . '&background=random' }}"
                                             class="w-full h-full object-cover">
                                     </div>
                                     <div>

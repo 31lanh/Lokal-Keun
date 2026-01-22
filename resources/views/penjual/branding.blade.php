@@ -35,8 +35,17 @@
                                     <label class="block text-xs font-bold text-gray-400 mb-2 uppercase">Banner Saat Ini</label>
                                     <div class="relative w-full h-40 bg-gray-100 rounded-xl overflow-hidden border border-gray-200">
                                         @if($umkm->photos->where('is_primary', true)->first())
-                                            <img src="{{ asset(ltrim($umkm->photos->where('is_primary', true)->first()->photo_url, '/')) }}"
-                                                 class="w-full h-full object-cover">
+                                            @php
+                                                $bannerPhoto = $umkm->photos->where('is_primary', true)->first();
+                                                $bannerSrc = $bannerPhoto->photo_url ?? null;
+                                                if ($bannerSrc && !Str::startsWith($bannerSrc, ['http'])) {
+                                                    $bannerSrc = asset(ltrim($bannerSrc, '/'));
+                                                }
+                                                if (!$bannerSrc && $bannerPhoto->photo_path) {
+                                                    $bannerSrc = asset('storage/' . $bannerPhoto->photo_path);
+                                                }
+                                            @endphp
+                                            <img src="{{ $bannerSrc }}" class="w-full h-full object-cover">
                                         @else
                                             <div class="w-full h-full flex items-center justify-center text-gray-400 bg-gray-200">
                                                 <span class="text-xs">Belum ada banner</span>
@@ -88,7 +97,7 @@
                                 <div class="flex flex-col items-center">
                                     <label class="block text-xs font-bold text-gray-400 mb-2 uppercase">Logo Saat Ini</label>
                                     <div class="w-32 h-32 rounded-full overflow-hidden border border-gray-200 shadow-sm">
-                                        <img src="{{ $user->profile_photo_path ? asset('storage/' . $user->profile_photo_path) : 'https://ui-avatars.com/api/?name=' . urlencode($umkm->nama_usaha) }}"
+                                        <img src="{{ $user->profile_photo_path ? (Str::startsWith($user->profile_photo_path, ['http']) ? $user->profile_photo_path : asset('storage/' . $user->profile_photo_path)) : 'https://ui-avatars.com/api/?name=' . urlencode($umkm->nama_usaha) }}"
                                              class="w-full h-full object-cover">
                                     </div>
                                 </div>

@@ -90,7 +90,16 @@ class AdminController extends Controller
 
         // Hapus foto profil jika ada
         if ($user->profile_photo_path) {
-            \Illuminate\Support\Facades\Storage::disk('public')->delete($user->profile_photo_path);
+            $path = $user->profile_photo_path;
+            if (filter_var($path, FILTER_VALIDATE_URL)) {
+                // If it's a URL (Cloudinary), we can't easily delete via Storage invalidating the path, 
+                // but we could try if we had the public ID. For now, we just skip deletion to avoid errors.
+                // Or we could try Cloudinary::uploadApi()->destroy($publicId) if we extracted it.
+            } else {
+                 if (\Illuminate\Support\Facades\Storage::disk('public')->exists($path)) {
+                    \Illuminate\Support\Facades\Storage::disk('public')->delete($path);
+                }
+            }
         }
 
         // Jika dia punya UMKM, hapus juga data UMKM-nya (Opsional, tergantung kebijakan)

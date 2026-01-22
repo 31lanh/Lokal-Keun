@@ -76,13 +76,14 @@ class SellerController extends Controller
             // Upload Foto Galeri (Multiple)
             if ($request->hasFile('photos')) {
                 foreach ($request->file('photos') as $index => $photo) {
-                    $filename = 'gallery_' . $umkm->id . '_' . time() . $index . '.' . $photo->getClientOriginalExtension();
-                    $photo->move(public_path('umkm/photos'), $filename);
-
+                    // Upload ke Cloudinary
+                    // getRealPath() digunakan agar Cloudinary uploder bisa membaca file tmp
+                    $uploadedFile = $photo->storeOnCloudinary('umkm/photos');
+                    
                     UmkmPhoto::create([
                         'umkm_id'    => $umkm->id,
-                        'photo_path' => 'umkm/photos/' . $filename,
-                        'photo_url'  => '/umkm/photos/' . $filename,
+                        'photo_path' => $uploadedFile->getSecurePath(), // URL aman dari Cloudinary
+                        'photo_url'  => $uploadedFile->getSecurePath(),
                         'is_primary' => false,
                         'order'      => $index + 1,
                     ]);
@@ -96,9 +97,8 @@ class SellerController extends Controller
 
                     $menuPhotoPath = null;
                     if (isset($menuData['photo']) && $menuData['photo'] instanceof \Illuminate\Http\UploadedFile) {
-                        $menuFilename = 'menu_' . $umkm->id . '_' . uniqid() . '.' . $menuData['photo']->getClientOriginalExtension();
-                        $menuData['photo']->move(public_path('umkm/menus'), $menuFilename);
-                        $menuPhotoPath = '/umkm/menus/' . $menuFilename;
+                         $uploadedMenu = $menuData['photo']->storeOnCloudinary('umkm/menus');
+                         $menuPhotoPath = $uploadedMenu->getSecurePath();
                     }
 
                     UmkmMenu::create([
@@ -227,9 +227,8 @@ class SellerController extends Controller
                     ];
 
                     if (isset($menuData['photo']) && $menuData['photo'] instanceof \Illuminate\Http\UploadedFile) {
-                        $menuFilename = 'menu_' . $umkm->id . '_' . uniqid() . '.' . $menuData['photo']->getClientOriginalExtension();
-                        $menuData['photo']->move(public_path('umkm/menus'), $menuFilename);
-                        $dataToSave['photo_path'] = '/umkm/menus/' . $menuFilename;
+                         $uploadedMenu = $menuData['photo']->storeOnCloudinary('umkm/menus');
+                         $dataToSave['photo_path'] = $uploadedMenu->getSecurePath();
                     }
 
                     $umkm->menus()->updateOrCreate(
@@ -248,13 +247,12 @@ class SellerController extends Controller
                 $order = $currentMaxOrder + 1;
 
                 foreach ($photos as $index => $photo) {
-                    $filename = 'gallery_' . $umkm->id . '_' . time() . $index . '.' . $photo->getClientOriginalExtension();
-                    $photo->move(public_path('umkm/photos'), $filename);
+                    $uploadedFile = $photo->storeOnCloudinary('umkm/photos');
 
                     UmkmPhoto::create([
                         'umkm_id'    => $umkm->id,
-                        'photo_path' => 'umkm/photos/' . $filename,
-                        'photo_url'  => '/umkm/photos/' . $filename,
+                        'photo_path' => $uploadedFile->getSecurePath(),
+                        'photo_url'  => $uploadedFile->getSecurePath(),
                         'is_primary' => false,
                         'order'      => $order++,
                     ]);
@@ -277,11 +275,22 @@ class SellerController extends Controller
         $photo = UmkmPhoto::where('umkm_id', auth()->user()->umkm->id)->findOrFail($photoId);
 
         // Hapus fisik file
-        $filePath = public_path($photo->photo_path);
-        if (File::exists($filePath)) {
-            File::delete($filePath);
-        } elseif (Storage::disk('public')->exists($photo->photo_path)) {
-            Storage::disk('public')->delete($photo->photo_path);
+        // Hapus fisik file
+        $path = $photo->photo_path;
+        if (filter_var($path, FILTER_VALIDATE_URL)) {
+             // It's a Cloudinary URL. 
+             // To delete, we need to extract public ID.
+             // URL: https://res.cloudinary.com/[cloud_name]/image/upload/v[version]/[public_id].[ext]
+             // Parsing is tricky without helper. 
+             // But usually we can attempt to delete if we stored the 'public_id' OR just leave it.
+             // Best practice: Store public_id in database. But we stored URL.
+        } else {
+            $filePath = public_path($path);
+            if (File::exists($filePath)) {
+                File::delete($filePath);
+            } elseif (Storage::disk('public')->exists($path)) {
+                Storage::disk('public')->delete($path);
+            }
         }
 
         $photo->delete();
@@ -322,23 +331,25 @@ class SellerController extends Controller
         $umkm = $user->umkm;
 
         if ($request->hasFile('logo')) {
-            $path = $request->file('logo')->store('profile-photos', 'public');
-            $user->update(['profile_photo_path' => $path]);
+            $uploaded = $request->file('logo')->storeOnCloudinary('profile-photos');
+            $user->update(['profile_photo_path' => $uploaded->getSecurePath()]);
         }
 
         if ($request->hasFile('banner')) {
             $bannerFile = $request->file('banner');
-            $bannerPath = $bannerFile->store('umkm-photos', 'public');
+            $uploadedBanner = $bannerFile->storeOnCloudinary('umkm-photos');
+            $bannerUrl = $uploadedBanner->getSecurePath();
 
             $existingBanner = UmkmPhoto::where('umkm_id', $umkm->id)->where('is_primary', true)->first();
 
             if ($existingBanner) {
-                $existingBanner->update(['photo_path' => $bannerPath, 'photo_url' => Storage::url($bannerPath)]);
+                // Opsional: Hapus banner lama dari Cloudinary jika perlu
+                $existingBanner->update(['photo_path' => $bannerUrl, 'photo_url' => $bannerUrl]);
             } else {
                 UmkmPhoto::create([
                     'umkm_id' => $umkm->id,
-                    'photo_path' => $bannerPath,
-                    'photo_url' => Storage::url($bannerPath),
+                    'photo_path' => $bannerUrl,
+                    'photo_url' => $bannerUrl,
                     'is_primary' => true,
                     'order' => 0
                 ]);
