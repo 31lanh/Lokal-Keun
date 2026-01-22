@@ -11,9 +11,15 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\File;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
+
+use App\Traits\RobustUpload;
 
 class SellerController extends Controller
 {
+    use RobustUpload;
+
     /**
      * Menampilkan form pendaftaran UMKM
      */
@@ -55,9 +61,18 @@ class SellerController extends Controller
         }
 
         try {
-            DB::beginTransaction();
+            // DB::beginTransaction(); // TEMPORARILY DISABLED FOR DEBUGGING
 
-            $umkm = Umkm::create([
+            // Manual Slug Generation
+            $slug = Str::slug($validated['nama_usaha']);
+            $count = 1;
+            while (DB::table('umkm')->where('slug', $slug)->exists()) {
+                $slug = Str::slug($validated['nama_usaha']) . '-' . $count;
+                $count++;
+            }
+
+            // Insert UMKM (Using Query Builder to bypass Eloquent Transaction issues)
+            $umkmId = DB::table('umkm')->insertGetId([
                 'user_id'       => auth()->id(),
                 'nama_usaha'    => $validated['nama_usaha'],
                 'kategori'      => $validated['kategori'],
@@ -70,53 +85,74 @@ class SellerController extends Controller
                 'maps_link'     => $validated['maps_link'] ?? null,
                 'jam_buka'      => $validated['jam_buka'] ?? null,
                 'jam_tutup'     => $validated['jam_tutup'] ?? null,
-                'status'        => 'pending', // [PENTING] Set default status ke pending
+                'status'        => 'pending',
+                'slug'          => $slug,
+                'created_at'    => now(),
+                'updated_at'    => now(),
             ]);
+
+            // Re-fetch as Eloquent Model for relationship handling if needed for other things
+            // $umkm = Umkm::find($umkmId);
 
             // Upload Foto Galeri (Multiple)
             if ($request->hasFile('photos')) {
                 foreach ($request->file('photos') as $index => $photo) {
-                    // Upload ke Cloudinary
-                    // getRealPath() digunakan agar Cloudinary uploder bisa membaca file tmp
-                    $uploadedFile = $photo->storeOnCloudinary('umkm/photos');
-                    
-                    UmkmPhoto::create([
-                        'umkm_id'    => $umkm->id,
-                        'photo_path' => $uploadedFile->getSecurePath(), // URL aman dari Cloudinary
-                        'photo_url'  => $uploadedFile->getSecurePath(),
-                        'is_primary' => false,
-                        'order'      => $index + 1,
-                    ]);
+                    try {
+                        // Use Robust Helper
+                        $upload = $this->uploadFile($photo, 'umkm/photos');
+                        
+                        DB::table('umkm_photos')->insert([
+                            'umkm_id'    => $umkmId,
+                            'photo_path' => $upload->path,
+                            'photo_url'  => $upload->url,
+                            'is_primary' => $index === 0,
+                            'order'      => $index + 1,
+                            'created_at' => now(),
+                            'updated_at' => now(),
+                        ]);
+                    } catch (\Exception $e) {
+                         Log::error("Failed to upload/save photo index $index: " . $e->getMessage());
+                    }
                 }
             }
 
             // Upload Menus
             if ($request->has('menus')) {
                 foreach ($request->menus as $menuData) {
-                    if (empty($menuData['name'])) continue;
+                    if (empty($menuData['name']) || empty($menuData['price'])) continue;
 
                     $menuPhotoPath = null;
                     if (isset($menuData['photo']) && $menuData['photo'] instanceof \Illuminate\Http\UploadedFile) {
-                         $uploadedMenu = $menuData['photo']->storeOnCloudinary('umkm/menus');
-                         $menuPhotoPath = $uploadedMenu->getSecurePath();
+                         try {
+                             // Use Robust Helper
+                             $uploadMenu = $this->uploadFile($menuData['photo'], 'umkm/menus');
+                             $menuPhotoPath = $uploadMenu->path;
+                         } catch (\Exception $e) {
+                             Log::error("Failed to upload menu photo: " . $e->getMessage());
+                         }
                     }
 
-                    UmkmMenu::create([
-                        'umkm_id'     => $umkm->id,
+                    DB::table('umkm_menus')->insert([
+                        'umkm_id'     => $umkmId,
                         'name'        => $menuData['name'],
                         'price'       => $menuData['price'],
                         'description' => $menuData['description'] ?? null,
                         'photo_path'  => $menuPhotoPath,
+                        'created_at'  => now(),
+                        'updated_at'  => now(),
                     ]);
                 }
             }
 
-            DB::commit();
+            // DB::commit();
+            
             // Redirect ke dashboard, nanti dicegat oleh logic di method dashboard()
             return redirect()->route('seller.dashboard'); 
         } catch (\Exception $e) {
-            DB::rollBack();
-            return back()->withInput()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
+            // DB::rollBack();
+            Log::error('Seller Registration Error: ' . $e->getMessage());
+            Log::error($e->getTraceAsString());
+            return back()->withInput()->with('error', 'Terjadi kesalahan saat memproses pendaftaran. Detail: ' . $e->getMessage());
         }
     }
 
@@ -197,7 +233,7 @@ class SellerController extends Controller
         ]);
 
         try {
-            DB::beginTransaction();
+            // DB::beginTransaction();
 
             $umkm->update([
                 'nama_usaha'   => $validated['nama_usaha'],
@@ -214,55 +250,83 @@ class SellerController extends Controller
             // Handle Menu Update
             if ($request->has('menus')) {
                 $submittedIds = collect($request->menus)->pluck('id')->filter()->toArray();
-                $umkm->menus()->whereNotIn('id', $submittedIds)->delete();
+                
+                // Delete removed menus using Query Builder
+                DB::table('umkm_menus')->where('umkm_id', $umkm->id)->whereNotIn('id', $submittedIds)->delete();
 
                 foreach ($request->menus as $menuData) {
                     if (empty($menuData['name'])) continue;
 
-                    $dataToSave = [
-                        'name'        => $menuData['name'],
-                        'price'       => $menuData['price'],
-                        'description' => $menuData['description'] ?? null,
-                        'is_recommended' => $menuData['is_recommended'] ?? 0, 
-                    ];
-
+                    $photoPath = null;
                     if (isset($menuData['photo']) && $menuData['photo'] instanceof \Illuminate\Http\UploadedFile) {
-                         $uploadedMenu = $menuData['photo']->storeOnCloudinary('umkm/menus');
-                         $dataToSave['photo_path'] = $uploadedMenu->getSecurePath();
+                         try {
+                             // Use Robust Helper
+                             $uploadMenu = $this->uploadFile($menuData['photo'], 'umkm/menus');
+                             $photoPath = $uploadMenu->path;
+                         } catch (\Exception $e) {
+                             Log::error("Failed to upload update menu photo: " . $e->getMessage());
+                         }
                     }
 
-                    $umkm->menus()->updateOrCreate(
-                        ['id' => $menuData['id'] ?? null],
-                        $dataToSave
-                    );
+                    // Prepare data
+                    $data = [
+                        'umkm_id' => $umkm->id,
+                        'name' => $menuData['name'],
+                        'price' => $menuData['price'],
+                        'description' => $menuData['description'] ?? null,
+                        'is_recommended' => isset($menuData['is_recommended']) ? 1 : 0,
+                        'updated_at' => now(),
+                    ];
+                    
+                    if ($photoPath) {
+                        $data['photo_path'] = $photoPath;
+                    }
+
+                    if (!empty($menuData['id'])) {
+                        // Update existing
+                        DB::table('umkm_menus')->where('id', $menuData['id'])->update($data);
+                    } else {
+                        // Create new
+                        $data['created_at'] = now();
+                        DB::table('umkm_menus')->insert($data);
+                    }
                 }
             } else {
-                $umkm->menus()->delete();
+                 // If menus array is empty/null but present, check if intent is clear.
             }
 
             // Handle Foto Galeri Baru
             if ($request->hasFile('photos')) {
                 $photos = $request->file('photos');
-                $currentMaxOrder = $umkm->photos()->max('order') ?? 0; 
+                $currentMaxOrder = DB::table('umkm_photos')->where('umkm_id', $umkm->id)->max('order') ?? 0;
                 $order = $currentMaxOrder + 1;
 
                 foreach ($photos as $index => $photo) {
-                    $uploadedFile = $photo->storeOnCloudinary('umkm/photos');
-
-                    UmkmPhoto::create([
-                        'umkm_id'    => $umkm->id,
-                        'photo_path' => $uploadedFile->getSecurePath(),
-                        'photo_url'  => $uploadedFile->getSecurePath(),
-                        'is_primary' => false,
-                        'order'      => $order++,
-                    ]);
+                    try {
+                        // Use Robust Helper
+                        $upload = $this->uploadFile($photo, 'umkm/photos');
+                        
+                        DB::table('umkm_photos')->insert([
+                            'umkm_id'    => $umkm->id,
+                            'photo_path' => $upload->path,
+                            'photo_url'  => $upload->url, // Use url for consistency
+                            'is_primary' => false,
+                            'order'      => $order++,
+                            'created_at' => now(),
+                            'updated_at' => now(),
+                        ]);
+                    } catch (\Exception $e) {
+                        Log::error("Update photo failed: " . $e->getMessage());
+                    }
                 }
             }
 
-            DB::commit();
+            // DB::commit();
             return redirect()->route('seller.dashboard')->with('success', 'Data berhasil diperbarui!');
         } catch (\Exception $e) {
-            DB::rollBack();
+            // DB::rollBack();
+            Log::error('UMKM Update Error: ' . $e->getMessage());
+            Log::error($e->getTraceAsString());
             return back()->withInput()->with('error', 'Gagal update: ' . $e->getMessage());
         }
     }
@@ -275,21 +339,17 @@ class SellerController extends Controller
         $photo = UmkmPhoto::where('umkm_id', auth()->user()->umkm->id)->findOrFail($photoId);
 
         // Hapus fisik file
-        // Hapus fisik file
         $path = $photo->photo_path;
         if (filter_var($path, FILTER_VALIDATE_URL)) {
              // It's a Cloudinary URL. 
-             // To delete, we need to extract public ID.
-             // URL: https://res.cloudinary.com/[cloud_name]/image/upload/v[version]/[public_id].[ext]
-             // Parsing is tricky without helper. 
-             // But usually we can attempt to delete if we stored the 'public_id' OR just leave it.
-             // Best practice: Store public_id in database. But we stored URL.
+             // We can't easily delete without API/Public ID, so we skip for now.
         } else {
-            $filePath = public_path($path);
-            if (File::exists($filePath)) {
-                File::delete($filePath);
-            } elseif (Storage::disk('public')->exists($path)) {
-                Storage::disk('public')->delete($path);
+            // Local file
+            // path might be partial "/storage/..." or full URL.
+            // If it starts with /storage, convert to public path
+            $relativePath = str_replace('/storage/', 'public/', $path);
+            if (Storage::exists($relativePath)) {
+                Storage::delete($relativePath);
             }
         }
 
@@ -320,7 +380,7 @@ class SellerController extends Controller
         return view('penjual.branding', compact('umkm', 'user'));
     }
 
-    public function updateBranding(Request $request)
+    public function updateBranding(Request $request) 
     {
         $request->validate([
             'logo' => 'nullable|image',
@@ -330,33 +390,38 @@ class SellerController extends Controller
         $user = auth()->user();
         $umkm = $user->umkm;
 
-        if ($request->hasFile('logo')) {
-            $uploaded = $request->file('logo')->storeOnCloudinary('profile-photos');
-            $user->update(['profile_photo_path' => $uploaded->getSecurePath()]);
-        }
-
-        if ($request->hasFile('banner')) {
-            $bannerFile = $request->file('banner');
-            $uploadedBanner = $bannerFile->storeOnCloudinary('umkm-photos');
-            $bannerUrl = $uploadedBanner->getSecurePath();
-
-            $existingBanner = UmkmPhoto::where('umkm_id', $umkm->id)->where('is_primary', true)->first();
-
-            if ($existingBanner) {
-                // Opsional: Hapus banner lama dari Cloudinary jika perlu
-                $existingBanner->update(['photo_path' => $bannerUrl, 'photo_url' => $bannerUrl]);
-            } else {
-                UmkmPhoto::create([
-                    'umkm_id' => $umkm->id,
-                    'photo_path' => $bannerUrl,
-                    'photo_url' => $bannerUrl,
-                    'is_primary' => true,
-                    'order' => 0
-                ]);
+        try {
+            if ($request->hasFile('logo')) {
+                // Use Robust Helper
+                $upload = $this->uploadFile($request->file('logo'), 'profile-photos');
+                $user->update(['profile_photo_path' => $upload->path]);
             }
-        }
 
-        return redirect()->route('seller.dashboard')->with('success', 'Tampilan toko diperbarui!');
+            if ($request->hasFile('banner')) {
+                // Use Robust Helper
+                $upload = $this->uploadFile($request->file('banner'), 'umkm-photos');
+                $bannerUrl = $upload->path;
+
+                $existingBanner = UmkmPhoto::where('umkm_id', $umkm->id)->where('is_primary', true)->first();
+
+                if ($existingBanner) {
+                    $existingBanner->update(['photo_path' => $bannerUrl, 'photo_url' => $bannerUrl]);
+                } else {
+                    UmkmPhoto::create([
+                        'umkm_id' => $umkm->id,
+                        'photo_path' => $bannerUrl,
+                        'photo_url' => $bannerUrl,
+                        'is_primary' => true,
+                        'order' => 0
+                    ]);
+                }
+            }
+
+            return redirect()->route('seller.dashboard')->with('success', 'Tampilan toko diperbarui!');
+        } catch (\Exception $e) {
+            Log::error('Branding Update Error: ' . $e->getMessage());
+            return back()->with('error', 'Gagal memperbarui tampilan: ' . $e->getMessage());
+        }
     }
 
     /**

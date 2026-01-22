@@ -29,14 +29,40 @@
             <form action="{{ route('seller.daftar.store') }}" method="POST" enctype="multipart/form-data" class="flex flex-col gap-8" id="form-daftar">
                 @csrf
 
-                {{-- Error Handling --}}
+                {{-- Error Handling (Validation) --}}
                 @if ($errors->any())
-                <div class="bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-200 px-6 py-4 rounded-xl">
-                    <ul class="list-disc list-inside space-y-1">
+                <div class="bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-200 px-6 py-4 rounded-xl animate-fade-in">
+                    <div class="flex items-center gap-2 mb-2">
+                        <span class="material-symbols-outlined">error</span>
+                        <span class="font-bold">Mohon periksa kembali:</span>
+                    </div>
+                    <ul class="list-disc list-inside space-y-1 text-sm">
                         @foreach ($errors->all() as $error)
                         <li>{{ $error }}</li>
                         @endforeach
                     </ul>
+                </div>
+                @endif
+
+                {{-- Session Error --}}
+                @if (session('error'))
+                <div class="bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-200 px-6 py-4 rounded-xl animate-fade-in flex items-center gap-3">
+                    <span class="material-symbols-outlined text-2xl">warning</span>
+                    <div>
+                        <span class="font-bold">Gagal Mendaftar</span>
+                        <p class="text-sm mt-1">{{ session('error') }}</p>
+                    </div>
+                </div>
+                @endif
+
+                {{-- Session Success --}}
+                @if (session('success'))
+                <div class="bg-green-50 dark:bg-green-900/30 border border-green-200 dark:border-green-800 text-green-700 dark:text-green-200 px-6 py-4 rounded-xl animate-fade-in flex items-center gap-3">
+                    <span class="material-symbols-outlined text-2xl">check_circle</span>
+                    <div>
+                        <span class="font-bold">Berhasil!</span>
+                        <p class="text-sm mt-1">{{ session('success') }}</p>
+                    </div>
                 </div>
                 @endif
 

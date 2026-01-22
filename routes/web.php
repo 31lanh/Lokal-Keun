@@ -135,3 +135,9 @@ Route::get('/run-seeder', function () {
         return 'Error: ' . $e->getMessage();
     }
 });
+
+require __DIR__ . '/debug_db.php';
+require __DIR__ . '/debug_transaction.php';
+require __DIR__ . '/debug_schema_deep.php';
+require __DIR__ . '/debug_data_check.php';
+require __DIR__ . '/debug_upload.php';
