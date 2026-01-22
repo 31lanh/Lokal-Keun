@@ -138,6 +138,7 @@ class SellerController extends Controller
                         'price'       => $menuData['price'],
                         'description' => $menuData['description'] ?? null,
                         'photo_path'  => $menuPhotoPath,
+                        'is_recommended' => 0, // Default not recommended
                         'created_at'  => now(),
                         'updated_at'  => now(),
                     ]);
@@ -338,22 +339,24 @@ class SellerController extends Controller
     {
         $photo = UmkmPhoto::where('umkm_id', auth()->user()->umkm->id)->findOrFail($photoId);
 
-        // Hapus fisik file
-        $path = $photo->photo_path;
-        if (filter_var($path, FILTER_VALIDATE_URL)) {
-             // It's a Cloudinary URL. 
-             // We can't easily delete without API/Public ID, so we skip for now.
-        } else {
-            // Local file
-            // path might be partial "/storage/..." or full URL.
-            // If it starts with /storage, convert to public path
-            $relativePath = str_replace('/storage/', 'public/', $path);
-            if (Storage::exists($relativePath)) {
-                Storage::delete($relativePath);
+        try {
+            // Hapus fisik file (Locally)
+            $path = $photo->photo_path;
+            if (!filter_var($path, FILTER_VALIDATE_URL)) {
+                // Local file
+                $relativePath = str_replace('/storage/', 'public/', $path);
+                if (Storage::exists($relativePath)) {
+                    Storage::delete($relativePath);
+                }
             }
+            // Cloudinary: We skip physical delete for now as we don't have the public_id easily or the package.
+        } catch (\Exception $e) {
+            Log::error("Failed to delete physical photo file: " . $e->getMessage());
+            // Proceed to delete record anyway
         }
 
-        $photo->delete();
+        // Use DB Table delete to avoid Eloquent issues
+        DB::table('umkm_photos')->where('id', $photo->id)->delete();
 
         if ($request->ajax() || $request->wantsJson() || $request->header('X-Requested-With') === 'XMLHttpRequest') {
             return response()->json([
