@@ -159,8 +159,6 @@
                             <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300">
                                 Password
                             </label>
-                            <a href="#" class="text-xs font-bold text-primary-orange hover:underline">Lupa
-                                Password?</a>
                         </div>
                         <div class="relative">
                             <input type="password" name="password" id="password" placeholder="••••••••" required
