@@ -440,8 +440,9 @@
         const url = `/seller/photo/${photoId}/delete`; 
 
         fetch(url, {
-            method: 'GET', // Harusnya DELETE, tapi di routes pakai GET (atau sesuaikan)
+            method: 'DELETE', // Fix: Use DELETE to match route
             headers: {
+                'X-CSRF-TOKEN': token, // Fix: Add CSRF Token
                 'X-Requested-With': 'XMLHttpRequest', 
                 'Accept': 'application/json',
                 'Content-Type': 'application/json'

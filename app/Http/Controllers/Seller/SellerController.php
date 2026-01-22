@@ -275,7 +275,7 @@ class SellerController extends Controller
                         'name' => $menuData['name'],
                         'price' => $menuData['price'],
                         'description' => $menuData['description'] ?? null,
-                        'is_recommended' => isset($menuData['is_recommended']) ? 1 : 0,
+                        'is_recommended' => (int) ($menuData['is_recommended'] ?? 0), // Fix casting
                         'updated_at' => now(),
                     ];
                     
@@ -293,7 +293,8 @@ class SellerController extends Controller
                     }
                 }
             } else {
-                 // If menus array is empty/null but present, check if intent is clear.
+                 // If menus array is empty (all deleted in UI), delete all from DB
+                 DB::table('umkm_menus')->where('umkm_id', $umkm->id)->delete();
             }
 
             // Handle Foto Galeri Baru
