@@ -110,13 +110,7 @@
                                     <span class="text-gray-400 flex items-center gap-1 text-xs">
                                         <span class="material-symbols-outlined text-base">hourglass_empty</span> Belum
                                     </span>
-                                    <form action="{{ route('admin.users.verify', $user->id) }}" method="POST" onsubmit="return confirm('Verifikasi manual user ini?');" class="inline-block ml-2">
-                                        @csrf
-                                        @method('PUT')
-                                        <button type="submit" class="text-xs bg-blue-100 text-blue-600 px-2 py-1 rounded hover:bg-blue-200" title="Verifikasi Manual">
-                                            Verify
-                                        </button>
-                                    </form>
+
                                 @endif
                             </td>
                             <td class="px-6 py-4 text-gray-500 text-xs">
@@ -124,6 +118,18 @@
                             </td>
                             <td class="px-6 py-4 text-center">
                                 @if ($user->id !== auth()->id())
+                                    {{-- Tombol Verifikasi Manual --}}
+                                    @if (!$user->email_verified_at)
+                                        <form action="{{ route('admin.users.verify', $user->id) }}" method="POST" onsubmit="return confirm('Verifikasi manual user ini?');" class="inline-block">
+                                            @csrf
+                                            @method('PUT')
+                                            <button type="submit"
+                                                class="p-2 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-600 hover:text-white transition-all shadow-sm hover:shadow-md"
+                                                title="Verifikasi Manual">
+                                                <span class="material-symbols-outlined text-lg">check_circle</span>
+                                            </button>
+                                        </form>
+                                    @endif
                                     <form action="{{ route('admin.users.destroy', $user->id) }}" method="POST"
                                         onsubmit="return confirm('Apakah Anda yakin ingin menghapus pengguna ini? Tindakan ini tidak dapat dibatalkan.');">
                                         @csrf @method('DELETE')
