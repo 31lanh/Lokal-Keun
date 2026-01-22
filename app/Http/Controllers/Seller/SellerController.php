@@ -105,7 +105,7 @@ class SellerController extends Controller
                             'umkm_id'    => $umkmId,
                             'photo_path' => $upload->path,
                             'photo_url'  => $upload->url,
-                            'is_primary' => $index === 0,
+                            'is_primary' => false, // Default is gallery, not banner
                             'order'      => $index + 1,
                             'created_at' => now(),
                             'updated_at' => now(),
