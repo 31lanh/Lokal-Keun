@@ -543,16 +543,13 @@
 
     <script>
         function shareUMKM() {
-            if (navigator.share) {
-                navigator.share({
-                    title: '{{ $umkm->nama_usaha }}',
-                    text: 'Cek profil UMKM ini di LokalKeun!',
-                    url: window.location.href
-                });
-            } else {
-                navigator.clipboard.writeText(window.location.href);
-                alert('Link profil berhasil disalin!');
-            }
+            navigator.clipboard.writeText(window.location.href).then(() => {
+                // Bisa ganti dengan Toast custom jika ada library
+                alert('Link profil UMKM berhasil disalin ke clipboard!');
+            }).catch(err => {
+                console.error('Gagal menyalin: ', err);
+                alert('Gagal menyalin link. Browser tidak support.');
+            });
         }
     </script>
     
