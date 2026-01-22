@@ -89,6 +89,7 @@ Route::middleware(['auth'])->group(function () {
         Route::put('/umkm/{id}/approve', [AdminController::class, 'approveUmkm'])->name('umkm.approve');
         Route::put('/umkm/{id}/reject', [AdminController::class, 'rejectUmkm'])->name('umkm.reject');
         Route::get('/users', [AdminController::class, 'usersIndex'])->name('users.index');
+        Route::put('/users/{id}/verify', [AdminController::class, 'verifyUser'])->name('users.verify');
         Route::delete('/users/{id}', [AdminController::class, 'userDestroy'])->name('users.destroy');
     });
 

@@ -116,4 +116,20 @@ class AdminController extends Controller
 
         return back()->with('success', 'Pengguna dan UMKM terkait berhasil dihapus.');
     }
+    /**
+     * Verifikasi email user secara manual.
+     */
+    public function verifyUser($id)
+    {
+        $user = User::findOrFail($id);
+        
+        if ($user->email_verified_at) {
+            return back()->with('error', 'User sudah terverifikasi.');
+        }
+
+        $user->email_verified_at = now();
+        $user->save();
+
+        return back()->with('success', 'Email user berhasil diverifikasi secara manual.');
+    }
 }

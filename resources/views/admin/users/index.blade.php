@@ -110,6 +110,13 @@
                                     <span class="text-gray-400 flex items-center gap-1 text-xs">
                                         <span class="material-symbols-outlined text-base">hourglass_empty</span> Belum
                                     </span>
+                                    <form action="{{ route('admin.users.verify', $user->id) }}" method="POST" onsubmit="return confirm('Verifikasi manual user ini?');" class="inline-block ml-2">
+                                        @csrf
+                                        @method('PUT')
+                                        <button type="submit" class="text-xs bg-blue-100 text-blue-600 px-2 py-1 rounded hover:bg-blue-200" title="Verifikasi Manual">
+                                            Verify
+                                        </button>
+                                    </form>
                                 @endif
                             </td>
                             <td class="px-6 py-4 text-gray-500 text-xs">
