@@ -117,31 +117,33 @@
                                 {{ $user->created_at->format('d M Y') }}
                             </td>
                             <td class="px-6 py-4 text-center">
-                                @if ($user->id !== auth()->id())
-                                    {{-- Tombol Verifikasi Manual --}}
-                                    @if (!$user->email_verified_at)
-                                        <form action="{{ route('admin.users.verify', $user->id) }}" method="POST" onsubmit="return confirm('Verifikasi manual user ini?');" class="inline-block">
-                                            @csrf
-                                            @method('PUT')
+                                <div class="flex items-center justify-center gap-2">
+                                    @if ($user->id !== auth()->id())
+                                        {{-- Tombol Verifikasi Manual --}}
+                                        @if (!$user->email_verified_at)
+                                            <form action="{{ route('admin.users.verify', $user->id) }}" method="POST" onsubmit="return confirm('Verifikasi manual user ini?');">
+                                                @csrf
+                                                @method('PUT')
+                                                <button type="submit"
+                                                    class="p-2 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-600 hover:text-white transition-all shadow-sm hover:shadow-md"
+                                                    title="Verifikasi Manual">
+                                                    <span class="material-symbols-outlined text-lg">check_circle</span>
+                                                </button>
+                                            </form>
+                                        @endif
+                                        <form action="{{ route('admin.users.destroy', $user->id) }}" method="POST"
+                                            onsubmit="return confirm('Apakah Anda yakin ingin menghapus pengguna ini? Tindakan ini tidak dapat dibatalkan.');">
+                                            @csrf @method('DELETE')
                                             <button type="submit"
-                                                class="p-2 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-600 hover:text-white transition-all shadow-sm hover:shadow-md"
-                                                title="Verifikasi Manual">
-                                                <span class="material-symbols-outlined text-lg">check_circle</span>
+                                                class="p-2 bg-red-50 text-red-600 rounded-lg hover:bg-red-600 hover:text-white transition-all shadow-sm hover:shadow-md"
+                                                title="Hapus Pengguna">
+                                                <span class="material-symbols-outlined text-lg">delete</span>
                                             </button>
                                         </form>
+                                    @else
+                                        <span class="text-xs text-gray-400 italic">Akun Anda</span>
                                     @endif
-                                    <form action="{{ route('admin.users.destroy', $user->id) }}" method="POST"
-                                        onsubmit="return confirm('Apakah Anda yakin ingin menghapus pengguna ini? Tindakan ini tidak dapat dibatalkan.');">
-                                        @csrf @method('DELETE')
-                                        <button type="submit"
-                                            class="p-2 bg-red-50 text-red-600 rounded-lg hover:bg-red-600 hover:text-white transition-all shadow-sm hover:shadow-md"
-                                            title="Hapus Pengguna">
-                                            <span class="material-symbols-outlined text-lg">delete</span>
-                                        </button>
-                                    </form>
-                                @else
-                                    <span class="text-xs text-gray-400 italic">Akun Anda</span>
-                                @endif
+                                </div>
                             </td>
                         </tr>
                     @empty
