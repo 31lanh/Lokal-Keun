@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Models\Umkm;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage; // Pastikan import ini ada
 
 class AdminController extends Controller
 {
@@ -77,7 +78,7 @@ class AdminController extends Controller
     }
 
     /**
-     * Hapus Pengguna
+     * Hapus Pengguna (PERBAIKAN UTAMA DISINI)
      */
     public function userDestroy($id)
     {
@@ -88,25 +89,31 @@ class AdminController extends Controller
 
         $user = User::findOrFail($id);
 
-        // Hapus foto profil jika ada
+        // 1. Hapus foto profil user jika ada (Cloudinary/Storage)
         if ($user->profile_photo_path) {
             $path = $user->profile_photo_path;
-            if (filter_var($path, FILTER_VALIDATE_URL)) {
-                // If it's a URL (Cloudinary), we can't easily delete via Storage invalidating the path, 
-                // but we could try if we had the public ID. For now, we just skip deletion to avoid errors.
-                // Or we could try Cloudinary::uploadApi()->destroy($publicId) if we extracted it.
-            } else {
-                 if (\Illuminate\Support\Facades\Storage::disk('public')->exists($path)) {
-                    \Illuminate\Support\Facades\Storage::disk('public')->delete($path);
+            
+            // Cek apakah ini URL (Cloudinary) atau path lokal
+            if (!filter_var($path, FILTER_VALIDATE_URL)) {
+                 if (Storage::disk('public')->exists($path)) {
+                    Storage::disk('public')->delete($path);
                 }
             }
+            // Jika menggunakan Cloudinary, biasanya kita butuh Public ID untuk menghapus via API.
+            // Namun untuk saat ini kita biarkan file di Cloudinary tetap ada agar tidak error,
+            // atau Anda bisa tambahkan logika penghapusan Cloudinary disini jika sudah install SDK-nya.
         }
 
-        // Jika dia punya UMKM, hapus juga data UMKM-nya (Opsional, tergantung kebijakan)
-        // $user->umkm()->delete(); 
+        // 2. HAPUS UMKM TERKAIT (SOLUSI ORPHAN DATA)
+        // Cek apakah user memiliki UMKM sebelum dihapus
+        if ($user->umkm) {
+            // Kita hapus UMKM-nya terlebih dahulu
+            $user->umkm->delete();
+        }
 
+        // 3. Akhirnya hapus User
         $user->delete();
 
-        return back()->with('success', 'Pengguna berhasil dihapus.');
+        return back()->with('success', 'Pengguna dan UMKM terkait berhasil dihapus.');
     }
 }
