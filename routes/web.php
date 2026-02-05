@@ -128,17 +128,18 @@ Route::middleware(['auth'])->get('/dashboard-redirect', function () {
     else return redirect()->route('buyer.dashboard');
 })->name('dashboard');
 
-Route::get('/run-seeder', function () {
-    try {
-        \Illuminate\Support\Facades\Artisan::call('db:seed', ['--force' => true]);
-        return 'Seeder successfully run!';
-    } catch (\Exception $e) {
-        return 'Error: ' . $e->getMessage();
-    }
-});
+// Route::get('/run-seeder', function () {
+//     try {
+//         \Illuminate\Support\Facades\Artisan::call('db:seed', ['--force' => true]);
+//         return 'Seeder successfully run!';
+//     } catch (\Exception $e) {
+//         return 'Error: ' . $e->getMessage();
+//     }
+// });
 
-require __DIR__ . '/debug_db.php';
-require __DIR__ . '/debug_transaction.php';
-require __DIR__ . '/debug_schema_deep.php';
-require __DIR__ . '/debug_data_check.php';
-require __DIR__ . '/debug_upload.php';
+// Debug routes removed for security
+// require __DIR__ . '/debug_db.php';
+// require __DIR__ . '/debug_transaction.php';
+// require __DIR__ . '/debug_schema_deep.php';
+// require __DIR__ . '/debug_data_check.php';
+// require __DIR__ . '/debug_upload.php';
