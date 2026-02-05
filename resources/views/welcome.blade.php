@@ -14,7 +14,7 @@
             <div class="absolute bottom-20 left-10 w-96 h-96 bg-primary-green/20 rounded-full blur-3xl animate-pulse-slow" style="animation-delay: 1s;"></div>
         </div>
 
-        <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
+        <div class="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
             <div class="grid lg:grid-cols-2 gap-8 items-center">
                 
                 {{-- KONTEN KIRI (Teks) --}}
@@ -88,8 +88,8 @@
 
     {{-- 2. SECTION TENTANG --}}
     <section id="tentang" class="min-h-screen flex items-center justify-center py-20 bg-background-light dark:bg-background-dark overflow-hidden">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
-            <div class="grid lg:grid-cols-2 gap-16 items-center">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
+            <div class="grid lg:grid-cols-2 gap-12 items-center">
                 
                 {{-- Info Grid Kiri: Fade Right --}}
                 <div class="relative order-2 lg:order-1" data-aos="fade-right">
@@ -175,7 +175,7 @@
 
     {{-- 3. SECTION KATEGORI --}}
     <section id="kategori" class="min-h-screen flex items-center justify-center py-20 bg-white dark:bg-surface-dark">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
             <div class="text-center mb-12" data-aos="fade-down">
                 <h2 class="text-4xl font-bold mb-4">Kategori <span class="gradient-text">Pilihan</span></h2>
                 <p class="text-gray-600 dark:text-gray-300">Jelajahi beragam produk lokal berkualitas</p>
@@ -212,7 +212,7 @@
 
     {{-- 4. SECTION JELAJAH (UMKM Unggulan) --}}
     <section id="jelajah" class="min-h-screen flex items-center justify-center py-20 bg-background-light dark:bg-background-dark">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
             <div class="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-4" data-aos="fade-right">
                 <div>
                     <h2 class="text-4xl font-bold mb-2">UMKM <span class="gradient-text">Unggulan</span></h2>
